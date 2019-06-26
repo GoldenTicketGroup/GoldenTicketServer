@@ -1,9 +1,8 @@
 const fs = require('fs')
 const json2csv = require('json2csv')
 const csv = require('csvtojson')
-const resMessage = require('../utils/responseMessage')
-const MSG = require('../utils/responseMessage')
-
+const resMessage = require('../responseMessage')
+const MSG = require('../responseMessage')
 const csv_url = './public/csv/'
 
 const csvManager = {
@@ -12,7 +11,6 @@ const csvManager = {
             console.log(JSON.stringify(jsonArray))
             const resultCsv = json2csv.parse(jsonArray)
             console.log(resultCsv)
-
             fs.writeFile(`${csv_url}${fileName}`, resultCsv, (err) => {
                 if (err) {
                     console.log(`file save(${csv_url}${fileName}) err: ${err}`)
@@ -27,7 +25,7 @@ const csvManager = {
     csvRead: (fileName) => {
         return new Promise((resolve, reject) => {
             try {
-                if(fs.existsSync(`${csv_url}${fileName}`) == false){
+                if (fs.existsSync(`${csv_url}${fileName}`) == false) {
                     throw Error(MSG.FAIL_CSV_READ)
                 }
             } catch (err) {
@@ -35,15 +33,14 @@ const csvManager = {
                 resolve(Array())
                 return
             }
-            
             csv().fromFile(`${csv_url}${fileName}`).then((jsonArr) => {
                 if (!jsonArr) {
                     console.log(`file read(${csv_url}${fileName}) err: ${err}`)
                     reject(resMessage.FAIL_CSV_READ)
                     return
                 }
-                for(const idx in jsonArr){
-                    if(!jsonArr[idx].write_date) continue
+                for (const idx in jsonArr) {
+                    if (!jsonArr[idx].write_date) continue
                     jsonArr[idx].write_date = jsonArr[idx].write_date
                 }
                 console.log(`All of complete(${csv_url}${fileName})!`)
@@ -57,7 +54,6 @@ const csvManager = {
     csvReadSingle: (fileName, idx) => {
         return new Promise(async (resolve, reject) => {
             const jsonArr = await csvManager.csvRead(fileName)
-
             let jsonData = null
             for (const i in jsonArr) {
                 if (jsonArr[i].idx == idx) {
@@ -65,7 +61,7 @@ const csvManager = {
                     break
                 }
             }
-            if(jsonData == null){
+            if (jsonData == null) {
                 reject(MSG.NO_INDEX)
                 return
             }

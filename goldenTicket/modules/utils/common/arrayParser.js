@@ -1,6 +1,3 @@
-const crypto = require('crypto')
-const resMessage = require('./responseMessage')
-
 const arrayParser = {
     stringToArray: (str) => {
         const arr = []

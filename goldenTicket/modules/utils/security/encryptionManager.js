@@ -17,5 +17,4 @@ const encryptionManager = {
         })
     },
 }
-
 module.exports = encryptionManager
