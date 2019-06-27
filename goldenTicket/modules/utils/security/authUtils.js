@@ -1,7 +1,7 @@
-const jwt = require('./jwt')
-const resMessage = require('./responseMessage')
-const statusCode = require('./statusCode')
-const util = require('./utils')
+const jwt = require('../auth/jwt')
+const MSG = require('../rest/responseMessage')
+const CODE = require('../rest/statusCode')
+const UTIL = require('../rest/utils')
 
 const authUtil = {
     //middlewares
@@ -11,17 +11,17 @@ const authUtil = {
     isLoggedin: async (req, res, next) => {
         var token = req.headers.token
         if (!token) {
-            return res.json(util.successFalse(statusCode.BAD_REQUEST, resMessage.EMPTY_TOKEN))
+            return res.json(UTIL.successFalse(CODE.BAD_REQUEST, MSG.EMPTY_TOKEN))
         }
         const user = jwt.verify(token)
         if (user == this.TOKEN_EXPIRED) {
-            return res.json(util.successFalse(statusCode.UNAUTHORIZED, resMessage.EXPIRED_TOKEN))
+            return res.json(UTIL.successFalse(CODE.UNAUTHORIZED, MSG.EXPIRED_TOKEN))
         }
         if (user == this.TOKEN_INVALID) {
-            return res.json(util.successFalse(statusCode.UNAUTHORIZED, resMessage.INVALID_TOKEN))
+            return res.json(UTIL.successFalse(CODE.UNAUTHORIZED, MSG.INVALID_TOKEN))
         }
         if (user.userIdx == undefined) {
-            return res.json(util.successFalse(statusCode.UNAUTHORIZED, resMessage.INVALID_TOKEN))
+            return res.json(UTIL.successFalse(CODE.UNAUTHORIZED, MSG.INVALID_TOKEN))
         }
         req.decoded = user
         next()
@@ -34,9 +34,9 @@ const authUtil = {
         } else {
             const user = jwt.verify(token)
             if (user == jwt.TOKEN_EXPIRED) {
-                return res.json(util.successFalse(statusCode.UNAUTHORIZED, resMessage.EXPRIED_TOKEN))
+                return res.json(UTIL.successFalse(CODE.UNAUTHORIZED, MSG.EXPRIED_TOKEN))
             } else if (user == jwt.TOKEN_INVALID) {
-                return res.json(util.successFalse(statusCode.UNAUTHORIZED, resMessage.INVALID_TOKEN))
+                return res.json(UTIL.successFalse(CODE.UNAUTHORIZED, MSG.INVALID_TOKEN))
             } else {
                 req.decoded = user
                 next()

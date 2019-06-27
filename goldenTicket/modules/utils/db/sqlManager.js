@@ -1,4 +1,11 @@
-const TABLE_X = 'x'
+const TABLE_SHOW = 'show'
+const TABLE_LOTTERY = 'lottery'
+const TABLE_TICKET = 'ticket'
+const TABLE_LIKE = 'like'
+const TABLE_USER = 'user'
+const TABLE_POST = 'post'
+const TABLE_CARD = 'card'
+const TABLE_HASHTAG = 'hashtag'
 
 function makeGroupByQuery(groupBy) {
     if (groupBy == undefined) return ""
@@ -11,6 +18,7 @@ function makeJoinQuery(joinJson) {
     if (joinJson.table == undefined ||
         joinJson.foreignKey == undefined ||
         joinJson.type == undefined) {
+        console.log(joinJson)
         throw "The joinJson is Wrong format on makeJoinQuery()"
     }
     let joinStr = `${joinJson.type} JOIN ${joinJson.table} USING (${joinJson.foreignKey})`
@@ -101,37 +109,46 @@ const sqlManager = {
         if (result == null) return false
         return result
     },
-    TABLE_X: TABLE_X
+    TABLE_SHOW: TABLE_SHOW,
+    TABLE_LOTTERY: TABLE_LOTTERY,
+    TABLE_TICKET: TABLE_TICKET,
+    TABLE_LIKE: TABLE_LIKE,
+    TABLE_USER: TABLE_USER,
+    TABLE_POST: TABLE_POST,
+    TABLE_CARD: TABLE_CARD,
+    TABLE_HASHTAG: TABLE_HASHTAG,
 }
 module.exports = sqlManager
 
 // test code
 
-function test(result) {
-    console.log(result)
-    return result
-}
-
-const opts = {
-    fieldsJson: `${TABLE_COMICS}.*`,
-    joinJson: {
-        table: 'hashtag',
-        foreignKey: "comicsIdx",
-        type: "LEFT"
-    },
-    groupBy: "keyword",
-    orderBy: {
-        "hashTagIdx": "DESC"
+const module_test = () => {
+    const test = (result) => {
+        console.log(result)
+        return result
     }
+    const opts = {
+        fieldsJson: `${TABLE_SHOW}.*`,
+        joinJson: {
+            table: 'hashtag',
+            foreignKey: "showIdx",
+            type: "LEFT"
+        },
+        groupBy: "keyword",
+        orderBy: {
+            "hashTagIdx": "DESC"
+        }
+    }
+    console.log(opts)
+    const res = sqlManager.db_select(test, TABLE_SHOW, {
+        likes: {
+            equ: 'LIKE',
+            value: '%A'
+        },
+        id: '1234'
+    }, opts)
+    res.then((res) => {
+        console.log(res)
+    })
 }
-console.log(opts)
-const res = sqlManager.db_select(test, sqlManager.TABLE_COMICS, {
-    likes: {
-        equ: 'LIKE',
-        value: '%A'
-    },
-    id: '1234'
-}, opts)
-res.then((res) => {
-    console.log(res)
-})
+// module_test()

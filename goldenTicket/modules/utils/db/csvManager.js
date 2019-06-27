@@ -1,8 +1,7 @@
 const fs = require('fs')
 const json2csv = require('json2csv')
 const csv = require('csvtojson')
-const resMessage = require('../responseMessage')
-const MSG = require('../responseMessage')
+const MSG = require('../../utils/rest/responseMessage')
 const csv_url = './public/csv/'
 
 const csvManager = {
@@ -14,7 +13,7 @@ const csvManager = {
             fs.writeFile(`${csv_url}${fileName}`, resultCsv, (err) => {
                 if (err) {
                     console.log(`file save(${csv_url}${fileName}) err: ${err}`)
-                    reject(resMessage.FAIL_CSV_WRITE)
+                    reject(MSG.FAIL_CSV_WRITE)
                     return
                 }
                 console.log(`All of complete(${csv_url}${fileName})`)
@@ -36,7 +35,7 @@ const csvManager = {
             csv().fromFile(`${csv_url}${fileName}`).then((jsonArr) => {
                 if (!jsonArr) {
                     console.log(`file read(${csv_url}${fileName}) err: ${err}`)
-                    reject(resMessage.FAIL_CSV_READ)
+                    reject(MSG.FAIL_CSV_READ)
                     return
                 }
                 for (const idx in jsonArr) {
@@ -47,7 +46,7 @@ const csvManager = {
                 resolve(jsonArr)
             }, (err) => {
                 console.log(`err with readCSV: ${err}`)
-                reject(resMessage.FAIL_CSV_READ)
+                reject(MSG.FAIL_CSV_READ)
             })
         })
     },

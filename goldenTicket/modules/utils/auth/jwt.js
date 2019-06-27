@@ -1,4 +1,4 @@
-const randToken = require('rand-token')
+var randToken = require('rand-token')
 const jwt = require('jsonwebtoken')
 const secretKey = require('../../../config/secret.key')
 const secretOrPrivateKey = secretKey.secretOrPrivateKey

@@ -15,5 +15,4 @@ const authUtil = {
         }
     },
 }
-
 module.exports = authUtil

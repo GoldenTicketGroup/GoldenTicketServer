@@ -1,4 +1,4 @@
-const pool = require('../../config/dbConfig')
+const pool = require('../../../config/dbConfig')
 
 module.exports = {
     queryParam_None: async (...args) => {
@@ -49,7 +49,6 @@ module.exports = {
     },
     Transaction: async (...args) => {
         let result = "Success"
-
         try {
             var connection = await pool.getConnection()
             await connection.beginTransaction()
