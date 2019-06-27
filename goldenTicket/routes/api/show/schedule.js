@@ -1,29 +1,29 @@
 const express = require('express');
 const router = express.Router();
 
-//공연 리스트 조회
+//스케쥴 리스트 조회
 router.get('/', async(req, res) => {
-    res.status(200).send("test1");
+    res.status(200).send("test3");
 });
 
-//공연 상세 조회
+//스케쥴 상세 조회
 router.get('/:id', async(req, res) => {
-    res.status(200).send("test2");
+    res.status(200).send("test4");
 });
 
-//공연 등록
+//스케쥴 등록
 router.post('/', async(req, res) => {
-    res.status(200).send("test1");
+    res.status(200).send("test3");
 });
 
-//공연 수정
+//스케쥴 수정
 router.put('/', async(req, res) => {
-    res.status(200).send("test1");
+    res.status(200).send("test3");
 });
 
-//공연 삭제
+//스케쥴 삭제
 router.delete('/', async(req, res) => {
-    res.status(200).send("test1");
+    res.status(200).send("test3");
 });
 
 module.exports = router;
