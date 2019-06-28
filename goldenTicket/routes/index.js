@@ -1,9 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const lottery = require('./api/lottery/index');
-const ticket = require('./api/ticket/index');
+const express = require('express')
+const router = express.Router()
 
-router.use('/lottery', lottery);
-router.use('/ticket', ticket);
+router.use('/', require('./api'))
 
 module.exports = router;
