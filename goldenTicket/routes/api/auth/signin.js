@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-router.use('/', require('./api'))
+//로그인
+router.post('/', async(req, res) => {
+    res.status(200).send("test8");
+});
 
 module.exports = router;
