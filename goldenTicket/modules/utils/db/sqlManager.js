@@ -1,3 +1,6 @@
+const errorMsg = require('../common/errorUtils')
+const MSG = require('../rest/responseMessage')
+
 const TABLE_SHOW = 'show'
 const TABLE_LOTTERY = 'lottery'
 const TABLE_TICKET = 'ticket'
@@ -30,12 +33,12 @@ function makeOrderByQuery(orderByJson) {
     let orderByStr = "ORDER BY"
     for (let key in orderByJson) {
         orderByStr = `${orderByStr} ${key} ${orderByJson[key]}`
-        return orderByStr
     }
+    return orderByStr
 }
 
 function makeWhereQuery(whereJson) {
-    if (whereJson == undefined) return ""
+    if (whereJson == undefined || Object.keys(whereJson).length == 0) return ""
     let conditions = ""
     for (let key in whereJson) {
         const condition = (whereJson[key].equ == undefined) ? `${key} = '${whereJson[key]}'` : `${key} ${whereJson[key].equ} '${whereJson[key].value}'`
@@ -50,8 +53,8 @@ function makeConditions(whereJson) {
     for (let key in whereJson) {
         const condition = `${key} = '${whereJson[key]}'`
         conditions = `${conditions},${condition}`
-        return conditions.substring(1)
     }
+    return conditions.substring(1)
 }
 
 function makeFieldsValueQuery(jsonData) {
@@ -64,11 +67,11 @@ function makeFieldsValueQuery(jsonData) {
         fields = fields + "," + column
         values.push(value)
         questions = questions + ",?"
-        return {
-            fields: fields.substring(1),
-            questions: questions.substring(1),
-            values: values
-        }
+    }
+    return {
+        fields: fields.substring(1),
+        questions: questions.substring(1),
+        values: values
     }
 }
 
@@ -92,6 +95,12 @@ const sqlManager = {
         const query = `INSERT INTO ${table}(${fields}) values(${questions})`
         const result = await func(query, values)
         if (result == null) return false
+        if (result.isError == true) {
+            if (result.jsonData.code == 'ER_DUP_ENTRY' || result.jsonData.errno == 1062){
+                return new errorMsg(true, MSG.ALREADY_X)
+            }
+            return false
+        }
         return result
     },
     db_delete: async (func, table, whereJson) => {

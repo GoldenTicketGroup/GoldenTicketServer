@@ -1,11 +1,13 @@
-const pool = require('../../../config/dbConfig')
+const poolPromise = require('../../../config/dbConfig')
+const errorMsg = require('../common/errorUtils')
 
 module.exports = {
     queryParam_None: async (...args) => {
         const query = args[0]
-        let result
+        let result, connection, pool
         try {
-            var connection = await pool.getConnection() // connection을 pool에서 하나 가져온다.
+            pool = await poolPromise
+            connection = await pool.getConnection() // connection을 pool에서 하나 가져온다.
             result = await connection.query(query) || null // query문의 결과 || null 값이 result에 들어간다.
         } catch (err) {
             console.log(err)
@@ -18,9 +20,10 @@ module.exports = {
     queryParam_Arr: async (...args) => {
         const query = args[0]
         const value = args[1] // array
-        let result
+        let result, connection, pool
         try {
-            var connection = await pool.getConnection() // connection을 pool에서 하나 가져온다.
+            pool = await poolPromise
+            connection = await pool.getConnection() // connection을 pool에서 하나 가져온다.
             result = await connection.query(query, value) || null // 두 번째 parameter에 배열 => query문에 들어갈 runtime 시 결정될 value
         } catch (err) {
             connection.rollback(() => {})
@@ -30,18 +33,18 @@ module.exports = {
             return result
         }
     },
-    queryParam_Parse: async (inputquery, inputvalue) => {
+    queryParam_Parse: async (inputquery, inputvalue, next) => {
         const query = inputquery
         const value = inputvalue
-        let result
+        let result, connection, pool
         try {
-            var connection = await pool.getConnection()
+            pool = await poolPromise
+            connection = await pool.getConnection()
             result = await connection.query(query, value) || null
-            console.log(result)
         } catch (err) {
-            console.log(err)
+            // console.log(err)
             connection.rollback(() => {})
-            next(err)
+            result = new errorMsg(true, err)
         } finally {
             pool.releaseConnection(connection)
             return result
@@ -49,8 +52,10 @@ module.exports = {
     },
     Transaction: async (...args) => {
         let result = "Success"
+        let connection, pool
         try {
-            var connection = await pool.getConnection()
+            pool = await poolPromise
+            connection = await pool.getConnection()
             await connection.beginTransaction()
             await args[0](connection, ...args)
             await connection.commit()

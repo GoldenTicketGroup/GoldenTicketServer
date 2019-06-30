@@ -27,6 +27,7 @@ module.exports = {
     REMOVED_X: (X) => `${X} 삭제 성공`,
     FAIL_REMOVED_X: (X) => `${X} 삭제 실패`,
     NO_X: (X) => `존재하지 않는 ${X} 입니다.`,
+    ALREADY_X: (X) => `존재하는 ${X} 입니다.`,
 
     LIKE_X: "좋아요 성공",
     ALREADY_LIKE_X: "이미 좋아요 상태 입니다.",
