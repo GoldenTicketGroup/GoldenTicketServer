@@ -25,5 +25,4 @@ router.put('/', async(req, res) => {
 router.delete('/', async(req, res) => {
     res.status(200).send("test6")
 })
-
 module.exports = router
