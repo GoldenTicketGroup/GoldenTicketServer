@@ -1,7 +1,7 @@
 const errorMsg = require('../common/errorUtils')
 const MSG = require('../rest/responseMessage')
 
-const TABLE_SHOW = 'show'
+const TABLE_SHOW = '`show`'
 const TABLE_LOTTERY = 'lottery'
 const TABLE_TICKET = 'ticket'
 const TABLE_LIKE = 'like'
@@ -77,6 +77,7 @@ function makeFieldsValueQuery(jsonData) {
 
 const sqlManager = {
     db_select: async (func, table, whereJson, opts) => {
+        if(opts == undefined) opts = {}
         const whereStr = makeWhereQuery(whereJson, ' AND ')
         const fieldsJson = opts.fields || '*'
         const joinStr = makeJoinQuery(opts.joinJson)
@@ -99,6 +100,7 @@ const sqlManager = {
             if (result.jsonData.code == 'ER_DUP_ENTRY' || result.jsonData.errno == 1062){
                 return new errorMsg(true, MSG.ALREADY_X)
             }
+            console.log(result.jsonData)
             return false
         }
         return result

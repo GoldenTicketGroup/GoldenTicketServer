@@ -98,9 +98,9 @@ const withdrawal_test = async () => {
     console.log(result)
 }
 const module_test = async () => {
-    await signUp_test()
+    // await signUp_test()
     // await withdrawal_test()
     // await signIn_test()
     // await update_test()
 }
-module_test()
+// module_test()
