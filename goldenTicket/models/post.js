@@ -5,6 +5,7 @@ const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
 
 const WORD = '게시글'
+const TABLE_NAME = sqlManager.TABLE_POST
 const convertPost = (postData) => {
     return {
         // 아래 내용은 그냥 임시
@@ -17,22 +18,25 @@ const convertPost = (postData) => {
     }
 }
 module.exports = {
-    insert: async (jsonData) => {
-        const result = await sqlManager.db_insert(db.queryParam_Parse, sqlManager.TABLE_POST, jsonData)
+    insert: async (jsonData, sqlFunc) => {
+        const func = sqlFunc || db.queryParam_Parse
+        const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
         return result
     },
-    update: async (setJson, whereJson) => {
-        const result = await sqlManager.db_update(db.queryParam_Parse, sqlManager.TABLE_POST, setJson, whereJson)
+    update: async (setJson, whereJson, sqlFunc) => {
+        const func = sqlFunc || db.queryParam_Parse
+        const result = await sqlManager.db_update(func, TABLE_NAME, setJson, whereJson)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_UPDATED_X(WORD)))
         }
         return result
     },
-    select: async (whereJson) => {
-        const result = await sqlManager.db_select(db.queryParam_Parse, sqlManager.TABLE_POST, whereJson)
+    select: async (whereJson, sqlFunc) => {
+        const func = sqlFunc || db.queryParam_Parse
+        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
@@ -41,8 +45,9 @@ module.exports = {
         }
         return convertPost(result[0])
     },
-    selectAll: async (whereJson, opts) => {
-        const result = await sqlManager.db_select(db.queryParam_Parse, sqlManager.TABLE_POST, whereJson, opts)
+    selectAll: async (whereJson, opts, sqlFunc) => {
+        const func = sqlFunc || db.queryParam_Parse
+        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }

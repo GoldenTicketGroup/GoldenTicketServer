@@ -75,7 +75,7 @@ function makeFieldsValueQuery(jsonData) {
 const sqlManager = {
     db_select: async (func, table, whereJson, opts) => {
         const whereStr = makeWhereQuery(whereJson, ' AND ')
-        const fieldsJson = opts.fieldsJson || '*'
+        const fieldsJson = opts.fields || '*'
         const joinStr = makeJoinQuery(opts.joinJson)
         const groupByStr = makeGroupByQuery(opts.groupBy)
         const orderByStr = makeOrderByQuery(opts.orderBy)

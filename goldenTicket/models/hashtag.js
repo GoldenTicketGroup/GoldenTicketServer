@@ -5,29 +5,32 @@ const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
 
 const WORD = `해시 태그`
+const TABLE_NAME =  sqlManager.TABLE_HASHTAG
 
-module.exports = {
-    register: async (jsonData) => {
-        const result = await sqlManager.db_insert(db.queryParam_Parse, sqlManager.TABLE_HASHTAG, jsonData)
+const hashtagModule = {
+    register: async (jsonData, sqlFunc) => {
+        const func = sqlFunc || db.queryParam_Parse
+        const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
         return result
     },
-    getTagList: async (whereJson) => {
+    getTagList: async (whereJson, sqlFunc) => {
         // const query = "SELECT keyword FROM comics.hashtag group by keyword"
+        const func = sqlFunc || db.queryParam_Parse
         const opts = {
             fields: 'keyword',
             groupBy: 'keyword'
         }
-        const result = await sqlManager.db_select(db.queryParam_Parse, sqlManager.TABLE_HASHTAG, whereJson, opts)
+        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
-        return result.map(it => it.keyword)
+        return result
     },
-    getShowList: async (keyword) => {
-        // const query = `SELECT comics.* FROM comics.hashtag LEFT JOIN comics ON hashtag.comicsIdx = comics.comicsIdx where keyword = '${keyword}' group by keyword;`
+    getShowList: async (keyword, sqlFunc) => {
+        const func = sqlFunc || db.queryParam_Parse
         const whereJson = {
             keyword: keyword
         }
@@ -35,36 +38,32 @@ module.exports = {
             fields: `${sqlManager.TABLE_SHOW}.*`,
             joinJson: {
                 type: 'LEFT',
-                foreignKey: 'comicsIdx',
+                foreignKey: 'showIdx',
                 table: sqlManager.TABLE_SHOW
             },
             groupBy: 'keyword'
         }
-        const result = await sqlManager.db_select(db.queryParam_Parse, sqlManager.TABLE_HASHTAG, whereJson, opts)
+        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
         return result
     }
 }
+module.exports = hashtagModule
+
 const module_test = async () => { 
-    // const query = `SELECT comics.* FROM comics.hashtag LEFT JOIN comics ON hashtag.comicsIdx = comics.comicsIdx where keyword = '${keyword}' group by keyword;`
-    const whereJson = {
-        keyword: 'keyword'
-    }
-    const opts = {
-        fieldsJson: `${sqlManager.TABLE_SHOW}.*`,
-        joinJson: {
-            type: 'LEFT',
-            foreignKey: 'showIdx',
-            table: sqlManager.TABLE_SHOW
-        },
-        groupBy: 'keyword'
-    }
-    const result = await sqlManager.db_select((test) => test, sqlManager.TABLE_HASHTAG, whereJson, opts)
-    if (!result) {
-        return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
-    }
+    let result
+    console.log('HASHTAG : register Test')
+    result = await hashtagModule.register({name: '희성', content: '내용'})
+    console.log(result)
+
+    console.log('HASHTAG : getShowList Test')
+    result = await hashtagModule.getShowList('일상')
+    console.log(result)
+
+    console.log('HASHTAG : getTagList Test')
+    result = await hashtagModule.getTagList({})
     console.log(result)
 }
 module_test()
