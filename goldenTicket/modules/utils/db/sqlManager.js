@@ -2,6 +2,7 @@ const errorMsg = require('../common/errorUtils')
 const MSG = require('../rest/responseMessage')
 
 const TABLE_SHOW = '`show`'
+const TABLE_SCHEDULE = 'schedule'
 const TABLE_LOTTERY = 'lottery'
 const TABLE_TICKET = 'ticket'
 const TABLE_LIKE = 'like'
@@ -121,6 +122,7 @@ const sqlManager = {
         return result
     },
     TABLE_SHOW: TABLE_SHOW,
+    TABLE_SCHEDULE: TABLE_SCHEDULE,
     TABLE_LOTTERY: TABLE_LOTTERY,
     TABLE_TICKET: TABLE_TICKET,
     TABLE_LIKE: TABLE_LIKE,
@@ -132,7 +134,6 @@ const sqlManager = {
 module.exports = sqlManager
 
 // test code
-
 const module_test = () => {
     const test = (result) => {
         console.log(result)
