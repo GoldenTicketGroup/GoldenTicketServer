@@ -60,6 +60,7 @@ module.exports = {
             await args[0](connection, ...args)
             await connection.commit()
         } catch (err) {
+            console.log(err)
             await connection.rollback()
             console.log("mysql error! err log =>" + err)
             result = undefined
