@@ -1,7 +1,6 @@
 const express = require('express')
-const router = express.Router()
-const lottery = require('./lottery.js')
+const router = express.Router();
 
-router.use('/lottery', lottery)
+router.use('/', require('./lottery'))
 
 module.exports = router
