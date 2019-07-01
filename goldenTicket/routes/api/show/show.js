@@ -23,7 +23,7 @@ router.get('/:id', async(req, res) => {
 
 //공연 등록
 router.post('/', upload.single('imageUrl'), async(req, res) => {
-    res.status(200).send("test1");
+    //res.status(200).send("test1");
     const imageUrl = req.file.location
     const name = req.body.name
     const originalPrice = req.body.originalPrice
@@ -50,8 +50,14 @@ router.put('/', async(req, res) => {
 });
 
 //공연 삭제
-router.delete('/', async(req, res) => {
-    res.status(200).send("test1");
+router.delete('/:id', async(req, res) => {
+    //res.status(200).send("test1");
+    const showIdx = req.params.id
+    const whereJson = {
+        showIdx
+    }
+    const result = showModule.remove(whereJson)
+    res.status(200).send(result)
 });
 
 module.exports = router;
