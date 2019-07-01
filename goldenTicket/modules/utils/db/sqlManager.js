@@ -96,12 +96,15 @@ const sqlManager = {
         const questions = resultQuery.questions
         const query = `INSERT INTO ${table}(${fields}) values(${questions})`
         const result = await func(query, values)
+        console.log(result)
         if (result == null) return false
         if (result.isError == true) {
             if (result.jsonData.code == 'ER_DUP_ENTRY' || result.jsonData.errno == 1062){
                 return new errorMsg(true, MSG.ALREADY_X)
             }
-            console.log(result.jsonData)
+            if (result.jsonData.code == 'ER_BAD_NULL_ERROR' || result.jsonData.errno == 1048){
+                return new errorMsg(true, MSG.NULL_VALUE)
+            }
             return false
         }
         return result
