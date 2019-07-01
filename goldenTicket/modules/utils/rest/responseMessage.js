@@ -1,5 +1,5 @@
 module.exports = {
-    NULL_VALUE: () => "필요한 값이 없습니다.",
+    NULL_VALUE: "필요한 값이 없습니다.",
     OUT_OF_VALUE: "파라미터 값이 잘못 되었습니다.",
 
     CREATED_USER: "회원가입 성공",
@@ -14,6 +14,7 @@ module.exports = {
     ALREADY_USER: "존재하는 유저 id 입니다.",
     NO_USER: "존재하지 않는 유저 id 입니다.",
     MISS_MATCH_PW: "비밀번호가 일치하지 않습니다",
+    WRONG_PW: "비밀번호가 틀렸습니다",
     ID_OR_PW_NULL_VALUE: "아이디/비밀번호 값이 없습니다.",
 
     CREATED_X: (X) => `${X} 성공`,
