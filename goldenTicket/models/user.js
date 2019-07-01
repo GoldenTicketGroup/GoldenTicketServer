@@ -44,13 +44,13 @@ const userModule = {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
         if (result.isError == true && result.jsonData === MSG.NULL_VALUE) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, result.jsonData))
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData))
         }
         if(password != confirm) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.WRONG_PW))
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.WRONG_PW))
         }
         if (result.isError == true && result.jsonData === MSG.ALREADY_X) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, result.jsonData(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData(WORD)))
         }
         return result
     },
