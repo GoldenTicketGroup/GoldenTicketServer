@@ -12,12 +12,18 @@ router.get('/', async(req, res) => {
 
 //공연 상세 조회
 router.get('/:id', async(req, res) => {
-    res.status(200).send("test2");
+    //res.status(200).send("test2");
+    const showIdx = req.params.id
+    const whereJson = {
+        showIdx
+    }
+    const result = await showModule.select(whereJson)
+    res.status(200).send(result)
 });
 
 //공연 등록
 router.post('/', upload.single('imageUrl'), async(req, res) => {
-    //res.status(200).send("test1");
+    res.status(200).send("test1");
     const imageUrl = req.file.location
     const name = req.body.name
     const originalPrice = req.body.originalPrice
