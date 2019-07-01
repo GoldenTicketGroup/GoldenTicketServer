@@ -5,7 +5,9 @@ const upload = require('../../../config/multer')
 
 //공연 리스트 조회
 router.get('/', async(req, res) => {
-    res.status(200).send("test1");
+    //res.status(200).send("test1");
+    const result = await showModule.getShowList()
+    res.status(200).send(result)
 });
 
 //공연 상세 조회
