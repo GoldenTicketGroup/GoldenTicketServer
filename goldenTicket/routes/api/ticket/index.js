@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const lottery = require('./ticket.js');
 
-router.use('/ticket', ticket);
+router.use('/', require('./ticket'));
 
 module.exports = router;
