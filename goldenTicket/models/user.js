@@ -4,6 +4,7 @@ const Utils = require('../modules/utils/rest/utils')
 const errorMsg = require('../modules/utils/common/errorUtils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
+const encryptionManager = require('../modules/utils/security/encryptionManager')
 
 const WORD = '유저'
 const TABLE_NAME = sqlManager.TABLE_USER
@@ -22,12 +23,33 @@ const convertUser = (userData) => {
 }
 const userModule = {
     signUp: async (jsonData, sqlFunc) => {
+        const salt = await encryptionManager.makeRandomByte()
+        if(!jsonData.password) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NULL_VALUE))
+        }
+        if(!jsonData.confirm) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NULL_VALUE))
+        }
+        const hashedPassword = await encryptionManager.encryption(jsonData.password, salt)
+        const password = jsonData.password
+        const confirm = jsonData.confirm
         const func = sqlFunc || db.queryParam_Parse
+        delete jsonData.password
+        delete jsonData.confirm
+        jsonData.password = hashedPassword;
+        jsonData.salt = salt;
+        console.log(jsonData)
         const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
-        if (result.isError == true) {
+        if (result.isError == true && result.jsonData === MSG.NULL_VALUE) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, result.jsonData))
+        }
+        if(password != confirm) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.WRONG_PW))
+        }
+        if (result.isError == true && result.jsonData === MSG.ALREADY_X) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, result.jsonData(WORD)))
         }
         return result
@@ -103,4 +125,4 @@ const module_test = async () => {
     // await signIn_test()
     // await update_test()
 }
-// module_test()
+module_test()
