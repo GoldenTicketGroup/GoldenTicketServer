@@ -21,7 +21,7 @@ router.get('/:id', async(req, res) => {
     const result = await showModule.select(whereJson)
     if(result.isError)
     { 
-        res.status(200).send(utils.successTrue(statusCode.NOT_FOUND, responseMessage.FAIL_READ_X('공연')))
+        res.status(200).send(utils.successFalse(statusCode.NOT_FOUND, responseMessage.FAIL_READ_X('공연')))
     }
     else
     {
@@ -66,8 +66,16 @@ router.delete('/:id', async(req, res) => {
     const whereJson = {
         showIdx
     }
-    const result = showModule.remove(whereJson)
-    res.status(200).send(result)
+    const result = await showModule.remove(whereJson)
+    console.log(result)
+    if(!result.isError)
+    {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.REMOVED_X('공연')))
+    }
+    else
+    {
+        res.status(200).send(result.jsonData)
+    }
 });
 
 module.exports = router;
