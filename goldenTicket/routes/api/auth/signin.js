@@ -11,7 +11,6 @@ router.post('/', async(req, res) => {
     const password = req.body.password
     const inputUser = { email, password }
     signInResult = await userModule.signIn(inputUser)
-    console.log(signInResult)
     if(signInResult.isError) {
         res.status(200).send(utils.successFalse(signInResult.jsonData.status, signInResult.jsonData.message))
     }
