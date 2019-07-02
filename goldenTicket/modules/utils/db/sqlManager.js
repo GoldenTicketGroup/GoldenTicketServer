@@ -98,11 +98,15 @@ const sqlManager = {
         const result = await func(query, values)
         if (result == null) return false
         if (result.isError == true) {
-            if (result.jsonData.code == 'ER_DUP_ENTRY' || result.jsonData.errno == 1062){
+            if (result.jsonData.code == 'ER_DUP_ENTRY' || result.jsonData.errno == 1062) {
                 return new errorMsg(true, MSG.ALREADY_X)
             }
-            if (result.jsonData.code == 'ER_BAD_NULL_ERROR' || result.jsonData.errno == 1048){
+            if (result.jsonData.code == 'ER_BAD_NULL_ERROR' || result.jsonData.errno == 1048) {
                 return new errorMsg(true, MSG.NULL_VALUE)
+            }
+            if (result.jsonData.code == 'ER_NO_REFERENCED_ROW_2' || result.jsonData.errno == 1452) {
+                console.log(result.jsonData)
+                return new errorMsg(true, MSG.FAIL_DB_WRITE)
             }
             return false
         }

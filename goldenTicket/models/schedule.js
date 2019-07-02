@@ -15,7 +15,8 @@ const convertSchedule = (scheduleData) => {
         start_time: scheduleData.startTime,
         seatCount: scheduleData.seatCount,
         end_time: scheduleData.endTime,
-        show_idx: scheduleData.showIdx
+        show_idx: scheduleData.showIdx,
+        done: scheduleData.done
     }
 }
 
@@ -27,7 +28,7 @@ const scheduleModule = {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
         if (result.isError == true) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, result.jsonData(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, result.jsonData))
         }
         return result
     },
@@ -71,7 +72,7 @@ const scheduleModule = {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
         }
         return result
-    },
+    }
 }
 module.exports = scheduleModule
 // TEST CODE
@@ -81,7 +82,7 @@ const apply_test = async (sqlFunc) => {
         date: '2021-06-29',
         startTime: '18:00',
         endTime: '20:00',
-        showIdx: 3
+        showIdx: 20
     }
     const result = await scheduleModule.apply(jsonData, sqlFunc)
     console.log(result)
@@ -139,6 +140,6 @@ const module_test = async () => {
     // await getList_test()
     // await select_test()
     // await remove_test()
-    await transaction_test()
+    // await transaction_test()
 }
 module_test()
