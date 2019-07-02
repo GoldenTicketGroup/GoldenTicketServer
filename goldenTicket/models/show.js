@@ -23,6 +23,7 @@ const convertShowInfo = (showData) => {
 
 const showModule = {
     apply: async (jsonData, sqlFunc) => {
+        console.log(jsonData)
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
         if (!result) {
@@ -101,9 +102,9 @@ const remove_test = async () => {
     console.log(result)   
 }
 const module_test = async () => {
-    await apply_test()
-    // await select_test()
+    //await apply_test()
+    await select_test()
     // await getShowList_test()
-    await remove_test()
+    //await remove_test()
 }
-// module_test()
+//  module_test()
