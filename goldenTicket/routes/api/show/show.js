@@ -19,7 +19,14 @@ router.get('/:id', async(req, res) => {
         showIdx
     }
     const result = await showModule.select(whereJson)
-    res.status(200).send(result)
+    if(result.isError)
+    { 
+        res.status(200).send(utils.successTrue(statusCode.NOT_FOUND, responseMessage.FAIL_READ_X('공연')))
+    }
+    else
+    {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
+    }
 });
 
 //공연 등록
