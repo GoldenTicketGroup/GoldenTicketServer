@@ -121,6 +121,12 @@ const sqlManager = {
         const query = `UPDATE ${table} SET ${setConditions} ${whereStr}`
         const result = await func(query)
         if (result == null) return false
+        if (result.isError == true) {
+            if (result.jsonData.code == 'ER_PARSE_ERROR' || result.jsonData.errno == 1064){
+                return new errorMsg(true, MSG.NULL_VALUE)
+            }
+            return false
+        }
         return result
     },
     TABLE_SHOW: TABLE_SHOW,

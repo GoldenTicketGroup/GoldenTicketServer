@@ -15,9 +15,26 @@ router.put('/', authUtil.isLoggedin , async (req, res) => {
     const decoded = req.decoded
     const userCondition = { decoded }
     const updateUser = await userModule.update( inputUser, userCondition )
-    if(updateUser)
+    if(!updateUser.isError)
     {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.UPDATED_X('유저')))
+    }
+    else{
+        res.status(200).send(updateUser)
+    }
+})
+
+// 유저 삭제하기
+router.delete('/', authUtil.isLoggedin , async (req, res) => {
+    const decoded = req.decoded
+    console.log(decoded.userIdx)
+    const deleteUser = await userModule.withdrawal( decoded.userIdx )
+    if(!deleteUser.isError)
+    {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.REMOVED_USER))
+    }
+    else {
+        res.status(200).send(deleteUser.jsonData)
     }
 })
 
