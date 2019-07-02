@@ -8,14 +8,12 @@ const utils = require('../../../modules/utils/rest/utils')
 
 //공연 리스트 조회
 router.get('/', async(req, res) => {
-    //res.status(200).send("test1");
     const result = await showModule.getShowList()
     res.status(200).send(result)
 });
 
 //공연 상세 조회
 router.get('/:id', async(req, res) => {
-    //res.status(200).send("test2");
     const showIdx = req.params.id
     const whereJson = {
         showIdx
@@ -26,7 +24,6 @@ router.get('/:id', async(req, res) => {
 
 //공연 등록
 router.post('/', upload.single('imageUrl'), async(req, res) => {
-    //res.status(200).send("test1");
     if(!req.file)
     {
         res.status(200).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE))
@@ -58,7 +55,6 @@ router.put('/', async(req, res) => {
 
 //공연 삭제
 router.delete('/:id', async(req, res) => {
-    //res.status(200).send("test1");
     const showIdx = req.params.id
     const whereJson = {
         showIdx

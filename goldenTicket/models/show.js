@@ -23,14 +23,16 @@ const convertShowInfo = (showData) => {
 
 const showModule = {
     apply: async (jsonData, sqlFunc) => {
-        console.log(jsonData)
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
+        if (result.isError == true && typeof(result.jsonData) == 'string') {
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData))
+        }
         if (result.isError == true) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, result.jsonData(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData(WORD)))
         }
         return result
     },
