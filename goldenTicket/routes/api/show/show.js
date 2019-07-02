@@ -10,7 +10,7 @@ const utils = require('../../../modules/utils/rest/utils')
 router.get('/', async(req, res) => {
     const result = await showModule.getShowList()
     res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('공연'), result))
-});
+})
 
 //공연 상세 조회
 router.get('/:id', async(req, res) => {
@@ -27,7 +27,7 @@ router.get('/:id', async(req, res) => {
     {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
     }
-});
+})
 
 //공연 등록
 router.post('/', upload.single('imageUrl'), async(req, res) => {
@@ -53,14 +53,10 @@ router.post('/', upload.single('imageUrl'), async(req, res) => {
             accountNumber
         }
         const result = await showModule.apply(showInfo)
-        res.status(200).send(result)
+        if(result)
+            res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.CREATED_X('공연')))
     }
-});
-
-//공연 수정
-router.put('/', async(req, res) => {
-    res.status(200).send("test1");
-});
+})
 
 //공연 삭제
 router.delete('/:id', async(req, res) => {
@@ -77,6 +73,6 @@ router.delete('/:id', async(req, res) => {
     {
         res.status(200).send(result.jsonData)
     }
-});
+})
 
-module.exports = router;
+module.exports = router
