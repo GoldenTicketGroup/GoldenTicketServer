@@ -1,27 +1,36 @@
 const MSG = require('../modules/utils/rest/responseMessage')
 const CODE = require('../modules/utils/rest/statusCode')
+const Utils = require('../modules/utils/rest/utils')
 const errorMsg = require('../modules/utils/common/errorUtils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
+const Schedule = require('../models/schedule')
 
 const WORD = '응모'
 const TABLE_NAME = sqlManager.TABLE_LOTTERY
 
 const convertLottery = (lotteryData) => {
     return {
-        // 아래 내용은 그냥 임시
         lottery_idx: lotteryData.lotteryIdx,
         schedule_idx: lotteryData.scheduleIdx,
         user_idx: lotteryData.userIdx,
         seat: lotteryData.seat,
-        win: lotteryData.win,
+        state: lotteryData.state,
         created_time: lotteryData.createdTime
     }
 }
-module.exports = {
-    insert: async (jsonData, sqlFunc) => {
+const lotteryModule = {
+    apply: async (jsonData, sqlFunc) => {
+        if (jsonData.userIdx == undefined || jsonData.scheduleIdx == undefined) {
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.NULL_VALUE))
+        }
+        const lottery = {
+            userIdx: jsonData.userIdx,
+            scheduleIdx: jsonData.scheduleIdx,
+            seat: 1
+        }
         const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
+        const result = await sqlManager.db_insert(func, TABLE_NAME, lottery)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
@@ -53,5 +62,95 @@ module.exports = {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
         return result.map(it => convertLottery(it))
+    },
+    delete: async (whereJson, sqlFunc) => {
+        const func = sqlFunc || db.queryParam_Parse
+        const result = await sqlManager.db_delete(func, TABLE_NAME, whereJson)
+        console.log(result)
+        if (!result) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_REMOVED_X(WORD)))
+        }
+        if (result.affectedRows == 0) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
+        }
+        return result
+    },
+    chooseWin: async (whereJson, sqlFunc) => {
+        const func = sqlFunc || db.queryParam_Parse
+        const resultSchedule = await Schedule.select(whereJson, func)
+        if(resultSchedule.isError == true){
+            return new errorMsg(false, resultSchedule.jsonData)
+        }
+        if(resultSchedule.length == 0){
+            return new errorMsg(false, MSG.NO_X(`추첨된 ${WORD}`))
+        }
+        console.log(resultSchedule)
+        if(resultSchedule.done == 1){
+            return new errorMsg(false, MSG.ALREADY_X(`추첨된 ${WORD}`))
+        }
+        const resultList = await lotteryModule.selectAll(whereJson, func)
+        if(resultList.isError == true) {
+            return new errorMsg(false, resultList.jsonData)
+        }
+        const randomIdx = parseInt(Math.random() * 1000) % resultList.length
+        const winLottery = resultList[randomIdx]
+        console.log(winLottery)
+        const transaction = await db.Transaction(async (connection) => {
+            const queryStreamFunc = (query, value) => {
+                return sqlFunc || connection.queryStream(query, value)
+            }
+            const resultUpdate = await Schedule.update({done: 1}, {scheduleIdx: winLottery.schedule_idx}, queryStreamFunc)
+            const resultLottery = await lotteryModule.update({state: 1}, {lotteryIdx: winLottery.lottery_idx})
+        })
+        if(!transaction){
+            return new errorMsg(false,  Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_UPDATED_X(WORD)))
+        }
+        return transaction
     }
 }
+module.exports = lotteryModule
+// module test
+const apply_test = async () => {
+    console.log('DB TEST [ Lottery : apply]')
+    const result = await lotteryModule.apply({
+        userIdx: 4,
+        scheduleIdx: 30
+    })
+    console.log(result)
+}
+const select_test = async () => {
+    console.log('DB TEST [ Lottery : select]')
+    const result = await lotteryModule.select({
+        userIdx: 4
+    })
+    console.log(result)
+}
+const selectAll_test = async () => {
+    console.log('DB TEST [ Lottery : selectAll]')
+    const result = await lotteryModule.selectAll({
+        userIdx: 4
+    })
+    console.log(result)
+}
+const delete_test = async () => {
+    console.log('DB TEST [ Lottery : delete]')
+    const result = await lotteryModule.delete({
+        lotteryIdx: 10
+    })
+    console.log(result)
+}
+const chooseWin_test = async () => {
+    console.log('DB TEST [ Lottery : chooseWin]')
+    const result = await lotteryModule.chooseWin({
+        scheduleIdx: 30
+    })
+    console.log(result)
+}
+const module_test = async () => {
+    // await apply_test()
+    // await select_test()
+    // await selectAll_test()
+    // await delete_test()
+    // await chooseWin_test()
+}
+module_test()
