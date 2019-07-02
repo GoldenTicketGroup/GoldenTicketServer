@@ -61,16 +61,19 @@ const userModule = {
         if(!setJson.email){
             delete setJson.email
         }
-        if(!setJson.phone){
+        if(!setJson.phone){ 
             delete setJson.phone
         }
+        console.log(setJson)
         whereJson = { userIdx :  whereJson.decoded.userIdx }
         const func = sqlFunc || db.queryParam_Parse 
         const result = await sqlManager.db_update(func, TABLE_NAME, setJson, whereJson)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_UPDATED_USER))
         }
-        console.log(result)
+        if (result.isError == true && result.jsonData === MSG.NULL_VALUE) {
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData))
+        }
         return result
     },
     signIn: async (jsonData, sqlFunc) => {
@@ -106,6 +109,7 @@ const userModule = {
         const func = sqlFunc || db.queryParam_Parse
         const whereJson = {userIdx: userIdx}
         const result = await sqlManager.db_delete(func, TABLE_NAME, whereJson)
+        console.log(result)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_REMOVED_USER))
         }
