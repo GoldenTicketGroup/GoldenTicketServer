@@ -28,7 +28,7 @@ const showModule = {
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
-        if (result.isError == true && typeof(result.jsonData) == 'string') {
+        if (result.isError == true && typeof(result.jsonData) == 'string') { //필요한 값이 없습니다. 일때
             return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData))
         }
         if (result.isError == true) {
@@ -58,7 +58,6 @@ const showModule = {
     remove: async (whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_delete(func, TABLE_NAME, whereJson)
-        console.log(result.affectedRows)
         if(result.affectedRows == 0)
         {
             return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_X(WORD)))

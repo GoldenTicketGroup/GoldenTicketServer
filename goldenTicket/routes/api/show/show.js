@@ -35,24 +35,26 @@ router.post('/', upload.single('imageUrl'), async(req, res) => {
     {
         res.status(200).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE))
     }
-    const imageUrl = req.file.location
-    const name = req.body.name
-    const originalPrice = req.body.originalPrice
-    const discountPrice = req.body.discountPrice
-    const location = req.body.location
-    const accountHolder = req.body.accountHolder
-    const accountNumber = req.body.accountNumber
-    const showInfo = {
-        imageUrl,
-        name,
-        originalPrice,
-        discountPrice,
-        location,
-        accountHolder,
-        accountNumber
+    else{
+        const imageUrl = req.file.location
+        const name = req.body.name
+        const originalPrice = req.body.originalPrice
+        const discountPrice = req.body.discountPrice
+        const location = req.body.location
+        const accountHolder = req.body.accountHolder
+        const accountNumber = req.body.accountNumber
+        const showInfo = {
+            imageUrl,
+            name,
+            originalPrice,
+            discountPrice,
+            location,
+            accountHolder,
+            accountNumber
+        }
+        const result = await showModule.apply(showInfo)
+        res.status(200).send(result)
     }
-    const result = await showModule.apply(showInfo)
-    res.status(200).send(result)
 });
 
 //공연 수정
@@ -67,7 +69,6 @@ router.delete('/:id', async(req, res) => {
         showIdx
     }
     const result = await showModule.remove(whereJson)
-    console.log(result)
     if(!result.isError)
     {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.REMOVED_X('공연')))
