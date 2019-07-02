@@ -102,7 +102,9 @@ const sqlManager = {
             if (result.jsonData.code == 'ER_DUP_ENTRY' || result.jsonData.errno == 1062){
                 return new errorMsg(true, MSG.ALREADY_X)
             }
-            console.log(result.jsonData)
+            if (result.jsonData.code == 'ER_BAD_NULL_ERROR' || result.jsonData.errno == 1048){
+                return new errorMsg(true, MSG.NULL_VALUE)
+            }
             return false
         }
         return result
