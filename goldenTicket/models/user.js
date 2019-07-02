@@ -55,11 +55,22 @@ const userModule = {
         return result
     },
     update: async (setJson, whereJson, sqlFunc) => {
-        const func = sqlFunc || db.queryParam_Parse
+        if(!setJson.name){
+            delete setJson.name
+        }
+        if(!setJson.email){
+            delete setJson.email
+        }
+        if(!setJson.phone){
+            delete setJson.phone
+        }
+        whereJson = { userIdx :  whereJson.decoded.userIdx }
+        const func = sqlFunc || db.queryParam_Parse 
         const result = await sqlManager.db_update(func, TABLE_NAME, setJson, whereJson)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_UPDATED_USER))
         }
+        console.log(result)
         return result
     },
     signIn: async (jsonData, sqlFunc) => {
