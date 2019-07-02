@@ -64,7 +64,6 @@ const userModule = {
         if(!setJson.phone){ 
             delete setJson.phone
         }
-        console.log(setJson)
         whereJson = { userIdx :  whereJson.decoded.userIdx }
         const func = sqlFunc || db.queryParam_Parse 
         const result = await sqlManager.db_update(func, TABLE_NAME, setJson, whereJson)
