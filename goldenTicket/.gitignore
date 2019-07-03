@@ -64,3 +64,4 @@ typings/
 # config
 config
 config/*
+../.DS_Store
