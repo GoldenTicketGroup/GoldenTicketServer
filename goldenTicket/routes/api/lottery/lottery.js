@@ -28,7 +28,7 @@ router.get('/:id', async (req, res) => {
         userIdx
     }
     const result = await lotteryModule.select(whereJson)
-    //res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X(WORD), result))
+    res.status(200).send(result.jsonData)
 })
 
 // 티켓 응모 리스트 조회
