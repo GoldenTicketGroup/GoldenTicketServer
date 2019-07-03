@@ -37,7 +37,7 @@ const lotteryModule = {
         if (result.isError == true) {
             return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.FAIL_DB_READ))
         }
-        return result
+        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.CREATED_X(WORD)))
     },
     update: async (setJson, whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
