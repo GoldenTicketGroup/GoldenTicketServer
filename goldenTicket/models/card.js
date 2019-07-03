@@ -1,6 +1,7 @@
 const MSG = require('../modules/utils/rest/responseMessage')
 const CODE = require('../modules/utils/rest/statusCode')
 const errorMsg = require('../modules/utils/common/errorUtils')
+const Utils = require('../modules/utils/rest/utils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
 
@@ -24,6 +25,12 @@ module.exports = {
         const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
+        }
+        if (result.isError == true && result.jsonData === MSG.NULL_VALUE) {
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData))
+        }
+        if (result.isError == true) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, result.jsonData))
         }
         return result
     },
