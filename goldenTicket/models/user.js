@@ -123,9 +123,9 @@ module.exports = userModule
 const signUp_test = async () => {
     console.log('DB TEST [ USER : signUp]')
     const result = await userModule.signUp({
-        name: '윤희성',
-        email: 'heesung6701@naver.com',
-        phone: '010-2081-3818',
+        name: '황재석',
+        email: 'dajasin245@naver.com',
+        phone: '010-9959-5668',
         salt: '1234'
     })
     console.log(result)
@@ -148,12 +148,12 @@ const update_test = async () => {
 }
 const withdrawal_test = async () => {
     console.log('DB TEST [ USER : withdrawal]')
-    const result = await userModule.withdrawal(9)
+    const result = await userModule.withdrawal(40)
     console.log(result)
 }
 const module_test = async () => {
     // await signUp_test()
-    // await withdrawal_test()
+    await withdrawal_test()
     // await signIn_test()
     // await update_test()
 }
