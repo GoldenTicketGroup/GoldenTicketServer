@@ -34,8 +34,7 @@ router.get('/:id', async (req, res) => {
 // 티켓 응모 리스트 조회
 router.get('/', async (req, res) => {
     const result = await lotteryModule.selectAll()
-    res.status(200).send(result)
-    //res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL(WORD), result))
+    res.status(200).send(result.jsonData)
 })
 
 //티켓 응모 삭제
