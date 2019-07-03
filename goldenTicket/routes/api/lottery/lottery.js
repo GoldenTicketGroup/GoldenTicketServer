@@ -42,7 +42,12 @@ router.get('/', async (req, res) => {
 
 //티켓 응모 삭제
 router.delete('/:id', async (req, res) => {
-    res.status(200).send("lottery test5")
+    const lotteryIdx = req.params.id
+    const whereJson = {
+        lotteryIdx
+    }
+    const result = await lotteryModule.delete(whereJson)
+    res.status(200).send(result)
 })
 
 // 당첨 티켓 추첨
