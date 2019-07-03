@@ -11,11 +11,11 @@ const utils = require('../../../modules/utils/rest/utils')
 router.post('/', async (req, res) => {
     const userIdx = req.body.userIdx
     const scheduleIdx = req.body.scheduleIdx
-    const lottery = {
+    const whereJson = {
         userIdx,
         scheduleIdx
     }
-    const result = await lotteryModule.apply(lottery)
+    const result = await lotteryModule.apply(whereJson)
     res.status(200).send(result) 
 })
 
@@ -26,7 +26,12 @@ router.put('/', async (req, res) => {
 
 // 티켓 응모 상세 조회
 router.get('/:id', async (req, res) => {
-    res.status(200).send("lottery test3")
+    const userIdx = req.params.id
+    const whereJson = {
+        userIdx
+    }
+    const result = await lotteryModule.select(whereJson)
+    res.status(200).send(result)
 })
 
 // 티켓 응모 리스트 조회
