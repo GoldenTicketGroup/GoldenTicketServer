@@ -34,6 +34,9 @@ const lotteryModule = {
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
+        if (result.isError == true) {
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.FAIL_DB_READ))
+        }
         return result
     },
     update: async (setJson, whereJson, sqlFunc) => {

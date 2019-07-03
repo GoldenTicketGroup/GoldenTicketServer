@@ -1,11 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const lotteryModule = require('../../../models/lottery')
-const upload = require('../../../config/multer')
-const responseMessage = require('../../../modules/utils/rest/responseMessage')
-const statusCode = require('../../../modules/utils/rest/statusCode')
-const utils = require('../../../modules/utils/rest/utils')
 
+const WORD = '응모'
 
 // 티켓 응모하기(등록)
 router.post('/', async (req, res) => {
@@ -16,7 +13,7 @@ router.post('/', async (req, res) => {
         scheduleIdx
     }
     const result = await lotteryModule.apply(whereJson)
-    res.status(200).send(result) 
+    res.status(200).send(result.jsonData)
 })
 
 // 티켓 수정
@@ -31,13 +28,13 @@ router.get('/:id', async (req, res) => {
         userIdx
     }
     const result = await lotteryModule.select(whereJson)
-    res.status(200).send(result)
+    //res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X(WORD), result))
 })
 
 // 티켓 응모 리스트 조회
 router.get('/', async (req, res) => {
     const result = await lotteryModule.selectAll()
-    res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('공연'), result))
+    //res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL(WORD), result))
 })
 
 //티켓 응모 삭제
