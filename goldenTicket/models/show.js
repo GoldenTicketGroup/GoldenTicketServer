@@ -39,6 +39,7 @@ const showModule = {
     select: async (whereJson, opts, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
+        console.log((parseInt(whereJson.showIdx)))
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }

@@ -13,23 +13,30 @@ const TABLE_NAME = sqlManager.TABLE_USER
 const convertUser = (userData) => {
     return {
         // 아래 내용은 그냥 임시
-        thisIs: 'dummy data',
-        user_idx: userData.TicketIdx,
-        schedule_idx: userData.scheduleIdx,
         user_idx: userData.userIdx,
-        seat: userData.seat,
-        win: userData.win,
-        created_time: userData.createdTime
+        email: userData.email,
+        name: userData.name
     }
 }
 const userModule = {
+    select: async (whereJson, opts, sqlFunc) => {
+        const func = sqlFunc || db.queryParam_Parse
+        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
+        if (result.length == undefined) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
+        }
+        if (result.length == 0) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
+        }
+        return convertUser(result[0])
+    },
     signUp: async (jsonData, sqlFunc) => {
         const salt = await encryptionManager.makeRandomByte()
         if(!jsonData.password) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NULL_VALUE))
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.NULL_VALUE))
         }
         if(!jsonData.confirm) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NULL_VALUE))
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.NULL_VALUE))
         }
         const hashedPassword = await encryptionManager.encryption(jsonData.password, salt)
         const password = jsonData.password
@@ -157,4 +164,4 @@ const module_test = async () => {
     // await signIn_test()
     // await update_test()
 }
-module_test()
+// module_test()

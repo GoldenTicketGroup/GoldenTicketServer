@@ -9,14 +9,17 @@ const WORD = '공연 일정'
 const TABLE_NAME = sqlManager.TABLE_SCHEDULE
 
 const convertSchedule = (scheduleData) => {
+    const date = JSON.stringify(scheduleData.date).split('-').join('.').substring(1,11)
+    const startTime = JSON.stringify(scheduleData.startTime).substring(1,6)
+    const endTime = JSON.stringify(scheduleData.endTime).substring(1,6)
+    const time = date.concat("  ", startTime,"-", endTime)
     return {
         schedule_idx: scheduleData.scheduleIdx,
-        date: scheduleData.date,
-        start_time: scheduleData.startTime,
-        seatCount: scheduleData.seatCount,
-        end_time: scheduleData.endTime,
         show_idx: scheduleData.showIdx,
-        done: scheduleData.done
+        date: time,
+        start_time: scheduleData.startTime,
+        draw_done: scheduleData.done,
+        draw_available: scheduleData.done
     }
 }
 

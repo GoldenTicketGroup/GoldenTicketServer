@@ -6,12 +6,6 @@ const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
 
-//공연 리스트 조회
-router.get('/', async(req, res) => {
-    const result = await showModule.getShowList()
-    res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('공연'), result))
-})
-
 //공연 상세 조회
 router.get('/:id', async(req, res) => {
     const showIdx = req.params.id
@@ -27,6 +21,12 @@ router.get('/:id', async(req, res) => {
     {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
     }
+})
+
+//공연 리스트 조회
+router.get('/', async(req, res) => {
+    const result = await showModule.getShowList()
+    res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('공연'), result))
 })
 
 //공연 등록

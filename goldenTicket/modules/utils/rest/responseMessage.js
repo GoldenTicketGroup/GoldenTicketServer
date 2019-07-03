@@ -5,6 +5,7 @@ module.exports = {
     CREATED_USER: "회원가입 성공",
     FAIL_CREATED_USER: "회원 가입 실패",
     READ_USER: "로그인 성공",
+    READ_USER_INFO: "유저 정보 조회 성공",
     FAIL_READ_USER: "유저 읽기 에러",
     UPDATED_USER: "회원 정보 수정 성공",
     FAIL_UPDATED_USER: "회원 정보 수정 실패",
@@ -49,4 +50,5 @@ module.exports = {
     FAIL_ENCRYPTION: "암호화에 실패했습니다.",
     FAIL_DB_READ: "DB 읽기 실패",
     FAIL_DB_WRITE: "DB 쓰기 실패",
+    FAIL_TO_FIND_INDEX: "인덱스 참조 실패"
 }
