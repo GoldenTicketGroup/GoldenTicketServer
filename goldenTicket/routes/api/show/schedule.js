@@ -6,13 +6,18 @@ const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
 
 //스케쥴 리스트 조회
-router.get('/', async(req, res) => {
-    res.status(200).send("test3");
-});
-
-//스케쥴 상세 조회
 router.get('/:id', async(req, res) => {
-    res.status(200).send("test4");
+    const showIdx = req.params.id
+    const whereJson = { showIdx }
+    const result = await scheduleModule.select(whereJson)
+    if(!result.isError)
+    {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('스케쥴'), result))
+    }
+    else
+    {
+        res.status(200).send(result.jsonData)
+    }
 });
 
 //스케쥴 등록
@@ -25,10 +30,13 @@ router.post('/', async(req, res) => {
         date, startTime, endTime, showIdx
     }
     const result = await scheduleModule.apply(scheduleInfo)
-    console.log(result)
     if(!result.isError)
     {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.CREATED_X('스케쥴')))
+    }
+    else
+    {
+        res.status(200).send(result.jsonData)
     }
 });
 
