@@ -1,9 +1,22 @@
 const express = require('express')
 const router = express.Router()
+const lotteryModule = require('../../../models/lottery')
+const upload = require('../../../config/multer')
+const responseMessage = require('../../../modules/utils/rest/responseMessage')
+const statusCode = require('../../../modules/utils/rest/statusCode')
+const utils = require('../../../modules/utils/rest/utils')
 
-// 티켓 응모하기
+
+// 티켓 응모하기(등록)
 router.post('/', async (req, res) => {
-    res.status(200).send("lottery test1")
+    const userIdx = req.body.userIdx
+    const scheduleIdx = req.body.scheduleIdx
+    const lottery = {
+        userIdx,
+        scheduleIdx
+    }
+    const result = await lotteryModule.apply(lottery)
+    res.status(200).send(result) 
 })
 
 // 티켓 수정
