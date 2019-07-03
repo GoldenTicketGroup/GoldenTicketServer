@@ -49,9 +49,9 @@ module.exports = {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
         if (result.length == 0) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_X(WORD)))
         }
-        return convertCard(result[0])
+        return result[0]
     },
     selectAll: async (whereJson, opts, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
@@ -59,6 +59,6 @@ module.exports = {
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
-        return result.map(it => convertCard(it))
+        return result
     }
 }
