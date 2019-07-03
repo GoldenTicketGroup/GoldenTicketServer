@@ -17,7 +17,7 @@ module.exports = {
     WRONG_PW: "비밀번호가 틀렸습니다",
     ID_OR_PW_NULL_VALUE: "아이디/비밀번호 값이 없습니다.",
 
-    CREATED_X: (X) => `${X} 성공`,
+    CREATED_X: (X) => `${X} 작성 성공`,
     FAIL_CREATED_X: (X) => `${X} 작성 실패`,
     READ_X_ALL: (X) => `${X} 전체 조회 성공`,
     FAIL_READ_X_ALL: (X) => `${X} 전체 조회 실패`,

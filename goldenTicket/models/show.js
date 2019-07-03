@@ -28,8 +28,11 @@ const showModule = {
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
+        if (result.isError == true && typeof(result.jsonData) == 'string') {
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData))
+        }
         if (result.isError == true) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, result.jsonData(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData(WORD)))
         }
         return result
     },
@@ -55,11 +58,12 @@ const showModule = {
     remove: async (whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_delete(func, TABLE_NAME, whereJson)
+        if(result.affectedRows == 0)
+        {
+            return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_X(WORD)))
+        }
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_REMOVED_X(WORD)))
-        }
-        if (result.affectedRows == 0) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
         }
         return result
     },
@@ -101,9 +105,9 @@ const remove_test = async () => {
     console.log(result)   
 }
 const module_test = async () => {
-    await apply_test()
-    // await select_test()
+    //await apply_test()
+    await select_test()
     // await getShowList_test()
-    await remove_test()
+    //await remove_test()
 }
-// module_test()
+//  module_test()
