@@ -44,7 +44,7 @@ router.delete('/:id', async (req, res) => {
         lotteryIdx
     }
     const result = await lotteryModule.delete(whereJson)
-    res.status(200).send(result)
+    res.status(200).send(result.jsonData)
 })
 
 // 당첨 티켓 추첨

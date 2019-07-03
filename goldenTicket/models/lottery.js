@@ -76,7 +76,7 @@ const lotteryModule = {
         if (result.affectedRows == 0) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
         }
-        return result
+        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.REMOVED_X(WORD)))
     },
     chooseWin: async (whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
