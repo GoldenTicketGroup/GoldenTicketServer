@@ -15,7 +15,6 @@ router.post('/', async (req, res) => {
         seatIdx
     }
     const result = await ticketModule.insert(whereJson)
-    console.log(result)
     res.status(200).send(result.jsonData)
 })
 
@@ -25,20 +24,27 @@ router.put('/', async (req, res) => {
 })
 
 // 당첨 티켓 상세 조회
-router.get('/:id', async (req, res) => {
-    const userIdx = req.params.id
+router.get('/:userIdx/:ticketIdx', async (req, res) => {
+    const userIdx = req.params.userIdx
+    const ticketIdx = req.params.ticketIdx
     const whereJson = {
-        userIdx
+        userIdx,
+        ticketIdx
     }
     const result = await ticketModule.select(whereJson)
     res.status(200).send(result.jsonData)
 })
 
 // 당첨 티켓 전체 조회
-router.get('/', async (req, res) => {
-    const result = await ticketModule.selectAll()
+router.get('/:userIdx', async (req, res) => {
+    const userIdx = req.params.userIdx
+    const whereJson = {
+        userIdx
+    }
+    const result = await ticketModule.selectAll(whereJson)
     res.status(200).send(result.jsonData)
 })
 
 // 당첨 티켓 삭제 부분은 관리자가 직접 삭제
+
 module.exports = router
