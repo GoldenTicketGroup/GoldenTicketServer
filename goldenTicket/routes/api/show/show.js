@@ -33,8 +33,16 @@ router.get('/home/:id', async(req, res) => {
 })
 
 //공연 리스트 조회
-router.get('/', async(req, res) => {
-    const result = await showModule.getShowList()
+router.get('/home', async(req, res) => {
+    const opts = {
+        joinJson: {
+            table: `show`,
+            foreignKey: `showIdx`,
+            type: "LEFT"
+        },
+        content: 'home_all'
+    }
+    const result = await showModule.getShowList('', opts)
     res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('공연'), result))
 })
 
