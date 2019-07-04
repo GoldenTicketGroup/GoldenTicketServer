@@ -21,7 +21,9 @@ const homeShowInfo = (showData) => {
 }
 
 const homeAllShowInfo = (showData) => {
-    time = showData.startTime.substring(0,5).concat(" ~ ", showData.endTime.substring(0,5))
+    let time = []
+    timeData = showData.startTime.substring(0,5).concat(" ~ ", showData.endTime.substring(0,5))
+    time.push(timeData)
     return {
         show_idx: showData.showIdx,
         image_url: showData.imageUrl,
@@ -29,6 +31,27 @@ const homeAllShowInfo = (showData) => {
         location: showData.location,
         running_time : time
     }
+}
+
+const homeAllShowFilter = (showData) => {
+    let filteredData = []
+    for(let i=0 ;i < Object.keys(showData).length - 1; i++)
+    {
+        if(showData[i].show_idx == showData[i+1].show_idx)
+        {
+            showData[i+1].running_time = showData[i].running_time.concat(showData[i+1].running_time)
+        }
+    }
+    for(let i=0 ;i < Object.keys(showData).length -1; i++)
+    {   
+        console.log(showData[i])
+        if(showData[i].show_idx != showData[i+1].show_idx)
+        {
+            filteredData.push(showData[i])
+        }
+    }
+    filteredData.push(showData[Object.keys(showData).length -1])
+    return filteredData
 }
 
 const showModule = {
@@ -50,6 +73,7 @@ const showModule = {
         const func = sqlFunc || db.queryParam_Parse
         opts.joinJson.table = TABLE_NAME
         const result = await sqlManager.db_select(func, TABLE_NAME_SCHEDULE, whereJson, opts)
+        console.log(result)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
@@ -58,7 +82,7 @@ const showModule = {
         }
         if(opts.content === 'home')
         {
-            return homeShowInfo(result)
+            return (homeShowInfo(result))
         }
     },
     getShowList: async (whereJson, opts, sqlFunc) => {  
@@ -73,7 +97,7 @@ const showModule = {
         }
         if(opts.content === 'home_all')
         {
-            return result.map(it => homeAllShowInfo(it))
+            return homeAllShowFilter(result.map(it => homeAllShowInfo(it)))
         }
     },
     remove: async (whereJson, sqlFunc) => {

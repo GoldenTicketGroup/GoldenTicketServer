@@ -17,7 +17,7 @@ router.get('/', authUtil.isLoggedin , async (req, res) => {
     }
     else{
         res.status(200).send(selectUser)
-    }
+    }   
 })
 
 // 유저 정보 변경하기
@@ -34,7 +34,7 @@ router.put('/', authUtil.isLoggedin , async (req, res) => {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.UPDATED_X('유저')))
     }
     else{
-        res.status(200).send(updateUser)
+        res.status(200).send(updateUser.jsonData)
     }
 })
 
