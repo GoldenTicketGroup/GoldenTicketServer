@@ -93,6 +93,7 @@ const userModule = {
         const whereJson = jsonData
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, {})
+        console.log(result)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_USER))
         }
@@ -106,7 +107,7 @@ const userModule = {
         }
         const User = {
             userIdx: result[0].userIdx,
-            email: result[0].email,
+            email: result[0].email
         }
         const token = jwt.sign(User)
         result[0].token = token
@@ -117,7 +118,7 @@ const userModule = {
         const whereJson = {userIdx: userIdx}
         const result = await sqlManager.db_delete(func, TABLE_NAME, whereJson)
         console.log(result)
-        if (!result) {
+        if (!result) { 
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_REMOVED_USER))
         }
         if (result.affectedRows == 0) {

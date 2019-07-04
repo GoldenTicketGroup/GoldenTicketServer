@@ -21,7 +21,6 @@ router.get('/home/:id', async(req, res) => {
         content: 'home'
     }
     const result = await showModule.select(whereJson, opts)
-    console.log(result)
     if(result.isError)
     { 
         res.status(200).send(utils.successFalse(statusCode.NOT_FOUND, responseMessage.FAIL_READ_X('공연')))
@@ -40,7 +39,6 @@ router.get('/home', async(req, res) => {
             foreignKey: `showIdx`,
             type: "LEFT"
         },
-        groupBy: "showIdx",
         content: 'home_all'
     }
     const result = await showModule.getShowList('', opts)
