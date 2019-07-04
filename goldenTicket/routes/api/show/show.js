@@ -7,12 +7,20 @@ const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
 
 //공연 상세 조회
-router.get('/:id', async(req, res) => {
+router.get('/home/:id', async(req, res) => {
     const showIdx = req.params.id
     const whereJson = {
-        showIdx
+        showIdx : parseInt(showIdx)
     }
-    const result = await showModule.select(whereJson)
+    const opts = {
+        joinJson: {
+            table: `show`,
+            foreignKey: `showIdx`,
+            type: "LEFT"
+        }
+    }
+    const result = await showModule.home_select(whereJson, opts)
+    console.log(result)
     if(result.isError)
     { 
         res.status(200).send(utils.successFalse(statusCode.NOT_FOUND, responseMessage.FAIL_READ_X('공연')))

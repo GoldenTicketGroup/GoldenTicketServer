@@ -8,13 +8,24 @@ const utils = require('../../../modules/utils/rest/utils')
 
 
 //콘텐츠 리스트 조회
-router.get('/', async(req, res) => {
-    res.status(200).send("test6")
-})
+// router.get('/', async(req, res) => {
+//     res.status(200).send("test6")
+// })
 
 //콘텐츠 상세 조회
 router.get('/:id', async(req, res) => {
-    res.status(200).send("test7")
+    const showIdx = req.params.id
+    const whereJson = { showIdx }
+    const result = await showContentModule.select(whereJson)
+    console.log(result)
+    if(!result.isError)
+    {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연 컨텐츠'), result))
+    }
+    else
+    {
+        res.status(200).send(result.jsonData)
+    }
 })
 
 //콘텐츠 작성
