@@ -51,7 +51,7 @@ module.exports = {
         if (result.length == 0) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
         }
-        return convertTicket(result[0])
+        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X(WORD), convertTicket(result[0])))
     },
     selectAll: async (whereJson, opts,sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
@@ -60,6 +60,5 @@ module.exports = {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
         return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD), result.map(it => convertTicket(it))))
-
     }
 }

@@ -26,7 +26,12 @@ router.put('/', async (req, res) => {
 
 // 당첨 티켓 상세 조회
 router.get('/:id', async (req, res) => {
-    res.status(200).send("test3")
+    const userIdx = req.params.id
+    const whereJson = {
+        userIdx
+    }
+    const result = await ticketModule.select(whereJson)
+    res.status(200).send(result.jsonData)
 })
 
 // 당첨 티켓 전체 조회
