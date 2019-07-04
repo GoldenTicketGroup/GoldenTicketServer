@@ -15,7 +15,8 @@ const convertUser = (userData) => {
         // 아래 내용은 그냥 임시
         user_idx: userData.userIdx,
         email: userData.email,
-        name: userData.name
+        name: userData.name,
+        phone: userData.phone
     }
 }
 const userModule = {

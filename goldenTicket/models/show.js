@@ -7,17 +7,27 @@ const sqlManager = require('../modules/utils/db/sqlManager')
 
 const WORD = '공연'
 const TABLE_NAME = sqlManager.TABLE_SHOW
+const TABLE_NAME_SCHEDULE = sqlManager.TABLE_SCHEDULE
 
-const convertShowInfo = (showData) => {
+const homeShowInfo = (showData) => {
+    time = showData.map((e) => e.startTime.substring(0,5).concat(" ~ ", e.endTime.substring(0,5)))
+    return {
+        show_idx: showData[0].showIdx,
+        image_url: showData[0].imageUrl,
+        name: showData[0].name,
+        location: showData[0].location,
+        running_time : time
+    }
+}
+
+const homeAllShowInfo = (showData) => {
+    time = showData.startTime.substring(0,5).concat(" ~ ", showData.endTime.substring(0,5))
     return {
         show_idx: showData.showIdx,
-        imageUrl: showData.imageUrl,
-        thumbnail: showData.thumbnail,
-        backImg: showData.backImageUrl,
+        image_url: showData.imageUrl,
         name: showData.name,
-        originalPrice: showData.originalPrice,
-        discountPrice: showData.discountPrice,
         location: showData.location,
+        running_time : time
     }
 }
 
@@ -38,23 +48,33 @@ const showModule = {
     },
     select: async (whereJson, opts, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
-        console.log((parseInt(whereJson.showIdx)))
+        opts.joinJson.table = TABLE_NAME
+        const result = await sqlManager.db_select(func, TABLE_NAME_SCHEDULE, whereJson, opts)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
         if (result.length == 0) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
         }
-        return convertShowInfo(result[0])
+        if(opts.content === 'home')
+        {
+            return homeShowInfo(result)
+        }
     },
-    getShowList: async (whereJson, opts, sqlFunc) => {
+    getShowList: async (whereJson, opts, sqlFunc) => {  
         const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
+        opts.joinJson.table = TABLE_NAME
+        const result = await sqlManager.db_select(func, TABLE_NAME_SCHEDULE, whereJson, opts)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
-        return result.map(it => convertShowInfo(it))
+        if (result.length == 0) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
+        }
+        if(opts.content === 'home_all')
+        {
+            return result.map(it => homeAllShowInfo(it))
+        }
     },
     remove: async (whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
