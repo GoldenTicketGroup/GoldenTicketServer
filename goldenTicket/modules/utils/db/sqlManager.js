@@ -87,9 +87,6 @@ const sqlManager = {
         const groupByStr = makeGroupByQuery(opts.groupBy)
         const orderByStr = makeOrderByQuery(opts.orderBy)
         const query = `SELECT ${fieldsJson} FROM ${table} ${joinStr} ${whereStr} ${groupByStr} ${orderByStr}`
-        console.log('-------------')
-        console.log(query)
-        console.log('-------------')
         const result = await func(query)
         if (result == null) return false
         return result
@@ -130,10 +127,14 @@ const sqlManager = {
         const whereStr = makeWhereQuery(whereJson)
         const query = `UPDATE ${table} SET ${setConditions} ${whereStr}`
         const result = await func(query)
+        console.log(result)
         if (result == null) return false
         if (result.isError == true) {
             if (result.jsonData.code == 'ER_PARSE_ERROR' || result.jsonData.errno == 1064){
                 return new errorMsg(true, MSG.NULL_VALUE)
+            }
+            if (result.jsonData.code == 'ER_DUP_ENTRY' || result.jsonData.errno == 1062) {
+                return new errorMsg(true, MSG.ALREADY_X)
             }
             return false
         }

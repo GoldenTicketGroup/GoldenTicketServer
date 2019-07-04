@@ -75,11 +75,15 @@ const userModule = {
         whereJson = { userIdx :  whereJson.decoded.userIdx }
         const func = sqlFunc || db.queryParam_Parse 
         const result = await sqlManager.db_update(func, TABLE_NAME, setJson, whereJson)
+        console.log(result)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_UPDATED_USER))
         }
         if (result.isError == true && result.jsonData === MSG.NULL_VALUE) {
             return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData))
+        }
+        if (result.isError == true && result.jsonData === MSG.ALREADY_X) {
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData(WORD)))
         }
         return result
     },
