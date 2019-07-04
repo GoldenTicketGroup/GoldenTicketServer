@@ -41,7 +41,7 @@ const showModule = {
         }
         return result
     },
-    home_select: async (whereJson, opts, sqlFunc) => {
+    select: async (whereJson, opts, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
         opts.joinJson.table = TABLE_NAME
         const result = await sqlManager.db_select(func, TABLE_NAME_SCHEDULE, whereJson, opts)
@@ -52,8 +52,10 @@ const showModule = {
         if (result.length == 0) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
         }
-        console.log(result)
-        return homeShowInfo(result)
+        if(opts.content === 'home')
+        {
+            return homeShowInfo(result)
+        }
     },
     getShowList: async (whereJson, opts, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse

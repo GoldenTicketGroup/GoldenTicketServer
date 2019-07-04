@@ -17,9 +17,10 @@ router.get('/home/:id', async(req, res) => {
             table: `show`,
             foreignKey: `showIdx`,
             type: "LEFT"
-        }
+        },
+        content: 'home'
     }
-    const result = await showModule.home_select(whereJson, opts)
+    const result = await showModule.select(whereJson, opts)
     console.log(result)
     if(result.isError)
     { 
