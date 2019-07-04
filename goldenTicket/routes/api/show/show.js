@@ -40,6 +40,7 @@ router.get('/home', async(req, res) => {
             foreignKey: `showIdx`,
             type: "LEFT"
         },
+        groupBy: "showIdx",
         content: 'home_all'
     }
     const result = await showModule.getShowList('', opts)
