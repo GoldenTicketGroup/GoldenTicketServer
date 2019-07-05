@@ -5,7 +5,7 @@ const Utils = require('../modules/utils/rest/utils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
 
-const WORD = '포스터'
+const WORD = '공연'
 const TABLE_NAME = sqlManager.TABLE_SHOW_POSTER
 
 const posterInfo = (posterData) => {
