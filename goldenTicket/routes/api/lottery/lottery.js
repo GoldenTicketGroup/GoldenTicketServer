@@ -23,12 +23,21 @@ router.put('/', async (req, res) => {
 })
 
 // 티켓 응모 상세 조회
-router.get('/:id', async (req, res) => {
-    const userIdx = req.params.id
+router.get('/:id', authUtil.isLoggedin, async (req, res) => {
+    const lotteryIdx = req.params.id
+    const decoded = req.decoded
     const whereJson = {
-        userIdx
+        userIdx : decoded.userIdx,
+        lotteryIdx : lotteryIdx
     }
-    const result = await lotteryModule.select(whereJson)
+    const opts = {
+        joinJson: {
+            table: `schedule`,
+            foreignKey: `scheduleIdx`,
+            type: "LEFT"
+        }
+    }
+    const result = await lotteryModule.select(whereJson, opts)
     res.status(200).send(result.jsonData)
 })
 

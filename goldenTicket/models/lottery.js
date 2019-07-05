@@ -47,16 +47,26 @@ const lotteryModule = {
         }
         return result
     },
-    select: async (whereJson, sqlFunc) => {
+    select: async (whereJson, opts, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson)
+        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
+        const condition = `SELECT * FROM lottery WHERE lotteryIdx = ${whereJson.lotteryIdx}`
+        const result2 = await func(condition)
+
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
-        if (result.length == 0) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
+        if (result2.length == 0) { //존재하지 않는 티켓을 조회했을 때
+            if (result.length == 0) {
+                return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_X(WORD)))
+            }
         }
-        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X(WORD), convertLottery(result[0])))
+        if (result2.length) { //존재하는 티켓이지만 당첨되지 않은 티켓을 조회했을 때
+            if (result.length == 0) {
+                return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.OK_NO_X(WORD)))
+            }
+            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X(WORD), convertLottery(result[0])))
+        }
     },
     selectAll: async (whereJson, opts, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
