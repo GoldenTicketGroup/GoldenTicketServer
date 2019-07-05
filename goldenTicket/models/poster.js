@@ -5,15 +5,13 @@ const Utils = require('../modules/utils/rest/utils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
 
-const WORD = '아티스트'
-const TABLE_NAME = sqlManager.TABLE_ARTIST
+const WORD = '포스터'
+const TABLE_NAME = sqlManager.TABLE_SHOW_POSTER
 
-const artistInfo = (artistData) => {
+const posterInfo = (posterData) => {
     return {
-        artist_idx: artistData.artistIdx,
-        name: artistData.name,
-        role_idx: artistData.role,
-        image_url: artistData.imageUrl
+        poster_idx: posterData.showPosterIdx,
+        image_url: posterData.imageUrl
     }
 }
 
@@ -57,6 +55,6 @@ module.exports = {
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
-        return result.map(it => artistInfo(it))
+        return result.map(it => posterInfo(it))
     }
 }
