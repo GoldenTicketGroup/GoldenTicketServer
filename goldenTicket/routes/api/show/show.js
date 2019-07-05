@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const showModule = require('../../../models/show')
 const artistModule = require('../../../models/artist')
+const posterModule = require('../../../models/poster')
 const upload = require('../../../config/multer')
 const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
@@ -60,16 +61,19 @@ router.get('/detail/:id', async(req, res) => {
         },
         content: 'detail'
     }
+    let arr = []
     const result = await showModule.select(whereJson, opts)
     const artistResult = await artistModule.selectAll(whereJson, opts)
-    console.log(artistResult)
+    const posterResult = await posterModule.selectAll(whereJson, opts)
+    arr.push(result, artistResult, posterResult)
+    console.log(arr)
     if(result.isError)
     { 
         res.status(200).send(result.jsonData)
     }
     else
     {
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), artistResult))
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), arr))
     }
 })
 

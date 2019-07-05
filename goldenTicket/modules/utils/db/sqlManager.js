@@ -12,8 +12,7 @@ const TABLE_CARD = 'card'
 const TABLE_HASHTAG = 'hashtag'
 const TABLE_SHOW_CONTENT = 'showContent'
 const TABLE_ARTIST = 'artist'
-
-
+const TABLE_SHOW_POSTER = 'showPoster'
 
 function makeGroupByQuery(groupBy) {
     if (groupBy == undefined) return ""
@@ -151,8 +150,8 @@ const sqlManager = {
     TABLE_CARD: TABLE_CARD,
     TABLE_HASHTAG: TABLE_HASHTAG,
     TABLE_SHOW_CONTENT: TABLE_SHOW_CONTENT,
-    TABLE_ARTIST: TABLE_ARTIST
-
+    TABLE_ARTIST: TABLE_ARTIST,
+    TABLE_SHOW_POSTER: TABLE_SHOW_POSTER
 }
 module.exports = sqlManager
 

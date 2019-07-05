@@ -5,14 +5,14 @@ const Utils = require('../modules/utils/rest/utils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
 
-const WORD = '아티스트'
+const WORD = '공연'
 const TABLE_NAME = sqlManager.TABLE_ARTIST
 
 const artistInfo = (artistData) => {
     return {
         artist_idx: artistData.artistIdx,
         name: artistData.name,
-        role_idx: artistData.role,
+        role: artistData.role,
         image_url: artistData.imageUrl
     }
 }
