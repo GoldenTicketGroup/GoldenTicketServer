@@ -3,15 +3,13 @@ const router = express.Router()
 const lotteryModule = require('../../../models/lottery')
 const authUtil = require("../../../modules/utils/security/authUtils")
 
-const WORD = '응모'
-
 // 티켓 응모하기(등록)
-router.post('/', async (req, res) => {
-    const userIdx = req.body.userIdx
+router.post('/', authUtil.isLoggedin, async (req, res) => {
     const scheduleIdx = req.body.scheduleIdx
+    const decoded = req.decoded
     const whereJson = {
-        userIdx,
-        scheduleIdx
+        userIdx : decoded.userIdx,
+        scheduleIdx : scheduleIdx
     }
     const result = await lotteryModule.apply(whereJson)
     res.status(200).send(result.jsonData)

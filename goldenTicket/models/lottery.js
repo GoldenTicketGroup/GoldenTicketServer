@@ -30,6 +30,12 @@ const lotteryModule = {
             seat: 1
         }
         const func = sqlFunc || db.queryParam_Parse
+        const condition = `SELECT * FROM lottery WHERE userIdx = ${lottery.userIdx} AND scheduleIdx = ${lottery.scheduleIdx}`
+        const result2 = await func(condition)
+        //중복해서 응모할 수 없음
+        if (result2 != 0){
+            return new errorMsg(true, Utils.successFalse(CODE.FORBIDDEN, MSG.ALREADY_X(WORD)))
+        }
         const result = await sqlManager.db_insert(func, TABLE_NAME, lottery)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
