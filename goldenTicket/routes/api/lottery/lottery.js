@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const lotteryModule = require('../../../models/lottery')
+const authUtil = require("../../../modules/utils/security/authUtils")
 
 const WORD = '응모'
 
@@ -32,8 +33,12 @@ router.get('/:id', async (req, res) => {
 })
 
 // 티켓 응모 리스트 조회
-router.get('/', async (req, res) => {
-    const result = await lotteryModule.selectAll()
+router.get('/', authUtil.isLoggedin, async (req, res) => {
+    const decoded = req.decoded
+    const whereJson = {
+        userIdx : decoded.userIdx
+    }
+    const result = await lotteryModule.selectAll(whereJson)
     res.status(200).send(result.jsonData)
 })
 
