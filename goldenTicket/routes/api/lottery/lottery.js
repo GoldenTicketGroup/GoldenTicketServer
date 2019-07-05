@@ -50,18 +50,15 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
 })
 
 //티켓 응모 삭제
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authUtil.isLoggedin, async (req, res) => {
     const lotteryIdx = req.params.id
+    const decoded = req.decoded
     const whereJson = {
-        lotteryIdx
+        userIdx : decoded.userIdx,
+        lotteryIdx : lotteryIdx
     }
     const result = await lotteryModule.delete(whereJson)
     res.status(200).send(result.jsonData)
 })
-
-// 당첨 티켓 추첨
-// router.select('/:name', async (req, res) => {
-//     res.status(200).send("lottery test6")
-// })
 
 module.exports = router

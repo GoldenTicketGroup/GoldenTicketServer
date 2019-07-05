@@ -32,9 +32,16 @@ const lotteryModule = {
         const func = sqlFunc || db.queryParam_Parse
         const condition = `SELECT * FROM lottery WHERE userIdx = ${lottery.userIdx} AND scheduleIdx = ${lottery.scheduleIdx}`
         const result2 = await func(condition)
+        const condition2 = `SELECT * FROM lottery WHERE userIdx = ${lottery.userIdx}`
+        const result3 = await func(condition2)
+        console.log(result3.length)
         //중복해서 응모할 수 없음
         if (result2 != 0){
             return new errorMsg(true, Utils.successFalse(CODE.FORBIDDEN, MSG.ALREADY_X(WORD)))
+        }
+        //최대 두개까지만 응모 가능
+        if (result3.length == 2){
+            return new errorMsg(true, Utils.successFalse(CODE.FORBIDDEN, MSG.ALREADY_LOTTERY_X(WORD)))
         }
         const result = await sqlManager.db_insert(func, TABLE_NAME, lottery)
         if (!result) {
