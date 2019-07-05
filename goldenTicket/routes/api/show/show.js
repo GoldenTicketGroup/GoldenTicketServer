@@ -61,19 +61,19 @@ router.get('/detail/:id', async(req, res) => {
         },
         content: 'detail'
     }
-    let arr = []
+    let detail = {}
     const result = await showModule.select(whereJson, opts)
     const artistResult = await artistModule.selectAll(whereJson, opts)
     const posterResult = await posterModule.selectAll(whereJson, opts)
-    arr.push(result, artistResult, posterResult)
-    console.log(arr)
-    if(result.isError)
+    result.artist = artistResult
+    result.poster = posterResult
+    if(result.isError || artistResult.isError || posterResult.isError)
     { 
         res.status(200).send(result.jsonData)
     }
     else
     {
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), arr))
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
     }
 })
 

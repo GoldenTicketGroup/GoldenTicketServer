@@ -8,15 +8,16 @@ const sqlManager = require('../modules/utils/db/sqlManager')
 const WORD = '공연 컨텐츠'
 const TABLE_NAME = sqlManager.TABLE_SHOW_CONTENT
 
-const convertCard = (cardData) => {
+const contentInfo = (showContent) => {
+    title = "<".concat(showContent.title, ">")
+    content = showContent.content.split('/')
     return {
-        // 아래 내용은 그냥 임시
-        post_idx: cardData.postIdx,
-        schedule_idx: cardData.scheduleIdx,
-        user_idx: cardData.userIdx,
-        seat: cardData.seat,
-        win: cardData.win,
-        created_time: cardData.createdTime
+        show_content_idx: showContent.postIdx,
+        title: title,
+        subtitle: showContent.subtitle,
+        image_url: showContent.contentImageUrl,
+        content: content,
+        show_idx: showContent.showIdx
     }
 }
 module.exports = {
@@ -52,7 +53,7 @@ module.exports = {
         if (result.length == 0) {
             return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_X(WORD)))
         }
-        return result[0]
+        return contentInfo(result[0])
     },
     selectAll: async (whereJson, opts, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
@@ -60,6 +61,7 @@ module.exports = {
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
-        return result
+        return result.map(it => contentInfo(it))
     }
 }
+

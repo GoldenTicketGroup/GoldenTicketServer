@@ -11,7 +11,7 @@ const TABLE_NAME = sqlManager.TABLE_SHOW_POSTER
 const posterInfo = (posterData) => {
     return {
         poster_idx: posterData.showPosterIdx,
-        image_url: posterData.imageUrl
+        image_url: posterData.posterImageUrl
     }
 }
 

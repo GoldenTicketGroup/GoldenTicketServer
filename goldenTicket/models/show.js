@@ -30,12 +30,14 @@ const detailShowInfo = (showData) => {
     // const date = JSON.stringify(e.date).split('-').join('.').substring(1,11)
     time = showData.map((e) => JSON.stringify(e.date).split('-').join('.').substring(1,11)
     .concat("  ", e.startTime.substring(0,5).concat("~", e.endTime.substring(0,5))))
+    const drawAvailable = showData.map((e) => e.drawAvailable)
     return {
         show_idx: showData[0].showIdx,
         image_url: showData[0].imageUrl,
         name: showData[0].name,
         location: showData[0].location,
         date : time,
+        draw_available: drawAvailable,
         original_price: showData[0].originalPrice,
         discount_price: showData[0].discountPrice
     }
