@@ -6,19 +6,30 @@ const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
 
 const WORD = '아티스트'
-const TABLE_NAME = sqlManager.TABLE_CARD
+const TABLE_NAME = sqlManager.TABLE_ARTIST
 
-const convertCard = (cardData) => {
+const artistInfo = (artistData) => {
     return {
-        // 아래 내용은 그냥 임시
-        post_idx: cardData.postIdx,
-        schedule_idx: cardData.scheduleIdx,
-        user_idx: cardData.userIdx,
-        seat: cardData.seat,
-        win: cardData.win,
-        created_time: cardData.createdTime
+        artist_idx: artistData.artistIdx,
+        name: artistData.name,
+        role_idx: artistData.role,
+        image_url: artistData.imageUrl
     }
 }
+
+const homeAllShowInfo = (showData) => {
+    let time = []
+    timeData = showData.startTime.substring(0,5).concat(" ~ ", showData.endTime.substring(0,5))
+    time.push(timeData)
+    return {
+        show_idx: showData.showIdx,
+        image_url: showData.imageUrl,
+        name: showData.name,
+        location: showData.location,
+        running_time : time
+    }
+}
+
 module.exports = {
     insert: async (jsonData, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
@@ -59,6 +70,6 @@ module.exports = {
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
-        return result
+        return result.map(it => artistInfo(it))
     }
 }

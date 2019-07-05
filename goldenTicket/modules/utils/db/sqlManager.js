@@ -11,6 +11,8 @@ const TABLE_POST = 'post'
 const TABLE_CARD = 'card'
 const TABLE_HASHTAG = 'hashtag'
 const TABLE_SHOW_CONTENT = 'showContent'
+const TABLE_ARTIST = 'artist'
+
 
 
 function makeGroupByQuery(groupBy) {
@@ -148,7 +150,8 @@ const sqlManager = {
     TABLE_POST: TABLE_POST,
     TABLE_CARD: TABLE_CARD,
     TABLE_HASHTAG: TABLE_HASHTAG,
-    TABLE_SHOW_CONTENT: TABLE_SHOW_CONTENT
+    TABLE_SHOW_CONTENT: TABLE_SHOW_CONTENT,
+    TABLE_ARTIST: TABLE_ARTIST
 
 }
 module.exports = sqlManager
