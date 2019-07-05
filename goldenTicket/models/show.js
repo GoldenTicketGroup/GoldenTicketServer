@@ -9,6 +9,11 @@ const WORD = '공연'
 const TABLE_NAME = sqlManager.TABLE_SHOW
 const TABLE_NAME_SCHEDULE = sqlManager.TABLE_SCHEDULE
 
+// const date = JSON.stringify(scheduleData.date).split('-').join('.').substring(1,11)
+// const startTime = JSON.stringify(scheduleData.startTime).substring(1,6)
+// const endTime = JSON.stringify(scheduleData.endTime).substring(1,6)
+// const time = startTime.concat("~", endTime)
+
 const homeShowInfo = (showData) => {
     time = showData.map((e) => e.startTime.substring(0,5).concat(" ~ ", e.endTime.substring(0,5)))
     return {
@@ -17,6 +22,22 @@ const homeShowInfo = (showData) => {
         name: showData[0].name,
         location: showData[0].location,
         running_time : time
+    }
+}
+
+const detailShowInfo = (showData) => {
+    console.log(showData)
+    // const date = JSON.stringify(e.date).split('-').join('.').substring(1,11)
+    time = showData.map((e) => JSON.stringify(e.date).split('-').join('.').substring(1,11)
+    .concat("  ", e.startTime.substring(0,5).concat("~", e.endTime.substring(0,5))))
+    return {
+        show_idx: showData[0].showIdx,
+        image_url: showData[0].imageUrl,
+        name: showData[0].name,
+        location: showData[0].location,
+        date : time,
+        original_price: showData[0].originalPrice,
+        discount_price: showData[0].discountPrice
     }
 }
 
@@ -83,6 +104,10 @@ const showModule = {
         if(opts.content === 'home')
         {
             return (homeShowInfo(result))
+        }
+        if(opts.content === 'detail')
+        {
+            return (detailShowInfo(result))
         }
     },
     getShowList: async (whereJson, opts, sqlFunc) => {  
