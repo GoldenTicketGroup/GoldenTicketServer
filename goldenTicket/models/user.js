@@ -36,15 +36,9 @@ const userModule = {
         if(!jsonData.password) {
             return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.NULL_VALUE))
         }
-        if(!jsonData.confirm) {
-            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.NULL_VALUE))
-        }
         const hashedPassword = await encryptionManager.encryption(jsonData.password, salt)
-        const password = jsonData.password
-        const confirm = jsonData.confirm
         const func = sqlFunc || db.queryParam_Parse
         delete jsonData.password
-        delete jsonData.confirm
         jsonData.password = hashedPassword;
         jsonData.salt = salt;
         const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
@@ -53,9 +47,6 @@ const userModule = {
         }
         if (result.isError == true && result.jsonData === MSG.NULL_VALUE) {
             return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData))
-        }
-        if(password != confirm) {
-            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.WRONG_PW))
         }
         if (result.isError == true && result.jsonData === MSG.ALREADY_X) {
             return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData(WORD)))

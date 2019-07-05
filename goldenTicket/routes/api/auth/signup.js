@@ -11,8 +11,7 @@ router.post('/', async(req, res) => {
     const email = req.body.email
     const phone = req.body.phone
     const password = req.body.password
-    const confirm = req.body.confirm
-    const inputUser = { name, email, phone, password, confirm }
+    const inputUser = { name, email, phone, password }
     signupResult = await userModule.signUp(inputUser)
     if(signupResult.isError) {
         res.status(200).send(utils.successFalse(signupResult.jsonData.status, signupResult.jsonData.message))
