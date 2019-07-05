@@ -35,7 +35,7 @@ module.exports = {
     ALREADY_LIKE_X: "이미 좋아요 상태입니다.",
     FAIL_LIKE_X: "좋아요 실패",
     UNLIKE_X: "좋아요 취소",
-    ALREADY_UNLIKE_X: "이미 좋아요 취소 상태입니다.",
+    ALREADY_UNLIKE_X: "좋아요를 취소할 수 없습니다.",
     FAIL_UNLIKE_X: "좋아요 취소 실패",
 
     CREATE_TOKEN: "토큰 발급 완료.",

@@ -11,7 +11,8 @@ const TABLE_POST = 'post'
 const TABLE_CARD = 'card'
 const TABLE_HASHTAG = 'hashtag'
 const TABLE_SHOW_CONTENT = 'showContent'
-
+const TABLE_ARTIST = 'artist'
+const TABLE_SHOW_POSTER = 'showPoster'
 
 function makeGroupByQuery(groupBy) {
     if (groupBy == undefined) return ""
@@ -98,7 +99,6 @@ const sqlManager = {
         const questions = resultQuery.questions
         const query = `INSERT INTO ${table}(${fields}) values(${questions})`
         const result = await func(query, values)
-        console.log(result)
         if (result == null) return false
         if (result.isError == true) {
             if (result.jsonData.code == 'ER_DUP_ENTRY' || result.jsonData.errno == 1062) {
@@ -149,8 +149,9 @@ const sqlManager = {
     TABLE_POST: TABLE_POST,
     TABLE_CARD: TABLE_CARD,
     TABLE_HASHTAG: TABLE_HASHTAG,
-    TABLE_SHOW_CONTENT: TABLE_SHOW_CONTENT
-
+    TABLE_SHOW_CONTENT: TABLE_SHOW_CONTENT,
+    TABLE_ARTIST: TABLE_ARTIST,
+    TABLE_SHOW_POSTER: TABLE_SHOW_POSTER
 }
 module.exports = sqlManager
 

@@ -10,6 +10,7 @@ router.get('/:id', async(req, res) => {
     const showIdx = req.params.id
     const whereJson = { showIdx }
     const result = await scheduleModule.select(whereJson)
+    console.log(result)
     if(!result.isError)
     {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('스케쥴'), result))

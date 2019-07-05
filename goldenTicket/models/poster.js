@@ -5,21 +5,16 @@ const Utils = require('../modules/utils/rest/utils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
 
-const WORD = '공연 컨텐츠'
-const TABLE_NAME = sqlManager.TABLE_SHOW_CONTENT
+const WORD = '공연'
+const TABLE_NAME = sqlManager.TABLE_SHOW_POSTER
 
-const contentInfo = (showContent) => {
-    title = "<".concat(showContent.title, ">")
-    content = showContent.content.split('/')
+const posterInfo = (posterData) => {
     return {
-        show_content_idx: showContent.postIdx,
-        title: title,
-        subtitle: showContent.subtitle,
-        image_url: showContent.contentImageUrl,
-        content: content,
-        show_idx: showContent.showIdx
+        poster_idx: posterData.showPosterIdx,
+        image_url: posterData.posterImageUrl
     }
 }
+
 module.exports = {
     insert: async (jsonData, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
@@ -46,14 +41,13 @@ module.exports = {
     select: async (whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_select(func, TABLE_NAME, whereJson)
-        console.log(result)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
         if (result.length == 0) {
             return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_X(WORD)))
         }
-        return contentInfo(result[0])
+        return result[0]
     },
     selectAll: async (whereJson, opts, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
@@ -61,7 +55,6 @@ module.exports = {
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
-        return result.map(it => contentInfo(it))
+        return result.map(it => posterInfo(it))
     }
 }
-

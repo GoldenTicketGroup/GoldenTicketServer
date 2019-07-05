@@ -1,12 +1,14 @@
 const express = require('express')
 const router = express.Router()
 const showModule = require('../../../models/show')
+const artistModule = require('../../../models/artist')
+const posterModule = require('../../../models/poster')
 const upload = require('../../../config/multer')
 const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
 
-//공연 상세 조회
+//홈 화면 공연 상세 조회
 router.get('/home/:id', async(req, res) => {
     const showIdx = req.params.id
     const whereJson = {
@@ -23,7 +25,7 @@ router.get('/home/:id', async(req, res) => {
     const result = await showModule.select(whereJson, opts)
     if(result.isError)
     { 
-        res.status(200).send(utils.successFalse(statusCode.NOT_FOUND, responseMessage.FAIL_READ_X('공연')))
+        res.status(200).send(result.jsonData)
     }
     else
     {
@@ -31,7 +33,7 @@ router.get('/home/:id', async(req, res) => {
     }
 })
 
-//공연 리스트 조회
+//홈 화면 공연 리스트 조회
 router.get('/home', async(req, res) => {
     const opts = {
         joinJson: {
@@ -43,6 +45,36 @@ router.get('/home', async(req, res) => {
     }
     const result = await showModule.getShowList('', opts)
     res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('공연'), result))
+})
+
+//상세 페이지 공연 상세 조회
+router.get('/detail/:id', async(req, res) => {
+    const showIdx = req.params.id
+    const whereJson = {
+        showIdx : parseInt(showIdx)
+    }
+    const opts = {
+        joinJson: {
+            table: `show`,
+            foreignKey: `showIdx`,
+            type: "LEFT"
+        },
+        content: 'detail'
+    }
+    let detail = {}
+    const result = await showModule.select(whereJson, opts)
+    const artistResult = await artistModule.selectAll(whereJson, opts)
+    const posterResult = await posterModule.selectAll(whereJson, opts)
+    result.artist = artistResult
+    result.poster = posterResult
+    if(result.isError || artistResult.isError || posterResult.isError)
+    { 
+        res.status(200).send(result.jsonData)
+    }
+    else
+    {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
+    }
 })
 
 //공연 등록
