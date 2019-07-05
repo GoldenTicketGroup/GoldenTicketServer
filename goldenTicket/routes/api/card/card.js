@@ -12,7 +12,7 @@ router.get('/', async(req, res) => {
     const result = await cardModule.selectAll()
     if(!result.isError)
     {
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('카드'), result))
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('카드'), result))
     }
     else
     {

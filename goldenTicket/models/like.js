@@ -16,13 +16,10 @@ module.exports = {
         }
         const selectResult = await sqlManager.db_select(func, TABLE_NAME, jsonData)
         if (selectResult.length == undefined) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
         if (selectResult.length != 0) {
             return new errorMsg(true, Utils.successFalse(CODE.NOT_MODIFIED, MSG.ALREADY_LIKE_X))
-        }
-        if (!selectResult) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
         const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
         if (!result && !jsonData.showIdx) {
@@ -30,6 +27,9 @@ module.exports = {
         }
         if ( result.isError && result.jsonData == '인덱스 참조 실패') {
             return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_X('공연')))
+        }
+        if (!result) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
         return result
     },
@@ -45,7 +45,7 @@ module.exports = {
             return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.NULL_VALUE))
         }
         if (selectResult.length == undefined) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_REMOVED_X(WORD)))
         }
         if (selectResult.length == 0) {
             return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.ALREADY_UNLIKE_X))

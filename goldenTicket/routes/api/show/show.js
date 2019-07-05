@@ -23,7 +23,7 @@ router.get('/home/:id', async(req, res) => {
     const result = await showModule.select(whereJson, opts)
     if(result.isError)
     { 
-        res.status(200).send(utils.successFalse(statusCode.NOT_FOUND, responseMessage.FAIL_READ_X('공연')))
+        res.status(200).send(result.jsonData)
     }
     else
     {
