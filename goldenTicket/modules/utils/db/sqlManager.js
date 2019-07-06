@@ -108,10 +108,10 @@ const sqlManager = {
                 return new errorMsg(true, MSG.NULL_VALUE)
             }
             if (result.jsonData.code == 'ER_NO_REFERENCED_ROW_2' || result.jsonData.errno == 1452) {
-                console.log(result.jsonData)
                 return new errorMsg(true, MSG.FAIL_TO_FIND_INDEX)
             }
-            return false
+            console.log(result.jsonData)
+            return new errorMsg(true, MSG.FAIL_DB_WRITE)
         }
         return result
     },
