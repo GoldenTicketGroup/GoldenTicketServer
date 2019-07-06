@@ -46,6 +46,8 @@ module.exports = {
     EMPTY_REFRESH_TOKEN: "재발급 토큰이 존재하지 않습니다.",
     EMPTY_TOKEN: "토큰값이 존재하지 않습니다.",
     NO_SELECT_AUTHORITY: "조회 권한 없음.",
+    NO_UPDATED: "변경된 점이 없습니다.",
+    NULL_PASSWORD: "패스워드를 입력하지 않으셨습니다.",
     INVALID_TOKEN: "잘못된 형식의 토큰입니다.",
     INVALID_REFRESH_TOKEN: "잘못된 형식의 refresh token입니다",
 

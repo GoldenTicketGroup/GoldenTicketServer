@@ -40,7 +40,7 @@ const userModule = {
             return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_UPDATED_USER))
         }
         if (result.isError == true) {
-            return result.jsonData
+            return result
         }
         return result
     },
@@ -80,7 +80,7 @@ const userModule = {
             email: userResult.email,
             name: userResult.name,
             phone: userResult.phone,
-            access_token: token
+            token: token
         }
         return responseJson
     },
@@ -96,17 +96,36 @@ const userModule = {
         }
         signupResult = await userModule.insert(jsonData)
         if (signupResult.isError) {
-            return signupResult
+            return signupResult.jsonData
         }
         return signupResult
     },
-    edit: async (input_name, input_email, input_phone, userIdx) => {    
+    edit: async (input_name, input_email, input_phone, input_password, userIdx) => {    
         const setJson = {}
         if(input_name) setJson.name = input_name
         if(input_email) setJson.email = input_email
         if(input_phone) setJson.phone = input_phone
+
+        const userResult = await userModule.select({userIdx: userIdx}, {})
+        if(userResult.isError){
+            return userResult
+        }
+        const salt = userResult.salt
+        const hashedPassword = await encryptionManager.encryption(input_password, salt)
+        if(userResult.password != hashedPassword){
+            return new errorMsg(true, utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_PW))
+        }
         const updateResult = await userModule.update(setJson, {userIdx: userIdx})
-        return updateResult
+        if(!updateResult){
+            return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_UPDATED_USER))
+        }
+        if(updateResult.isError){
+            return updateResult
+        }
+        if(updateResult.affectedRows == 0) {
+            return new errorMsg(true, utils.successTrue(statusCode.OK, responseMessage.NO_UPDATED))
+        }
+        return true
     }
 }
 module.exports = userModule
