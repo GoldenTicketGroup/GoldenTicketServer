@@ -30,6 +30,8 @@ module.exports = {
     FAIL_REMOVED_X: (X) => `${X} 삭제 실패`,
     NO_X: (X) => `존재하지 않는 ${X} 입니다.`,
     ALREADY_X: (X) => `존재하는 ${X} 입니다.`,
+    OK_NO_X: (X) => `${X}내역이 존재하지 않습니다.`,
+    ALREADY_LOTTERY_X: (X) => `이미 두 개의 ${X}내역이 존재합니다.`,
 
     LIKE_X: "좋아요 성공",
     ALREADY_LIKE_X: "이미 좋아요 상태입니다.",
@@ -44,6 +46,8 @@ module.exports = {
     EMPTY_REFRESH_TOKEN: "재발급 토큰이 존재하지 않습니다.",
     EMPTY_TOKEN: "토큰값이 존재하지 않습니다.",
     NO_SELECT_AUTHORITY: "조회 권한 없음.",
+    NO_UPDATED: "변경된 점이 없습니다.",
+    NULL_PASSWORD: "패스워드를 입력하지 않으셨습니다.",
     INVALID_TOKEN: "잘못된 형식의 토큰입니다.",
     INVALID_REFRESH_TOKEN: "잘못된 형식의 refresh token입니다",
 
