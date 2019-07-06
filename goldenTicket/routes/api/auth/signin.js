@@ -11,7 +11,7 @@ router.post('/', async(req, res) => {
     const input_password = req.body.password
     if (!input_email || !input_password)
     {
-        res.status(200).send(utils.successFalse(CODE.BAD_REQUEST, MSG.NULL_VALUE))
+        res.status(200).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE))
         return
     }
     const result = await userModule.signIn(input_email, input_password)
