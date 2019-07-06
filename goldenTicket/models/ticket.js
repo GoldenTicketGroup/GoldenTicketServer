@@ -20,12 +20,12 @@ const convertTicket = (TicketData) => {
     }
 }
 module.exports = {
-    insert: async (jsonData, sqlFunc) => {
+    insert: async (jsonData, opts, sqlFunc) => {
         if (jsonData.userIdx == undefined || jsonData.seatIdx == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.NULL_VALUE))
         }
         const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
+        const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData, opts)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
