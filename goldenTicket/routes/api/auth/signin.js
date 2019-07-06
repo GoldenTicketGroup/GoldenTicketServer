@@ -4,20 +4,21 @@ const userModule = require('../../../models/user')
 const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
+const userModule = require('../../../models/user')
 
 //로그인
 router.post('/', async(req, res) => {
-    const email = req.body.email
-    const password = req.body.password
-    const inputUser = { email, password }
-    signInResult = await userModule.signIn(inputUser)
-    if(signInResult.isError) {
-        res.status(200).send(utils.successFalse(signInResult.jsonData.status, signInResult.jsonData.message))
+    const input_email = req.body.email
+    const input_password = req.body.password
+    if (!input_email || !input_password)
+    {
+        res.status(200).send(utils.successFalse(CODE.BAD_REQUEST, MSG.NULL_VALUE))
+        return
     }
-    else {
-        const accessToken = signInResult.token.accessToken
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_USER, { accessToken }))
+    const result = await userModule.signIn(input_email, input_password)
+    if (result.isError) {
+        res.status(200).send(utils.successFalse(result.jsonData))
     }
+    res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_USER, result))
 })
-
 module.exports = router

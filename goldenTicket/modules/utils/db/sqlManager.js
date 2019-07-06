@@ -99,10 +99,15 @@ const sqlManager = {
         const questions = resultQuery.questions
         const query = `INSERT INTO ${table}(${fields}) values(${questions})`
         const result = await func(query, values)
-        if (result == null) return false
+        if (result == null) return new errorMsg(true, MSG.FAIL_DB_WRITE)
         if (result.isError == true) {
             if (result.jsonData.code == 'ER_DUP_ENTRY' || result.jsonData.errno == 1062) {
-                return new errorMsg(true, MSG.ALREADY_X)
+                const sqlMessage =  result.jsonData.sqlMessage
+                const lastIdx = sqlMessage.lastIndexOf('\'')
+                const startIdx = sqlMessage.lastIndexOf('\'', lastIdx - 1)
+                const endIdx = sqlMessage.lastIndexOf('_')
+                const duplicatedField = sqlMessage.substring(startIdx +1, endIdx)
+                return new errorMsg(true, MSG.ALREADY_X(duplicatedField))
             }
             if (result.jsonData.code == 'ER_BAD_NULL_ERROR' || result.jsonData.errno == 1048) {
                 return new errorMsg(true, MSG.NULL_VALUE)
@@ -110,7 +115,6 @@ const sqlManager = {
             if (result.jsonData.code == 'ER_NO_REFERENCED_ROW_2' || result.jsonData.errno == 1452) {
                 return new errorMsg(true, MSG.FAIL_TO_FIND_INDEX)
             }
-            console.log(result.jsonData)
             return new errorMsg(true, MSG.FAIL_DB_WRITE)
         }
         return result

@@ -1,9 +1,11 @@
-const MSG = require('../modules/utils/rest/responseMessage')
-const CODE = require('../modules/utils/rest/statusCode')
-const Utils = require('../modules/utils/rest/utils')
+const responseMessage = require('../modules/utils/rest/responseMessage')
+const statusCode = require('../modules/utils/rest/statusCode')
+const utils = require('../modules/utils/rest/utils')
 const errorMsg = require('../modules/utils/common/errorUtils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
+const encryptionManager = require('../modules/utils/security/encryptionManager')
+const jwt = require('../modules/utils/security/jwt')
 
 const WORD = '유저'
 const TABLE_NAME = sqlManager.TABLE_USER
@@ -13,14 +15,14 @@ const userModule = {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
         if (result.length == undefined) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
+            return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_READ_X(WORD)))
         }
         if (result.length == 0) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
+            return new errorMsg(true, utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_X(WORD)))
         }
         return result[0]
     },
-    signUp: async (jsonData, sqlFunc) => {
+    insert: async (jsonData, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
         if (result.isError) {
@@ -29,42 +31,88 @@ const userModule = {
         return result
     },
     update: async (setJson, whereJson, sqlFunc) => {
-        if(!setJson.name){
+        if (!setJson.name) {
             delete setJson.name
         }
-        if(!setJson.email){
+        if (!setJson.email) {
             delete setJson.email
         }
-        if(!setJson.phone){ 
+        if (!setJson.phone) {
             delete setJson.phone
         }
-        whereJson = { userIdx :  whereJson.decoded.userIdx }
-        const func = sqlFunc || db.queryParam_Parse 
+        whereJson = {
+            userIdx: whereJson.decoded.userIdx
+        }
+        const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_update(func, TABLE_NAME, setJson, whereJson)
         console.log(result)
         if (!result) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_UPDATED_USER))
+            return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_UPDATED_USER))
         }
-        if (result.isError == true && result.jsonData === MSG.NULL_VALUE) {
-            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData))
+        if (result.isError == true && result.jsonData === responseMessage.NULL_VALUE) {
+            return new errorMsg(true, utils.successFalse(statusCode.BAD_REQUEST, result.jsonData))
         }
-        if (result.isError == true && result.jsonData === MSG.ALREADY_X) {
-            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData(WORD)))
+        if (result.isError == true && result.jsonData === responseMessage.ALREADY_X) {
+            return new errorMsg(true, utils.successFalse(statusCode.BAD_REQUEST, result.jsonData(WORD)))
         }
         return result
     },
     withdrawal: async (userIdx, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
-        const whereJson = {userIdx: userIdx}
+        const whereJson = {
+            userIdx: userIdx
+        }
         const result = await sqlManager.db_delete(func, TABLE_NAME, whereJson)
         console.log(result)
-        if (!result) { 
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_REMOVED_USER))
+        if (!result) {
+            return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_REMOVED_USER))
         }
         if (result.affectedRows == 0) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
+            return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.NO_X(WORD)))
         }
         return result
+    },
+    signIn : async (input_email, input_password) => {
+        const userResult = await userModule.select({email: input_email}, {})
+        if (userResult.isError) {
+            return userResult
+        }
+        const salt = userResult.salt
+        const hashedPassword = await encryptionManager.encryption(input_password, salt)
+        if(userResult.password != hashedPassword)
+        {            
+            return new errorMsg(true, utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_PW))
+        }
+        const User = {
+            userIdx: userResult.userIdx,
+            email: userResult.email
+        }
+        const token = jwt.sign(User).accessToken
+        const responseJson = {
+            user_idx: userResult.userIdx,
+            email: userResult.email,
+            name: userResult.name,
+            phone: userResult.phone,
+            access_token: token
+        }
+        return responseJson
+    },
+
+    signUp: async (input_name, input_email, input_phone, input_password) => {
+        const salt = await encryptionManager.makeRandomByte()
+        const hashedPassword = await encryptionManager.encryption(input_password, salt)
+        const jsonData = {
+            name: input_name,
+            email: input_email,
+            phone: input_phone,
+            password: hashedPassword,
+            salt: salt
+        }
+        signupResult = await userModule.insert(jsonData)
+        if (signupResult.isError) {
+            return signupResult
+        }
+        return signupResult
     }
 }
 module.exports = userModule
@@ -90,9 +138,11 @@ const update_test = async () => {
     console.log('DB TEST [ USER : update]')
     const result = await userModule.update({
         name: '윤희성',
-        refreshToken:'1234',
+        refreshToken: '1234',
         fcmToken: 'test'
-    },{userIdx: 10})
+    }, {
+        userIdx: 10
+    })
     console.log(result)
 }
 const withdrawal_test = async () => {
