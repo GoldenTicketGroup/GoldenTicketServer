@@ -19,7 +19,7 @@ router.post('/', async(req, res) => {
         !input_password) {       
         return new errorMsg(true, Utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE))
     }
-    const result = signUp(input_name, input_email, input_phone, input_password)
+    const result = await signUp(input_name, input_email, input_phone, input_password)
     if(result.isError) {
         res.status(200).send(result.jsonData)
         return
@@ -48,5 +48,5 @@ const signUp_test = async () => {
     const result = await signUp("윤희성", "heesung6701@naver.com", "010-2081-3818", "1234")
     console.log(result)
 }
-signUp_test()
+// signUp_test()
 module.exports = router
