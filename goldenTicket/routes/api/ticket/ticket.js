@@ -6,6 +6,7 @@ const authUtil = require("../../../modules/utils/security/authUtils")
 
 // 후순위
 // 당첨 티켓 등록
+// 당첨 후 이미 관람 한 내역은 있을 수 있음
 router.post('/', upload.single('imageUrl'), authUtil.isLoggedin, async (req, res) => {
     const imageUrl = req.file.location
     const decoded = req.decoded
