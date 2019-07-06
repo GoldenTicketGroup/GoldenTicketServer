@@ -25,35 +25,22 @@ const userModule = {
     insert: async (jsonData, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
+        if (!result) {
+            return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_CREATED_USER))
+        }
         if (result.isError) {
             return result
         }
         return result
     },
     update: async (setJson, whereJson, sqlFunc) => {
-        if (!setJson.name) {
-            delete setJson.name
-        }
-        if (!setJson.email) {
-            delete setJson.email
-        }
-        if (!setJson.phone) {
-            delete setJson.phone
-        }
-        whereJson = {
-            userIdx: whereJson.decoded.userIdx
-        }
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_update(func, TABLE_NAME, setJson, whereJson)
-        console.log(result)
         if (!result) {
             return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_UPDATED_USER))
         }
-        if (result.isError == true && result.jsonData === responseMessage.NULL_VALUE) {
-            return new errorMsg(true, utils.successFalse(statusCode.BAD_REQUEST, result.jsonData))
-        }
-        if (result.isError == true && result.jsonData === responseMessage.ALREADY_X) {
-            return new errorMsg(true, utils.successFalse(statusCode.BAD_REQUEST, result.jsonData(WORD)))
+        if (result.isError == true) {
+            return result.jsonData
         }
         return result
     },
@@ -97,7 +84,6 @@ const userModule = {
         }
         return responseJson
     },
-
     signUp: async (input_name, input_email, input_phone, input_password) => {
         const salt = await encryptionManager.makeRandomByte()
         const hashedPassword = await encryptionManager.encryption(input_password, salt)
@@ -113,6 +99,14 @@ const userModule = {
             return signupResult
         }
         return signupResult
+    },
+    edit: async (input_name, input_email, input_phone, userIdx) => {    
+        const setJson = {}
+        if(input_name) setJson.name = input_name
+        if(input_email) setJson.email = input_email
+        if(input_phone) setJson.phone = input_phone
+        const updateResult = await userModule.update(setJson, {userIdx: userIdx})
+        return updateResult
     }
 }
 module.exports = userModule

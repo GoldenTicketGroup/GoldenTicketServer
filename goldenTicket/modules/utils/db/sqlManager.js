@@ -1,5 +1,7 @@
 const errorMsg = require('../common/errorUtils')
-const MSG = require('../rest/responseMessage')
+const responseMessage = require('../rest/responseMessage')
+const utils = require('../rest/utils')
+const statusCode = require('../rest/statusCode')
 
 const TABLE_SHOW = '`show`'
 const TABLE_SCHEDULE = 'schedule'
@@ -99,7 +101,7 @@ const sqlManager = {
         const questions = resultQuery.questions
         const query = `INSERT INTO ${table}(${fields}) values(${questions})`
         const result = await func(query, values)
-        if (result == null) return new errorMsg(true, MSG.FAIL_DB_WRITE)
+        if (result == null) return false
         if (result.isError == true) {
             if (result.jsonData.code == 'ER_DUP_ENTRY' || result.jsonData.errno == 1062) {
                 const sqlMessage =  result.jsonData.sqlMessage
@@ -107,15 +109,15 @@ const sqlManager = {
                 const startIdx = sqlMessage.lastIndexOf('\'', lastIdx - 1)
                 const endIdx = sqlMessage.lastIndexOf('_')
                 const duplicatedField = sqlMessage.substring(startIdx +1, endIdx)
-                return new errorMsg(true, MSG.ALREADY_X(duplicatedField))
+                return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.ALREADY_X(duplicatedField)))
             }
             if (result.jsonData.code == 'ER_BAD_NULL_ERROR' || result.jsonData.errno == 1048) {
-                return new errorMsg(true, MSG.NULL_VALUE)
+                return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.NULL_VALUE))
             }
             if (result.jsonData.code == 'ER_NO_REFERENCED_ROW_2' || result.jsonData.errno == 1452) {
-                return new errorMsg(true, MSG.FAIL_TO_FIND_INDEX)
+                return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_TO_FIND_INDEX))
             }
-            return new errorMsg(true, MSG.FAIL_DB_WRITE)
+            return false
         }
         return result
     },
@@ -131,14 +133,18 @@ const sqlManager = {
         const whereStr = makeWhereQuery(whereJson)
         const query = `UPDATE ${table} SET ${setConditions} ${whereStr}`
         const result = await func(query)
-        console.log(result)
         if (result == null) return false
         if (result.isError == true) {
             if (result.jsonData.code == 'ER_PARSE_ERROR' || result.jsonData.errno == 1064){
-                return new errorMsg(true, MSG.NULL_VALUE)
+                return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.NULL_VALUE))
             }
             if (result.jsonData.code == 'ER_DUP_ENTRY' || result.jsonData.errno == 1062) {
-                return new errorMsg(true, MSG.ALREADY_X)
+                const sqlMessage =  result.jsonData.sqlMessage
+                const lastIdx = sqlMessage.lastIndexOf('\'')
+                const startIdx = sqlMessage.lastIndexOf('\'', lastIdx - 1)
+                const endIdx = sqlMessage.lastIndexOf('_')
+                const duplicatedField = sqlMessage.substring(startIdx +1, endIdx)
+                return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.ALREADY_X(duplicatedField)))
             }
             return false
         }

@@ -22,20 +22,20 @@ router.get('/', authUtil.isLoggedin , async (req, res) => {
 
 // 유저 정보 변경하기
 router.put('/', authUtil.isLoggedin , async (req, res) => {
-    const name = req.body.name  
-    const email = req.body.email
-    const phone = req.body.phone
-    const inputUser = { name, email, phone }
-    const decoded = req.decoded
-    const userCondition = { decoded }
-    const updateUser = await userModule.update( inputUser, userCondition )
-    if(!updateUser.isError)
+    const input_name = req.body.name  
+    const input_email = req.body.email
+    const input_phone = req.body.phone
+    if(!input_name && !input_email && !input_phone) {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.NULL_VALUE))
+    }
+    const userIdx = req.decoded.userIdx
+    const updateResult = await userModule.edit(input_name, input_email, input_phone, userIdx)
+    if(updateResult.isError)
     {
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.UPDATED_X('유저')))
+        res.status(200).send(updateResult.jsonData)
+        return
     }
-    else{
-        res.status(200).send(updateUser.jsonData)
-    }
+    res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.UPDATED_X('유저'), updateResult))
 })
 
 // 유저 삭제하기
