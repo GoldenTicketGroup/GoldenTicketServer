@@ -7,19 +7,31 @@ const utils = require('../../../modules/utils/rest/utils')
 
 //회원가입
 router.post('/', async(req, res) => {
-    const name = req.body.name  
-    const email = req.body.email
-    const phone = req.body.phone
-    const password = req.body.password
-    const confirm = req.body.confirm
-    const inputUser = { name, email, phone, password, confirm }
-    signupResult = await userModule.signUp(inputUser)
+    const input_name = req.body.name  
+    const input_email = req.body.email
+    const input_phone = req.body.phone
+    const input_password = req.body.password
+    if (!input_name || 
+        !input_email ||
+        !input_phone || 
+        !input_password) {       
+        return new errorMsg(true, Utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE))
+    }
+    const salt = await encryptionManager.makeRandomByte()
+    const hashedPassword = await encryptionManager.encryption(input_password, salt)
+    const jsonData = {
+        name: input_name,
+        email: input_email,
+        phone: input_phone,
+        password: hashedPassword,
+        salt: salt
+    }
+    signupResult = await userModule.signUp(jsonData)
     if(signupResult.isError) {
-        res.status(200).send(utils.successFalse(signupResult.jsonData.status, signupResult.jsonData.message))
+        res.status(200).send(signupResult.jsonData)
+        return
     }
-    else {
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.CREATED_USER))
-    }
-});
+    res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.CREATED_USER))
+})
 
-module.exports = router;
+module.exports = router

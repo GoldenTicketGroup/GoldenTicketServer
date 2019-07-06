@@ -12,7 +12,6 @@ const TABLE_NAME = sqlManager.TABLE_USER
 
 const convertUser = (userData) => {
     return {
-        // 아래 내용은 그냥 임시
         user_idx: userData.userIdx,
         email: userData.email,
         name: userData.name,
