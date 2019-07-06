@@ -22,27 +22,6 @@ const userModule = {
         }
         return result[0]
     },
-<<<<<<< HEAD
-    signUp: async (jsonData, sqlFunc) => {
-        const salt = await encryptionManager.makeRandomByte()
-        if(!jsonData.password) {
-            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.NULL_VALUE))
-        }
-        const hashedPassword = await encryptionManager.encryption(jsonData.password, salt)
-        const func = sqlFunc || db.queryParam_Parse
-        delete jsonData.password
-        jsonData.password = hashedPassword;
-        jsonData.salt = salt;
-        const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
-        if (!result) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
-        }
-        if (result.isError == true && result.jsonData === MSG.NULL_VALUE) {
-            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData))
-        }
-        if (result.isError == true && result.jsonData === MSG.ALREADY_X) {
-            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, result.jsonData(WORD)))
-=======
     insert: async (jsonData, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
@@ -51,7 +30,6 @@ const userModule = {
         }
         if (result.isError) {
             return result
->>>>>>> b0b450809d1d519110e7106e2832c56891a73615
         }
         return result
     },
