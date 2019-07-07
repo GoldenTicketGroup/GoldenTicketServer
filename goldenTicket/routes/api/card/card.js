@@ -9,7 +9,10 @@ const utils = require('../../../modules/utils/rest/utils')
 
 //카드 리스트 조회
 router.get('/', async(req, res) => {
-    const result = await cardModule.selectAll()
+    const opts = {
+        fields: `cardIdx, imageUrl, title, category`
+    }
+    const result = await cardModule.selectAll('', opts)
     if(!result.isError)
     {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('카드'), result))
