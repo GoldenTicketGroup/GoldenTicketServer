@@ -1,17 +1,20 @@
 const express = require('express')
 const router = express.Router()
+const upload = require('../../../config/multer')
 const ticketModule = require('../../../models/ticket')
 const authUtil = require("../../../modules/utils/security/authUtils")
 
+// 후순위
 // 당첨 티켓 등록
-router.post('/', async (req, res) => {
-    const qrcode = req.body.qrcode
-    const userIdx = req.body.userIdx
+// 당첨 후 이미 관람 한 내역은 있을 수 있음
+router.post('/', upload.single('imageUrl'), authUtil.isLoggedin, async (req, res) => {
+    const imageUrl = req.file.location
+    const decoded = req.decoded
     const scheduleIdx = req.body.scheduleIdx
     const seatIdx = req.body.seatIdx
     const whereJson = {
-        qrcode,
-        userIdx,
+        imageUrl,
+        userIdx : decoded.userIdx,
         scheduleIdx,
         seatIdx
     }
