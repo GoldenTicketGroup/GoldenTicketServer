@@ -1,12 +1,14 @@
 const express = require('express')
 const router = express.Router()
 const showModule = require('../../../models/show')
+const scheduleModule = require('../../../models/schedule')
 const artistModule = require('../../../models/artist')
 const posterModule = require('../../../models/poster')
 const upload = require('../../../config/multer')
 const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
+const showFilter = require('../../../modules/utils/filter/showFilter')
 
 //홈 화면 공연 리스트 조회
 router.get('/home', async (req, res) => {

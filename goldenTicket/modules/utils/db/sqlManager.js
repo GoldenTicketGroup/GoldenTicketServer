@@ -90,6 +90,7 @@ const sqlManager = {
         const groupByStr = makeGroupByQuery(opts.groupBy)
         const orderByStr = makeOrderByQuery(opts.orderBy)
         const query = `SELECT ${fieldsJson} FROM ${table} ${joinStr} ${whereStr} ${groupByStr} ${orderByStr}`
+        console.log(query)
         const result = await func(query)
         if (result == null) return false
         return result
