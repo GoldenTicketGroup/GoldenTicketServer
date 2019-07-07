@@ -4,11 +4,15 @@ const showModule = require('../../../models/show')
 const scheduleModule = require('../../../models/schedule')
 const artistModule = require('../../../models/artist')
 const posterModule = require('../../../models/poster')
+const likeModule = require('../../../models/like')
+const authUtil = require("../../../modules/utils/security/authUtils")
 const upload = require('../../../config/multer')
 const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
 const showFilter = require('../../../modules/utils/filter/showFilter')
+const sqlManager = require('../../../modules/utils/db/sqlManager')
+const TABLE_SHOW = sqlManager.TABLE_SHOW
 
 //홈 화면 공연 리스트 조회
 router.get('/home', async(req, res) => {
@@ -23,6 +27,7 @@ router.get('/home', async(req, res) => {
         }
     }
     let result = await scheduleModule.getList('', opts)
+
     if(result.isError)
     { 
         res.status(200).send(result.jsonData)
@@ -34,7 +39,7 @@ router.get('/home', async(req, res) => {
     }
 })
 
-//상세 페이지 공연 상세 조회
+//공연 상세 조회
 router.get('/detail/:id', async(req, res) => {
     const showIdx = req.params.id
     const whereJson = {
@@ -60,6 +65,32 @@ router.get('/detail/:id', async(req, res) => {
     else
     {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
+    }
+})
+
+//관심있는 공연 리스트 조회
+router.get('/heart', authUtil.isLoggedin, async(req, res) => {
+    const userIdx = req.decoded.userIdx
+    const whereJson = { 
+        userIdx
+    }
+    const opts = {
+        fields: `showIdx, imageUrl, name`,
+        joinJson: {
+            table: "`show`",
+            foreignKey: `showIdx`,
+            type: "LEFT"
+        }
+    }
+    let result = await likeModule.getLikeList(whereJson, opts)
+    console.log(result)
+    if(result.isError)
+    { 
+        res.status(200).send(result.jsonData)
+    }
+    else
+    {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('공연'), result))
     }
 })
 

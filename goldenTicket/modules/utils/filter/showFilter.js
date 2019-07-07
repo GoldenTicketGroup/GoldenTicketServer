@@ -30,9 +30,7 @@ const showFilter = {
     const schedule = showData.map((e) => {
             return {
                 schedule_idx: e.scheduleIdx,
-                start_time: TimeFormatting(e.date, e.startTime),
-                end_time: TimeFormatting(e.date, e.endTime),
-                draw_available: e.drawAvailable
+                time: TimeFormatting(e.date, e.startTime)
             }
         })
     return {
@@ -41,9 +39,10 @@ const showFilter = {
         name: showData[0].name,
         location: showData[0].location,
         date: stringifyDate(showData[0].date, showData[0].startTime, showData[0].endTime),
-        schedule : schedule,
         original_price: showData[0].originalPrice,
-        discount_price: showData[0].discountPrice
+        discount_price: showData[0].discountPrice,
+        draw_available: showData[0].drawAvailable,
+        schedule : schedule
         }
     },
     homeAllShowInfo : (showData) => {
