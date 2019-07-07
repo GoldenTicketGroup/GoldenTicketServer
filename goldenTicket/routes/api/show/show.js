@@ -23,6 +23,7 @@ router.get('/home', async(req, res) => {
         }
     }
     let result = await scheduleModule.getList('', opts)
+
     if(result.isError)
     { 
         res.status(200).send(result.jsonData)
@@ -34,7 +35,7 @@ router.get('/home', async(req, res) => {
     }
 })
 
-//상세 페이지 공연 상세 조회
+//공연 상세 조회
 router.get('/detail/:id', async(req, res) => {
     const showIdx = req.params.id
     const whereJson = {
@@ -62,6 +63,9 @@ router.get('/detail/:id', async(req, res) => {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
     }
 })
+
+//관심있는 공연 리스트 조회
+
 
 //공연 등록
 router.post('/', upload.single('imageUrl'), async(req, res) => {
