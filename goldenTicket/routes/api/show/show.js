@@ -10,32 +10,6 @@ const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
 const showFilter = require('../../../modules/utils/filter/showFilter')
 
-
-//홈 화면 공연 상세 조회
-router.get('/home/:id', async(req, res) => {
-    const showIdx = req.params.id
-    const whereJson = {
-        showIdx : parseInt(showIdx)
-    }
-    const opts = {
-        joinJson: {
-            table: `show`,
-            foreignKey: `showIdx`,
-            type: "LEFT"
-        },
-        content: 'home'
-    }
-    const result = await showModule.select(whereJson, opts)
-    if(result.isError)
-    { 
-        res.status(200).send(result.jsonData)
-    }
-    else
-    {
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
-    }
-})
-
 //홈 화면 공연 리스트 조회
 router.get('/home', async(req, res) => {
     const opts = {
@@ -43,6 +17,9 @@ router.get('/home', async(req, res) => {
             table: "`show`",
             foreignKey: `showIdx`,
             type: "LEFT"
+        },
+        orderBy: {
+            "showIdx": "ASC"
         }
     }
     let result = await scheduleModule.getList('', opts)
