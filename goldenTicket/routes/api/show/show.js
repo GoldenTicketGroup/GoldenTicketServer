@@ -1,12 +1,15 @@
 const express = require('express')
 const router = express.Router()
 const showModule = require('../../../models/show')
+const scheduleModule = require('../../../models/schedule')
 const artistModule = require('../../../models/artist')
 const posterModule = require('../../../models/poster')
 const upload = require('../../../config/multer')
 const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
+const showFilter = require('../../../modules/utils/filter/showFilter')
+
 
 //홈 화면 공연 상세 조회
 router.get('/home/:id', async(req, res) => {
@@ -37,19 +40,26 @@ router.get('/home/:id', async(req, res) => {
 router.get('/home', async(req, res) => {
     const opts = {
         joinJson: {
-            table: `show`,
+            table: "`show`",
             foreignKey: `showIdx`,
             type: "LEFT"
-        },
-        content: 'home_all'
+        }
     }
-    const result = await showModule.getShowList('', opts)
-    res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('공연'), result))
+    let result = await scheduleModule.getList('', opts)
+    if(result.isError)
+    { 
+        res.status(200).send(result.jsonData)
+    }
+    else
+    {
+        result = showFilter.homeAllShowFilter(result.map(it => showFilter.homeAllShowInfo(it)))
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
+    }
 })
 
 //상세 페이지 공연 상세 조회
 router.get('/detail/:id', async(req, res) => {
-    const showIdx = req.params.showIdx
+    const showIdx = req.params.id
     const whereJson = {
         showIdx : parseInt(showIdx)
     }

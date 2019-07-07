@@ -55,7 +55,7 @@ const scheduleModule = {
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
-        return result.map(it => convertSchedule(it))
+        return result
     },
     update: async (setJson, whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
