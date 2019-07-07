@@ -1,29 +1,47 @@
+const moment = require('moment')
 
+const TimeFormatting =  (date, time) =>
+{
+    date = JSON.stringify(date).split('-').join('.').substring(1,11)
+    const dateString = `${date} ${time} `
+    const dateObject = new Date(dateString)
+    let dateMomentObject = moment(dateObject)
+    dateMomentObject = dateMomentObject.format("a hh:mm:ss MM/DD/YYYY")
+    dateMomentObject = dateMomentObject.replace('pm', "오후")
+    dateMomentObject = dateMomentObject.replace('am', "오전")
+    dateMomentObject = dateMomentObject.substring(0,8)
+    if(dateMomentObject.substring(3,4) == '0')
+    {
+        dateMomentObject = dateMomentObject.substring(0,3).concat(dateMomentObject.substring(4,8))
+    }
+    return dateMomentObject
+}
+
+const stringifyDate = (date, startTime, endTime) =>
+{
+    return JSON.stringify(date).split('-').join('.').substring(1,11)
+    .concat("  ", startTime.substring(0,5).concat("~", endTime.substring(0,5)))
+}
 
 const showFilter = {
-    homeShowInfo : (showData) => {
-        time = showData.map((e) => e.startTime.substring(0,5).concat(" ~ ", e.endTime.substring(0,5)))
-        return {
-            show_idx: showData[0].showIdx,
-            image_url: showData[0].imageUrl,
-            name: showData[0].name,
-            location: showData[0].location,
-            running_time : time
-        }
-    },
-    detailShowInfo : (showData) => {
-    console.log(showData)
+    detailShowFilter : (showData) => {
+
     // const date = JSON.stringify(e.date).split('-').join('.').substring(1,11)
-    time = showData.map((e) => JSON.stringify(e.date).split('-').join('.').substring(1,11)
-    .concat("  ", e.startTime.substring(0,5).concat("~", e.endTime.substring(0,5))))
-    const drawAvailable = showData.map((e) => e.drawAvailable)
+    const schedule = showData.map((e) => {
+            return {
+                schedule_idx: e.scheduleIdx,
+                start_time: TimeFormatting(e.date, e.startTime),
+                end_time: TimeFormatting(e.date, e.endTime),
+                draw_available: e.drawAvailable
+            }
+        })
     return {
         show_idx: showData[0].showIdx,
         image_url: showData[0].imageUrl,
         name: showData[0].name,
         location: showData[0].location,
-        date : time,
-        draw_available: drawAvailable,
+        date: stringifyDate(showData[0].date, showData[0].startTime, showData[0].endTime),
+        schedule : schedule,
         original_price: showData[0].originalPrice,
         discount_price: showData[0].discountPrice
         }
@@ -39,7 +57,6 @@ const showFilter = {
         }
     },
     homeAllShowFilter : (showData) => {
-    console.log(showData)
     let filteredData = []
     var cnt = 0
     for(let i=0 ;i < Object.keys(showData).length - 1; i++)
