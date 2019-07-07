@@ -63,7 +63,7 @@ module.exports = {
             console.log(err)
             await connection.rollback()
             console.log("mysql error! err log =>" + err)
-            result = undefined
+            result = new errorMsg(true, err)
         } finally {
             pool.releaseConnection(connection)
             return result

@@ -104,7 +104,7 @@ const lotteryModule = {
         }
         return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.REMOVED_X(WORD)))
     },
-    chooseWin: async (whereJson, sqlFunc) => {
+    chooseWin: async (cacheLotteryList, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
         const resultSchedule = await Schedule.select(whereJson, func)
         if(resultSchedule.isError == true){
@@ -117,12 +117,9 @@ const lotteryModule = {
         if(resultSchedule.done == 1){
             return new errorMsg(false, MSG.ALREADY_X(`추첨된 ${WORD}`))
         }
-        const resultList = await lotteryModule.selectAll(whereJson, func)
-        if(resultList.isError == true) {
-            return new errorMsg(false, resultList.jsonData)
-        }
-        const randomIdx = parseInt(Math.random() * 1000) % resultList.length
-        const winLottery = resultList[randomIdx]
+        
+        const randomIdx = parseInt(Math.random() * 1000) % cacheLotteryList.length
+        const winLottery = cacheLotteryList[randomIdx]
         console.log(winLottery)
         const transaction = await db.Transaction(async (connection) => {
             const queryStreamFunc = (query, value) => {
