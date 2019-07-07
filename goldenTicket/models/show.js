@@ -33,7 +33,7 @@ const showModule = {
         if (result.length == 0) {
             return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_X(WORD)))
         }
-        return result
+        return result[0]
     },
     getShowList: async (whereJson, opts, sqlFunc) => {  
         const func = sqlFunc || db.queryParam_Parse

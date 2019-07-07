@@ -4,27 +4,8 @@ const Utils = require('../modules/utils/rest/utils')
 const errorMsg = require('../modules/utils/common/errorUtils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
-const moment = require('moment');
-
 const WORD = '공연 일정'
 const TABLE_NAME = sqlManager.TABLE_SCHEDULE
-
-const convertSchedule = (scheduleData) => {
-    var dateObj = moment(scheduleData.date, "YYY-MM-DDTHH:mm:ssZ").toDate();
-    console.log(dateObj)
-    const date = JSON.stringify(scheduleData.date).split('-').join('.').substring(1,11)
-    const startTime = JSON.stringify(scheduleData.startTime).substring(1,6)
-    const endTime = JSON.stringify(scheduleData.endTime).substring(1,6)
-    const time = date.concat("  ", startTime,"-", endTime)
-    return {
-        schedule_idx: scheduleData.scheduleIdx,
-        show_idx: scheduleData.showIdx,
-        date: time,
-        start_time: scheduleData.startTime,
-        draw_done: scheduleData.done,
-        draw_available: scheduleData.done
-    }
-}
 
 const scheduleModule = {
     apply: async (jsonData, sqlFunc) => {
@@ -47,7 +28,7 @@ const scheduleModule = {
         if (result.length == 0) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
         }
-        return convertSchedule(result[0])
+        return result[0]
     },
     getList: async (whereJson, opts, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
