@@ -42,14 +42,13 @@ router.get('/detail/:id', async(req, res) => {
     }
     const opts = {
         joinJson: {
-            table: `show`,
+            table: "`show`",
             foreignKey: `showIdx`,
             type: "LEFT"
-        },
-        content: 'detail'
+        }
     }
-    let detail = {}
-    const result = await showModule.select(whereJson, opts)
+    let result = await scheduleModule.getList(whereJson, opts)
+    result = showFilter.detailShowFilter(result)
     const artistResult = await artistModule.selectAll(whereJson, opts)
     const posterResult = await posterModule.selectAll(whereJson, opts)
     result.artist = artistResult
