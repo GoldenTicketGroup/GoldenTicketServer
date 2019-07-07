@@ -4,6 +4,8 @@ const showModule = require('../../../models/show')
 const scheduleModule = require('../../../models/schedule')
 const artistModule = require('../../../models/artist')
 const posterModule = require('../../../models/poster')
+const likeModule = require('../../../models/like')
+const authUtil = require("../../../modules/utils/security/authUtils")
 const upload = require('../../../config/multer')
 const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
@@ -65,7 +67,29 @@ router.get('/detail/:id', async(req, res) => {
 })
 
 //관심있는 공연 리스트 조회
-
+router.get('/heart', authUtil.isLoggedin, async(req, res) => {
+    const userIdx = req.decoded.userIdx
+    const whereJson = {
+        userIdx
+    }
+    const opts = {
+        joinJson: {
+            table: "`show`",
+            foreignKey: `showIdx`,
+            type: "LEFT"
+        }
+    }
+    let result = await likeModule.getLikeList(whereJson, opts)
+    console.log(result)
+    if(result.isError)
+    { 
+        res.status(200).send(result.jsonData)
+    }
+    else
+    {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('공연'), result))
+    }
+})
 
 //공연 등록
 router.post('/', upload.single('imageUrl'), async(req, res) => {

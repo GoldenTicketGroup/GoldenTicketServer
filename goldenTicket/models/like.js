@@ -55,5 +55,16 @@ module.exports = {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_REMOVED_X(WORD)))
         }
         return result
+    },
+    getLikeList: async (whereJson, opts, sqlFunc) => {  
+        const func = sqlFunc || db.queryParam_Parse
+        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
+        if (result.length == undefined) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
+        }
+        if (result.length == 0) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
+        }
+        return result
     }
 }
