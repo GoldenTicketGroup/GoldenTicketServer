@@ -4,78 +4,8 @@ const Utils = require('../modules/utils/rest/utils')
 const errorMsg = require('../modules/utils/common/errorUtils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
-
 const WORD = '공연'
 const TABLE_NAME = sqlManager.TABLE_SHOW
-const TABLE_NAME_SCHEDULE = sqlManager.TABLE_SCHEDULE
-
-// const date = JSON.stringify(scheduleData.date).split('-').join('.').substring(1,11)
-// const startTime = JSON.stringify(scheduleData.startTime).substring(1,6)
-// const endTime = JSON.stringify(scheduleData.endTime).substring(1,6)
-// const time = startTime.concat("~", endTime)
-
-const homeShowInfo = (showData) => {
-    time = showData.map((e) => e.startTime.substring(0,5).concat(" ~ ", e.endTime.substring(0,5)))
-    return {
-        show_idx: showData[0].showIdx,
-        image_url: showData[0].imageUrl,
-        name: showData[0].name,
-        location: showData[0].location,
-        running_time : time
-    }
-}
-
-const detailShowInfo = (showData) => {
-    console.log(showData)
-    // const date = JSON.stringify(e.date).split('-').join('.').substring(1,11)
-    time = showData.map((e) => JSON.stringify(e.date).split('-').join('.').substring(1,11)
-    .concat("  ", e.startTime.substring(0,5).concat("~", e.endTime.substring(0,5))))
-    const drawAvailable = showData.map((e) => e.drawAvailable)
-    return {
-        show_idx: showData[0].showIdx,
-        image_url: showData[0].imageUrl,
-        name: showData[0].name,
-        location: showData[0].location,
-        date : time,
-        draw_available: drawAvailable,
-        original_price: showData[0].originalPrice,
-        discount_price: showData[0].discountPrice
-    }
-}
-
-const homeAllShowInfo = (showData) => {
-    let time = []
-    timeData = showData.startTime.substring(0,5).concat(" ~ ", showData.endTime.substring(0,5))
-    time.push(timeData)
-    return {
-        show_idx: showData.showIdx,
-        image_url: showData.imageUrl,
-        name: showData.name,
-        location: showData.location,
-        running_time : time
-    }
-}
-
-const homeAllShowFilter = (showData) => {
-    let filteredData = []
-    for(let i=0 ;i < Object.keys(showData).length - 1; i++)
-    {
-        if(showData[i].show_idx == showData[i+1].show_idx)
-        {
-            showData[i+1].running_time = showData[i].running_time.concat(showData[i+1].running_time)
-        }
-    }
-    for(let i=0 ;i < Object.keys(showData).length -1; i++)
-    {   
-        console.log(showData[i])
-        if(showData[i].show_idx != showData[i+1].show_idx)
-        {
-            filteredData.push(showData[i])
-        }
-    }
-    filteredData.push(showData[Object.keys(showData).length -1])
-    return filteredData
-}
 
 const showModule = {
     apply: async (jsonData, sqlFunc) => {
@@ -103,29 +33,18 @@ const showModule = {
         if (result.length == 0) {
             return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_X(WORD)))
         }
-        if(opts.content === 'home')
-        {
-            return (homeShowInfo(result))
-        }
-        if(opts.content === 'detail')
-        {
-            return (detailShowInfo(result))
-        }
+        return result[0]
     },
     getShowList: async (whereJson, opts, sqlFunc) => {  
         const func = sqlFunc || db.queryParam_Parse
-        opts.joinJson.table = TABLE_NAME
-        const result = await sqlManager.db_select(func, TABLE_NAME_SCHEDULE, whereJson, opts)
+        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
         if (result.length == 0) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
         }
-        if(opts.content === 'home_all')
-        {
-            return homeAllShowFilter(result.map(it => homeAllShowInfo(it)))
-        }
+        return result
     },
     remove: async (whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
