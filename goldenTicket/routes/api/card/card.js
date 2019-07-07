@@ -6,7 +6,7 @@ const upload = require('../../../config/multer')
 const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
-
+const cardFilter = require('../../../modules/utils/filter/cardFilter')
 
 //카드 리스트 조회
 router.get('/', async(req, res) => {
@@ -38,7 +38,7 @@ router.get('/:id', async(req, res) => {
     const result = await contentModule.selectAll(whereJson, opts)
     if(!result.isError)
     {
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('카드'), result))
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('카드'), cardFilter.detailCardFilter(result)))
     }
     else
     {
