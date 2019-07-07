@@ -6,35 +6,6 @@ const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
 
-
-// 콘텐츠 리스트 조회
-router.get('/', async(req, res) => {
-    const result = await showContentModule.selectAll()
-    if(!result.isError)
-    {
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연 컨텐츠'), result))
-    }
-    else
-    {
-        res.status(200).send(result.jsonData)
-    }
-})
-
-//콘텐츠 상세 조회
-router.get('/:id', async(req, res) => {
-    const showIdx = req.params.id
-    const whereJson = { showIdx }
-    const result = await showContentModule.select(whereJson)
-    if(!result.isError)
-    {
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연 컨텐츠'), result))
-    }
-    else
-    {
-        res.status(200).send(result.jsonData)
-    }
-})
-
 //콘텐츠 작성
 router.post('/', upload.single('imageUrl'), async(req, res) => {
     if(!req.file)
@@ -43,7 +14,6 @@ router.post('/', upload.single('imageUrl'), async(req, res) => {
         res.status(200).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE))
     }
     else{
-        console.log('너냐2')
         const imageUrl = req.file.location
         const title = req.body.title
         const subtitle = req.body.subtitle

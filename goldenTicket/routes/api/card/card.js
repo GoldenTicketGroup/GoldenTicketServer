@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const cardModule = require('../../../models/card')
+const contentModule = require('../../../models/showContent')
 const upload = require('../../../config/multer')
 const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
@@ -27,7 +28,14 @@ router.get('/', async(req, res) => {
 router.get('/:id', async(req, res) => {
     const cardIdx = req.params.id
     const whereJson = { cardIdx }
-    const result = await cardModule.select(whereJson)
+    const opts = {
+        joinJson: {
+            table: "card",
+            foreignKey: `cardIdx`,
+            type: "LEFT"
+        }
+    }
+    const result = await contentModule.selectAll(whereJson, opts)
     if(!result.isError)
     {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('카드'), result))
