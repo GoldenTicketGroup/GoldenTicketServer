@@ -11,6 +11,8 @@ const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
 const showFilter = require('../../../modules/utils/filter/showFilter')
+const sqlManager = require('../../../modules/utils/db/sqlManager')
+const TABLE_SHOW = sqlManager.TABLE_SHOW
 
 //홈 화면 공연 리스트 조회
 router.get('/home', async(req, res) => {
@@ -69,10 +71,11 @@ router.get('/detail/:id', async(req, res) => {
 //관심있는 공연 리스트 조회
 router.get('/heart', authUtil.isLoggedin, async(req, res) => {
     const userIdx = req.decoded.userIdx
-    const whereJson = {
+    const whereJson = { 
         userIdx
     }
     const opts = {
+        fields: `showIdx, imageUrl, name`,
         joinJson: {
             table: "`show`",
             foreignKey: `showIdx`,
