@@ -100,7 +100,7 @@ const userModule = {
         }
         return signupResult
     },
-    edit: async (input_name, input_email, input_phone, input_password, userIdx) => {    
+    edit: async (input_name, input_email, input_phone, userIdx) => {    
         const setJson = {}
         if(input_name) setJson.name = input_name
         if(input_email) setJson.email = input_email
@@ -111,10 +111,6 @@ const userModule = {
             return userResult
         }
         const salt = userResult.salt
-        const hashedPassword = await encryptionManager.encryption(input_password, salt)
-        if(userResult.password != hashedPassword){
-            return new errorMsg(true, utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_PW))
-        }
         const updateResult = await userModule.update(setJson, {userIdx: userIdx})
         if(!updateResult){
             return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_UPDATED_USER))

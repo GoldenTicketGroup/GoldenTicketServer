@@ -49,7 +49,7 @@ router.get('/home', async(req, res) => {
 
 //상세 페이지 공연 상세 조회
 router.get('/detail/:id', async(req, res) => {
-    const showIdx = req.params.id
+    const showIdx = req.params.showIdx
     const whereJson = {
         showIdx : parseInt(showIdx)
     }

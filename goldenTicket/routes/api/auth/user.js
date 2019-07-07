@@ -11,15 +11,11 @@ router.put('/', authUtil.isLoggedin , async (req, res) => {
     const input_name = req.body.name  
     const input_email = req.body.email
     const input_phone = req.body.phone
-    const input_password = req.body.password
     if(!input_name && !input_email && !input_phone) {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.NULL_VALUE))
     }
-    if(input_password == undefined) {
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.NULL_PASSWORD))
-    }
     const userIdx = req.decoded.userIdx
-    const updateResult = await userModule.edit(input_name, input_email, input_phone, input_password, userIdx)
+    const updateResult = await userModule.edit(input_name, input_email, input_phone, userIdx)
     if(updateResult.isError)
     {
         res.status(200).send(updateResult.jsonData)
