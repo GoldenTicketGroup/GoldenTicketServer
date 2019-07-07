@@ -19,7 +19,6 @@ const cardFilter = {
             content : content 
             }
         },
-
 }
 
 module.exports = cardFilter
