@@ -30,7 +30,7 @@ router.get('/:id', async(req, res) => {
     const whereJson = { cardIdx }
     const opts = {
         joinJson: {
-            table: "cardd",
+            table: "card",
             foreignKey: `cardIdx`,
             type: "LEFT"
         }
