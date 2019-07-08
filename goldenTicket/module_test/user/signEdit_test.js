@@ -24,4 +24,4 @@ const signUp_test = async () => {
     await edit_test_success()
     await edit_test_fail()
 }
-signUp_test()
+//signUp_test()
