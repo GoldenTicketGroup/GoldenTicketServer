@@ -72,7 +72,7 @@ const lotteryModule = {
     },
     selectAll: async (whereJson) => {
         const selectAllQuery = 'SELECT * ' +
-        'FROM (SELECT show.name, schedule.startTime, lottery.lotteryIdx, lottery.userIdx ' +
+        'FROM (SELECT show.name, schedule.startTime, schedule.date, lottery.lotteryIdx, lottery.userIdx ' +
         'FROM (( `show` INNER JOIN schedule ON show.showIdx = schedule.showIdx)' +
         'INNER JOIN lottery ON schedule.scheduleIdx = lottery.scheduleIdx)) AS a ' +
         `WHERE a.userIdx = ${whereJson.userIdx}`

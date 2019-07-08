@@ -6,6 +6,7 @@ const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
 const Utils = require('../../../modules/utils/rest/utils')
 const errorMsg = require('../../../modules/utils/common/errorUtils')
+const filter = require('../../../modules/utils/filter/lotteryFilter')
 
 // 티켓 응모하기(등록)
 router.post('/', authUtil.isLoggedin, async (req, res) => {
@@ -51,7 +52,7 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
     }
     console.log(whereJson)
     const result = await lotteryModule.selectAll(whereJson)
-    res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('티켓응모'), result))
+    res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('티켓응모'), filter.lotteryFilter(result)))
 })
 
 //티켓 응모 삭제
