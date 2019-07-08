@@ -17,7 +17,14 @@ router.post('/', authUtil.isLoggedin, async (req, res) => {
         scheduleIdx : scheduleIdx
     }
     const result = await lotteryModule.apply(whereJson)
-    res.status(200).send(result.jsonData)
+    console.log(result)
+    if(result.isError)
+    {
+        res.status(200).send(result.jsonData)   
+    }
+    else{
+        res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.CREATED_X('응모')))
+    }
 })
 
 // 티켓 수정
