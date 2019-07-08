@@ -3,7 +3,7 @@ const CODE = require('../modules/utils/rest/statusCode')
 const errorMsg = require('../modules/utils/common/errorUtils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
-
+const Utils = require('../modules/utils/rest/utils')
 const WORD = `해시 태그`
 const TABLE_NAME =  sqlManager.TABLE_HASHTAG
 
@@ -16,14 +16,12 @@ const hashtagModule = {
         }
         return result
     },
-    getTagList: async (whereJson, sqlFunc) => {
-        // const query = "SELECT keyword FROM comics.hashtag group by keyword"
-        const func = sqlFunc || db.queryParam_Parse
-        const opts = {
-            fields: 'keyword',
-            groupBy: 'keyword'
-        }
-        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
+    getTagList: async (text) => {
+        const selectHashTagQuery = 'SELECT * ' +
+        'FROM show_hashTag, `show`, hashTag' +
+        ` where hashTag.keyword LIKE '%${text}%' AND hashTag.hashTagIdx =  show_hashTag.hashTagIdx`
+        + ` AND show_hashTag.showIdx = show.showIdx`
+        const result = await db.queryParam_None(selectHashTagQuery);
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
@@ -66,4 +64,4 @@ const module_test = async () => {
     result = await hashtagModule.getTagList({})
     console.log(result)
 }
-module_test()
+// module_test()
