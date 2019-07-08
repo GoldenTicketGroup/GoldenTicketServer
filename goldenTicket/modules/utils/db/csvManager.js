@@ -1,11 +1,11 @@
-const responseMEssage = require('../../utils/rest/responseMessage')
+const responseMessage = require('../../utils/rest/responseMessage')
 const fs = require('fs')
 const json2csv = require('json2csv')
 const csv = require('csvtojson')
 const moment = require('moment')
 
-const csv_url = '../../../public/csv/'
-const log_url = '../../../public/log/'
+const csv_url = './public/csv/'
+const log_url = './public/log/'
 
 const csvManager = {
     csvWrite: (fileName, jsonArray) => {
@@ -64,7 +64,7 @@ const csvManager = {
                 }
             }
             if (jsonData == null) {
-                reject(responseMEssage.NO_INDEX)
+                reject(responseMessage.NO_INDEX)
                 return
             }
             resolve(jsonData)
@@ -84,13 +84,15 @@ const csvManager = {
         const nowMoment = moment(date)
         const dateStr = nowMoment.format("YYYY-MM-DD HH:MM:SS")
         fs.appendFile(`${log_url}${fileName}`, `[${dateStr}] ${stringData}\n`, (err) => {
-            if(err) throw err
+            if(err) new Error(err)
             console.log(`saved log ${stringData}`)
         })
         return
     },
-    CSV_READY_TO_LOTTERY_LIST: "ready2lotteryList.csv",
-    LOG_TO_UPDATE_AVAILABLE: "log2updateAvailable.csv"
+    CSV_READY_TO_SCHEDULE_LIST: "ready2scheduleList.csv",
+    CSV_LOTTERY_LIST_WITH_SCHEDULE_CACHE: (idx)=> `lotterySaveCache_${idx}`,
+    LOG_TO_UPDATE_AVAILABLE: "log2updateAvailable.csv",
+    LOG_DURING_SAVE_CACHE: "logDuringSaveCache.csv",
 }
 
 module.exports = csvManager
