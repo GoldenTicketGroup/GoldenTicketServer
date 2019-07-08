@@ -5,20 +5,9 @@ const errorMsg = require('../modules/utils/common/errorUtils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
 const Schedule = require('../models/schedule')
-
 const WORD = '응모'
 const TABLE_NAME = sqlManager.TABLE_LOTTERY
 
-const convertLottery = (lotteryData) => {
-    return {
-        lottery_idx: lotteryData.lotteryIdx,
-        schedule_idx: lotteryData.scheduleIdx,
-        user_idx: lotteryData.userIdx,
-        seat: lotteryData.seat,
-        state: lotteryData.state,
-        created_time: lotteryData.createdTime
-    }
-}
 const lotteryModule = {
     apply: async (jsonData, sqlFunc) => {
         if (jsonData.userIdx == undefined || jsonData.scheduleIdx == undefined) {
@@ -81,16 +70,25 @@ const lotteryModule = {
             return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X(WORD), convertLottery(result[0])))
         }
     },
-    selectAll: async (whereJson, opts, sqlFunc) => {
-        const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
+    selectAll: async (whereJson) => {
+        const selectAllQuery = 'SELECT * ' +
+        'FROM (SELECT show.name, schedule.startTime, lottery.lotteryIdx, lottery.userIdx ' +
+        'FROM (( `show` INNER JOIN schedule ON show.showIdx = schedule.showIdx)' +
+        'INNER JOIN lottery ON schedule.scheduleIdx = lottery.scheduleIdx)) AS a ' +
+        `WHERE a.userIdx = ${whereJson.userIdx}`
+        const result = await db.queryParam_None(selectAllQuery)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
         if (result.length == 0) {
-            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.OK_NO_X(WORD), result.map(it => convertLottery(it))))    
+            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.OK_NO_X(WORD), result))    
         }
-        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD), result.map(it => convertLottery(it))))
+        let resultArray = []
+        for(var i=0; i<result.length; i++)
+        {
+            resultArray.push(result[i])
+        }
+        return resultArray
     },
     delete: async (whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
