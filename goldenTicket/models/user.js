@@ -25,6 +25,7 @@ const userModule = {
     insert: async (jsonData, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
+        console.log(result)
         if (!result) {
             return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_CREATED_USER))
         }
@@ -95,6 +96,7 @@ const userModule = {
             salt: salt
         }
         signupResult = await userModule.insert(jsonData)
+        console.log(signupResult)
         if (signupResult.isError) {
             return signupResult.jsonData
         }

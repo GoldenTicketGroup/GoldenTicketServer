@@ -34,6 +34,7 @@ module.exports = {
     ALREADY_LOTTERY_X: (X) => `이미 두 개의 ${X}내역이 존재합니다.`,
     NO_HEART: "관심있는 공연이 존재하지 않습니다.",
     SHOW_HEART: "관심있는 공연 조회 성공",
+    NO_SEARCH: "검색 결과가 없습니다.",
     LIKE_X: "좋아요 성공",
     ALREADY_LIKE_X: "이미 좋아요 상태입니다.",
     FAIL_LIKE_X: "좋아요 실패",
