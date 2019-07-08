@@ -77,6 +77,10 @@ const lotteryModule = {
         'INNER JOIN lottery ON schedule.scheduleIdx = lottery.scheduleIdx)) AS a ' +
         `WHERE a.userIdx = ${whereJson.userIdx}`
         const result = await db.queryParam_None(selectAllQuery)
+        if(!result)
+        {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
+        }
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }

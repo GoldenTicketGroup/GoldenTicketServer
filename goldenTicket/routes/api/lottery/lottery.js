@@ -10,7 +10,7 @@ const filter = require('../../../modules/utils/filter/lotteryFilter')
 
 // 티켓 응모하기(등록)
 router.post('/', authUtil.isLoggedin, async (req, res) => {
-    const scheduleIdx = req.body.scheduleIdx
+    const scheduleIdx = req.body.schedule_idx
     const decoded = req.decoded
     const whereJson = {
         userIdx : decoded.userIdx,
@@ -48,10 +48,13 @@ router.get('/:id', authUtil.isLoggedin, async (req, res) => {
 router.get('/', authUtil.isLoggedin, async (req, res) => {
     const decoded = req.decoded
     const whereJson = {
-        userIdx : decoded.userIdx
+        userIdx : decoded.userIdsx
     }
-    console.log(whereJson)
     const result = await lotteryModule.selectAll(whereJson)
+    if(result.isError)
+    {
+        res.status(200).send(result.jsonData)
+    }
     res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('티켓응모'), filter.lotteryFilter(result)))
 })
 
