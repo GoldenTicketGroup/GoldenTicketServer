@@ -4,21 +4,9 @@ const Utils = require('../modules/utils/rest/utils')
 const errorMsg = require('../modules/utils/common/errorUtils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
-
 const WORD = '당첨 티켓'
 const TABLE_NAME = sqlManager.TABLE_TICKET
 
-const convertTicket = (TicketData) => {
-    return {
-        // 아래 내용은 그냥 임시
-        Ticket_idx: TicketData.TicketIdx,
-        schedule_idx: TicketData.scheduleIdx,
-        user_idx: TicketData.userIdx,
-        seat: TicketData.seat,
-        win: TicketData.win,
-        created_time: TicketData.createdTime
-    }
-}
 module.exports = {
     insert: async (jsonData, opts, sqlFunc) => {
         if (jsonData.userIdx == undefined || jsonData.seatIdx == undefined) {
