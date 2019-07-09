@@ -71,7 +71,7 @@ const lotteryModule = {
         }
     },
     selectAll: async (whereJson) => {
-        const selectAllQuery = 'SELECT * ' +
+        const selectAllQuery = 'SELECT lotteryIdx, name, startTime AS start_time ' +
         'FROM (SELECT show.name, schedule.startTime, lottery.lotteryIdx, lottery.userIdx ' +
         'FROM (( `show` INNER JOIN schedule ON show.showIdx = schedule.showIdx)' +
         'INNER JOIN lottery ON schedule.scheduleIdx = lottery.scheduleIdx)) AS a ' +
@@ -88,7 +88,7 @@ const lotteryModule = {
         {
             resultArray.push(result[i])
         }
-        return resultArray
+        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD), resultArray))
     },
     delete: async (whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse

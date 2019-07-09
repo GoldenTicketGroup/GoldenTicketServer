@@ -2,9 +2,6 @@ const express = require('express')
 const router = express.Router()
 const lotteryModule = require('../../../models/lottery')
 const authUtil = require("../../../modules/utils/security/authUtils")
-const responseMessage = require('../../../modules/utils/rest/responseMessage')
-const statusCode = require('../../../modules/utils/rest/statusCode')
-const Utils = require('../../../modules/utils/rest/utils')
 const errorMsg = require('../../../modules/utils/common/errorUtils')
 
 // 티켓 응모하기(등록)
@@ -51,7 +48,7 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
     }
     console.log(whereJson)
     const result = await lotteryModule.selectAll(whereJson)
-    res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('티켓응모'), result))
+    res.status(200).send(result.jsonData)
 })
 
 //티켓 응모 삭제
