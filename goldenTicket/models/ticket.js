@@ -82,6 +82,6 @@ module.exports = {
         {
             resultArray.push(result[i])
         }
-        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL('당첨 내역'), resultArray))
+        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL('당첨 티켓'), resultArray))
     }
 }

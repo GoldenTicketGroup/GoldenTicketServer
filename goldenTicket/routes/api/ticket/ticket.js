@@ -47,6 +47,11 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
         userIdx : decoded.userIdx
     }
     const result = await ticketModule.selectAll(whereJson)
+    if(result.isError && result.jsonData.message == '당첨 티켓이 없습니다. 전체 조회 성공')
+    {
+        result.jsonData.data = []
+        res.status(200).send(result.jsonData)
+    }
     res.status(200).send(result.jsonData)
 })
 
