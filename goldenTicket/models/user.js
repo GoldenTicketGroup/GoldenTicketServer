@@ -73,7 +73,8 @@ const userModule = {
         }
         const User = {
             userIdx: userResult.userIdx,
-            email: userResult.email
+            email: userResult.email,
+            isAdmined: userResult.isAdmined
         }
         const token = jwt.sign(User).accessToken
         const responseJson = {

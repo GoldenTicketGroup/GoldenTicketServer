@@ -71,11 +71,14 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
 })
 
 //티켓 응모 삭제
-router.delete('/:id', authUtil.isLoggedin, async (req, res) => {
-    const lotteryIdx = req.params.id
-    const decoded = req.decoded
+router.delete('/', authUtil.isLoggedin, async (req, res) => {
+    const lotteryIdx = req.body.lotteryIdx
+    const userIdx = req.decoded.userIdx
+    const isAdmined = req.decoded.isAdmined
+    console.log("req.decoded: "+req.decoded)
+    console.log("isadmined: "+isAdmined)
     const whereJson = {
-        userIdx : decoded.userIdx,
+        userIdx,
         lotteryIdx : lotteryIdx
     }
     const result = await lotteryModule.delete(whereJson)

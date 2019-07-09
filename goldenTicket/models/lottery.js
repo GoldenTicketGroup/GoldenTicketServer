@@ -26,7 +26,7 @@ const lotteryModule = {
         console.log(result3.length)
         //중복해서 응모할 수 없음
         if (result2 != 0){
-            return new errorMsg(true, Utils.successFalse(CODE.OK, MSG.ALREADY_X(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.NO_CONTENT, MSG.ALREADY_X(WORD)))
         }
         //최대 두개까지만 응모 가능
         if (result3.length == 2){

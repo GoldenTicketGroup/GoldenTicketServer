@@ -11,7 +11,8 @@ module.exports = {
     sign: (user) => {
         const payload = {
             userIdx: user.userIdx,
-            email: user.email
+            email: user.email,
+            isAdmined: user.isAdmined
         }
         const result = {
             accessToken: jwt.sign(payload, secretOrPrivateKey, options),
@@ -59,7 +60,8 @@ module.exports = {
     refresh: (user) => {
         const payload = {
             userIdx: user.userIdx,
-            name: user.name
+            name: user.name,
+            isAdmined: user.isAdmined
         }
         return jwt.sign(payload, secretOrPrivateKey, options);
     },
