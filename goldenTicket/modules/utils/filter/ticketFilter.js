@@ -17,13 +17,22 @@ const stringifyDuration = (startDate, endDate) =>
 
 
 const ticketFilter = {
-
     ticketFilter : (ticketData) => {
         ticketData.date = durationFormatting(ticketData.date)
         ticketData.running_time = stringifyDuration(ticketData.startTime, ticketData.endTime)
         ticketData.price = ticketData.price.concat("원")
         delete ticketData.startTime
         delete ticketData.endTime
+        return ticketData
+    },
+    ticketAllFilter : (ticketData) => {
+        ticketData.map((e) => {
+            e.date = durationFormatting(e.date)
+            e.running_time = stringifyDuration(e.startTime, e.endTime)
+            e.price = e.price.concat("원")
+            delete e.startTime
+            delete e.endTime
+        })
         return ticketData
     }
 }
