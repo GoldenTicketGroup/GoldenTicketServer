@@ -60,7 +60,14 @@ typings/
 # next.js build output
 .next
 
+# log and csv file
+public/csv
+public/csv/*
+public/log
+public/log/*
 
 # config
 config
 config/*
+../.DS_Store
+.DS_Store

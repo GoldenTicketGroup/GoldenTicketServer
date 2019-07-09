@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express')
+const router = express.Router()
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+const scheduler = require('../modules/utils/scheduler/scheduler')
+scheduler.startCron()
 
-module.exports = router;
+router.use('/', require('./api'))
+
+module.exports = router
