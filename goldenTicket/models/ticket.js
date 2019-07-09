@@ -4,21 +4,9 @@ const Utils = require('../modules/utils/rest/utils')
 const errorMsg = require('../modules/utils/common/errorUtils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
-
 const WORD = '당첨 티켓'
 const TABLE_NAME = sqlManager.TABLE_TICKET
 
-const convertTicket = (TicketData) => {
-    return {
-        // 아래 내용은 그냥 임시
-        Ticket_idx: TicketData.TicketIdx,
-        schedule_idx: TicketData.scheduleIdx,
-        user_idx: TicketData.userIdx,
-        seat: TicketData.seat,
-        win: TicketData.win,
-        created_time: TicketData.createdTime
-    }
-}
 module.exports = {
     insert: async (jsonData, opts, sqlFunc) => {
         if (jsonData.userIdx == undefined || jsonData.seatIdx == undefined) {
@@ -43,8 +31,8 @@ module.exports = {
         return result
     },
     select: async (whereJson) => {
-        const selectDetailQuery = 'SELECT newTicket.ticketIdx AS ticket_idx, showIdx AS show_idx, qrcode AS qr_code, newTicket.imageUrl AS image_url, newTicket.date, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location ' +
-        'FROM (SELECT ticket.ticketIdx, show.showIdx, ticket.qrcode, show.imageUrl, schedule.date, show.name, seat.seatType, seat.seatName, show.discountPrice, show.location ' +
+        const selectDetailQuery = 'SELECT newTicket.startTime, newTicket.endTime, newTicket.ticketIdx AS ticket_idx, showIdx AS show_idx, qrcode AS qr_code, newTicket.imageUrl AS image_url, newTicket.date, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location ' +
+        'FROM (SELECT ticket.ticketIdx, show.showIdx, ticket.qrcode, show.imageUrl, schedule.date, show.name, seat.seatType, seat.seatName, show.discountPrice, show.location, schedule.startTime, schedule.endTime ' +
         'FROM ((( `show` INNER JOIN schedule ' +
         'ON show.showIdx = schedule.showIdx) ' +
         'INNER JOIN seat ON schedule.scheduleIdx = seat.scheduleIdx) ' +
@@ -67,12 +55,7 @@ module.exports = {
             if (result.length == 0) {
                 return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.NO_X('당첨 내역')))
             }
-            let resultArray = []
-            for(var i=0; i<result.length; i++)
-            {
-                resultArray.push(result[i])
-            }
-            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X('당첨 내역'), resultArray))
+            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X('당첨 내역'), result[0]))
         }
     },
     selectAll: async (whereJson) => {
@@ -94,6 +77,6 @@ module.exports = {
         {
             resultArray.push(result[i])
         }
-        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL('당첨 내역'), resultArray))
+        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL('당첨 티켓'), resultArray))
     }
 }
