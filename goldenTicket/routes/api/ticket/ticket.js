@@ -3,9 +3,6 @@ const router = express.Router()
 const upload = require('../../../config/multer')
 const ticketModule = require('../../../models/ticket')
 const authUtil = require("../../../modules/utils/security/authUtils")
-const responseMessage = require('../../../modules/utils/rest/responseMessage')
-const statusCode = require('../../../modules/utils/rest/statusCode')
-const Utils = require('../../../modules/utils/rest/utils')
 
 // 후순위
 // 당첨 티켓 등록
@@ -38,14 +35,8 @@ router.get('/:id', authUtil.isLoggedin, async (req, res) => {
         userIdx : decoded.userIdx,
         ticketIdx : ticketIdx
     }
-    const opts = {
-        joinJson: {
-            table: `schedule`,
-            foreignKey: `scheduleIdx`,
-            type: "LEFT"
-        }
-    }
-    const result = await ticketModule.select(whereJson, opts)
+    const result = await ticketModule.select(whereJson)
+    console.log("result:"+result)
     res.status(200).send(result.jsonData)
 })
 
@@ -56,7 +47,7 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
         userIdx : decoded.userIdx
     }
     const result = await ticketModule.selectAll(whereJson)
-    res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('당첨티켓'), result))
+    res.status(200).send(result.jsonData)
 })
 
 // 당첨 티켓 삭제 부분은 관리자가 직접 삭제
