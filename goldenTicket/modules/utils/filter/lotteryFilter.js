@@ -20,6 +20,8 @@ const lotteryFilter = {
                 start_time: TimeFormatting(e.date, e.startTime)
             }
         })
+        console.log(filteredData)
+
         return filteredData
     }
 }
