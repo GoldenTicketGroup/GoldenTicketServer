@@ -31,8 +31,8 @@ module.exports = {
         return result
     },
     select: async (whereJson) => {
-        const selectDetailQuery = 'SELECT newTicket.ticketIdx AS ticket_idx, showIdx AS show_idx, qrcode AS qr_code, newTicket.imageUrl AS image_url, newTicket.date, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location ' +
-        'FROM (SELECT ticket.ticketIdx, show.showIdx, ticket.qrcode, show.imageUrl, schedule.date, show.name, seat.seatType, seat.seatName, show.discountPrice, show.location ' +
+        const selectDetailQuery = 'SELECT newTicket.startTime, newTicket.endTime, newTicket.ticketIdx AS ticket_idx, showIdx AS show_idx, qrcode AS qr_code, newTicket.imageUrl AS image_url, newTicket.date, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location ' +
+        'FROM (SELECT ticket.ticketIdx, show.showIdx, ticket.qrcode, show.imageUrl, schedule.date, show.name, seat.seatType, seat.seatName, show.discountPrice, show.location, schedule.startTime, schedule.endTime ' +
         'FROM ((( `show` INNER JOIN schedule ' +
         'ON show.showIdx = schedule.showIdx) ' +
         'INNER JOIN seat ON schedule.scheduleIdx = seat.scheduleIdx) ' +
@@ -43,7 +43,7 @@ module.exports = {
         //존재하지 않는 티켓 조회
         const condition = `SELECT * FROM ticket WHERE ticketIdx = ${whereJson.ticketIdx}`
         const result2 = await db.queryParam_None(condition)
-        if (true) {
+        if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
         if (result2.length == 0) { //존재하지 않는 티켓을 조회했을 때
@@ -55,12 +55,7 @@ module.exports = {
             if (result.length == 0) {
                 return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.NO_X('당첨 내역')))
             }
-            let resultArray = []
-            for(var i=0; i<result.length; i++)
-            {
-                resultArray.push(result[i])
-            }
-            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X('당첨 내역'), resultArray))
+            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X('당첨 내역'), result[0]))
         }
     },
     selectAll: async (whereJson) => {

@@ -3,6 +3,7 @@ const router = express.Router()
 const upload = require('../../../config/multer')
 const ticketModule = require('../../../models/ticket')
 const authUtil = require("../../../modules/utils/security/authUtils")
+const filter = require("../../../modules/utils/filter/ticketFilter")
 
 // 후순위
 // 당첨 티켓 등록
@@ -36,7 +37,10 @@ router.get('/:id', authUtil.isLoggedin, async (req, res) => {
         ticketIdx : ticketIdx
     }
     const result = await ticketModule.select(whereJson)
-    console.log("result:"+result)
+    if(result.jsonData.message == "당첨 내역 상세 조회 성공")
+    {
+            filter.ticketFilter(result.jsonData.data)
+    }
     res.status(200).send(result.jsonData)
 })
 
