@@ -50,6 +50,7 @@ const showFilter = {
         duration: duration,
         original_price: showData[0].originalPrice,
         discount_price: showData[0].discountPrice,
+        background_image: showData[0].backgroundImage,
         schedule : schedule
         }
     },
