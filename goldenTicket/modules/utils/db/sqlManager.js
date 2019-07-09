@@ -92,6 +92,7 @@ const sqlManager = {
         const query = `SELECT ${fieldsJson} FROM ${table} ${joinStr} ${whereStr} ${groupByStr} ${orderByStr}`
         console.log(query)
         const result = await func(query)
+        console.log(result)
         if (result == null) return false
         return result
     },
