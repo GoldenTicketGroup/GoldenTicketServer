@@ -43,7 +43,7 @@ module.exports = {
         //존재하지 않는 티켓 조회
         const condition = `SELECT * FROM ticket WHERE ticketIdx = ${whereJson.ticketIdx}`
         const result2 = await db.queryParam_None(condition)
-        if (result.length == undefined) {
+        if (true) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
         if (result2.length == 0) { //존재하지 않는 티켓을 조회했을 때
