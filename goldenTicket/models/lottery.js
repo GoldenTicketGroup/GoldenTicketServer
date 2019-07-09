@@ -92,7 +92,7 @@ const lotteryModule = {
         {
             resultArray.push(result[i])
         }
-        return resultArray
+        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD), resultArray))
     },
     delete: async (whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse

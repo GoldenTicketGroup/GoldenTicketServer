@@ -20,7 +20,7 @@ const hashtagModule = {
         const selectHashTagQuery = 'SELECT * ' +
         'FROM show_hashTag, `show`, hashTag' +
         ` where hashTag.keyword LIKE '%${text}%' AND hashTag.hashTagIdx =  show_hashTag.hashTagIdx`
-        + ` AND show_hashTag.showIdx = show.showIdx`
+        + ` AND show_hashTag.showIdx = show.showIdxx`
         const result = await db.queryParam_None(selectHashTagQuery);
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))

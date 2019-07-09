@@ -1,6 +1,6 @@
 const textSearchFilter = {
 
-    textSearchFilter : (searchData) => {
+    searchFilter : (searchData) => {
         const filteredData = searchData.map((e) => {
             return {
                 show_idx: e.showIdx,

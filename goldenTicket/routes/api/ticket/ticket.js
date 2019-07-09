@@ -35,14 +35,8 @@ router.get('/:id', authUtil.isLoggedin, async (req, res) => {
         userIdx : decoded.userIdx,
         ticketIdx : ticketIdx
     }
-    const opts = {
-        joinJson: {
-            table: `schedule`,
-            foreignKey: `scheduleIdx`,
-            type: "LEFT"
-        }
-    }
-    const result = await ticketModule.select(whereJson, opts)
+    const result = await ticketModule.select(whereJson)
+    console.log("result:"+result)
     res.status(200).send(result.jsonData)
 })
 
