@@ -78,7 +78,7 @@ router.get('/heart', authUtil.isLoggedin, async(req, res) => {
         userIdx
     }
     const opts = {
-        fields: `showIdx, imageUrl, name`,
+        fields: `showIdx as show_idx, imageUrl as image_url, name`,
         joinJson: {
             table: "`show`",
             foreignKey: `showIdx`,
