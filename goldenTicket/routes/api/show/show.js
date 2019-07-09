@@ -57,15 +57,15 @@ router.get('/detail/:id', async(req, res) => {
         return
     }
     result = showFilter.detailShowFilter(result)
-    // const artistResult = await artistModule.selectAll(whereJson, opts)
-    // const posterResult = await posterModule.selectAll(whereJson, opts)
-    // result.artist = artistResult
-    // result.poster = posterResult
-    // if(result.isError || artistResult.isError || posterResult.isError || artistResult.length==0 || posterResult.length==0)
-    // {
-    //     res.status(200).send(utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_READ_X('공연')))
-    // }
-    // else
+    const artistResult = await artistModule.selectAll(whereJson, opts)
+    const posterResult = await posterModule.selectAll(whereJson, opts)
+    result.artist = artistResult
+    result.poster = posterResult
+    if(result.isError || artistResult.isError || posterResult.isError || artistResult.length==0 || posterResult.length==0)
+    {
+        res.status(200).send(utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_READ_X('공연')))
+    }
+    else
     {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
     }
