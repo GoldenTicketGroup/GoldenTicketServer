@@ -1,6 +1,6 @@
 const moment = require('moment')
 
-const TimeFormatting =  (date, time) =>
+const timeFormatting =  (date, time) =>
 {
     date = JSON.stringify(date).split('-').join('.').substring(1,11)
     const dateString = `${date} ${time} `
@@ -17,20 +17,29 @@ const TimeFormatting =  (date, time) =>
     return dateMomentObject
 }
 
-const stringifyDate = (date, startTime, endTime) =>
+const durationFormatting = (date) =>
 {
-    return JSON.stringify(date).split('-').join('.').substring(1,11)
-    .concat("  ", startTime.substring(0,5).concat("~", endTime.substring(0,5)))
+    const dateString = `${date}`
+    const dateObject = new Date(dateString)
+    let dateMomentObject = moment(dateObject)
+    dateMomentObject = dateMomentObject.format("YYYY.MM.DD")
+    return dateMomentObject
+}
+
+const stringifyDuration = (startDate, endDate) =>
+{
+    return startDate.substring(0,10).concat(" ~ ", endDate.substring(0,10))
 }
 
 const showFilter = {
     detailShowFilter : (showData) => {
-
-    // const date = JSON.stringify(e.date).split('-').join('.').substring(1,11)
+    console.log(showData)
+    const duration = stringifyDuration(durationFormatting(showData[0].startDate), durationFormatting(showData[0].endDate))
     const schedule = showData.map((e) => {
             return {
                 schedule_idx: e.scheduleIdx,
-                time: TimeFormatting(e.date, e.startTime)
+                time: timeFormatting(e.date, e.startTime),
+                draw_available: e.drawAvailable
             }
         })
     return {
@@ -38,10 +47,9 @@ const showFilter = {
         image_url: showData[0].imageUrl,
         name: showData[0].name,
         location: showData[0].location,
-        date: stringifyDate(showData[0].date, showData[0].startTime, showData[0].endTime),
+        duration: duration,
         original_price: showData[0].originalPrice,
         discount_price: showData[0].discountPrice,
-        draw_available: showData[0].drawAvailable,
         schedule : schedule
         }
     },

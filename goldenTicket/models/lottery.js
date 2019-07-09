@@ -71,12 +71,16 @@ const lotteryModule = {
         }
     },
     selectAll: async (whereJson) => {
-        const selectAllQuery = 'SELECT lotteryIdx, name, startTime AS start_time ' +
-        'FROM (SELECT show.name, schedule.startTime, lottery.lotteryIdx, lottery.userIdx ' +
+        const selectAllQuery = 'SELECT * ' +
+        'FROM (SELECT show.name, schedule.startTime, schedule.date, lottery.lotteryIdx, lottery.userIdx ' +
         'FROM (( `show` INNER JOIN schedule ON show.showIdx = schedule.showIdx)' +
         'INNER JOIN lottery ON schedule.scheduleIdx = lottery.scheduleIdx)) AS a ' +
         `WHERE a.userIdx = ${whereJson.userIdx}`
         const result = await db.queryParam_None(selectAllQuery)
+        if(!result)
+        {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
+        }
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }

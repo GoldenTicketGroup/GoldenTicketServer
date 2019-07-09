@@ -20,7 +20,7 @@ router.get('/', async(req, res) => {
     }
     else
     {
-        res.status(200).send(result.jsonData)
+        res.status(200).send(utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_READ_X('카드')))
     }
 })
 
@@ -36,13 +36,18 @@ router.get('/:id', async(req, res) => {
         }
     }
     const result = await contentModule.selectAll(whereJson, opts)
+    if(result.length == 0)
+    {
+        res.status(200).send(utils.successFalse(statusCode.NOT_FOUND, responseMessage.NO_X('카드 글')))
+        return
+    }
     if(!result.isError)
     {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('카드'), cardFilter.detailCardFilter(result)))
     }
     else
     {
-        res.status(200).send(result.jsonData)
+        res.status(200).send(utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_READ_X('카드')))
     }
 })
 

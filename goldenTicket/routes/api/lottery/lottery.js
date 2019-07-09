@@ -3,17 +3,25 @@ const router = express.Router()
 const lotteryModule = require('../../../models/lottery')
 const authUtil = require("../../../modules/utils/security/authUtils")
 const errorMsg = require('../../../modules/utils/common/errorUtils')
+const filter = require('../../../modules/utils/filter/lotteryFilter')
 
 // 티켓 응모하기(등록)
 router.post('/', authUtil.isLoggedin, async (req, res) => {
-    const scheduleIdx = req.body.scheduleIdx
+    const scheduleIdx = req.body.schedule_idx
     const decoded = req.decoded
     const whereJson = {
         userIdx : decoded.userIdx,
         scheduleIdx : scheduleIdx
     }
     const result = await lotteryModule.apply(whereJson)
-    res.status(200).send(result.jsonData)
+    console.log(result)
+    if(result.isError)
+    {
+        res.status(200).send(result.jsonData)   
+    }
+    else{
+        res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.CREATED_X('응모')))
+    }
 })
 
 // 티켓 수정
@@ -44,11 +52,14 @@ router.get('/:id', authUtil.isLoggedin, async (req, res) => {
 router.get('/', authUtil.isLoggedin, async (req, res) => {
     const decoded = req.decoded
     const whereJson = {
-        userIdx : decoded.userIdx
+        userIdx : decoded.userIdsx
     }
-    console.log(whereJson)
     const result = await lotteryModule.selectAll(whereJson)
-    res.status(200).send(result.jsonData)
+    if(result.isError)
+    {
+        res.status(200).send(result.jsonData)
+    }
+    res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('티켓응모'), filter.lotteryFilter(result)))
 })
 
 //티켓 응모 삭제
