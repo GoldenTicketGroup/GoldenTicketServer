@@ -42,12 +42,19 @@ module.exports = {
         }
         return result
     },
-    select: async (whereJson, opts, sqlFunc) => {
-        const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
+    select: async (whereJson) => {
+        const selectDetailQuery = 'SELECT newTicket.ticketIdx AS ticket_idx, showIdx AS show_idx, qrcode AS qr_code, newTicket.imageUrl AS image_url, newTicket.date, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location ' +
+        'FROM (SELECT ticket.ticketIdx, show.showIdx, ticket.qrcode, show.imageUrl, schedule.date, show.name, seat.seatType, seat.seatName, show.discountPrice, show.location ' +
+        'FROM ((( `show` INNER JOIN schedule ' +
+        'ON show.showIdx = schedule.showIdx) ' +
+        'INNER JOIN seat ON schedule.scheduleIdx = seat.scheduleIdx) ' +
+        'INNER JOIN ticket ON seat.seatIdx = ticket.seatIdx) ' +
+        `WHERE ticket.userIdx = ${whereJson.userIdx}) newTicket `+
+        `WHERE newTicket.ticketIdx = ${whereJson.ticketIdx}`
+        const result = await db.queryParam_None(selectDetailQuery)
         //존재하지 않는 티켓 조회
         const condition = `SELECT * FROM ticket WHERE ticketIdx = ${whereJson.ticketIdx}`
-        const result2 = await func(condition)
+        const result2 = await db.queryParam_None(condition)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
@@ -60,18 +67,33 @@ module.exports = {
             if (result.length == 0) {
                 return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.NO_X('당첨 내역')))
             }
-            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X(WORD), convertTicket(result[0])))
+            let resultArray = []
+            for(var i=0; i<result.length; i++)
+            {
+                resultArray.push(result[i])
+            }
+            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X('당첨 내역'), resultArray))
         }
     },
-    selectAll: async (whereJson, opts,sqlFunc) => {
-        const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
+    selectAll: async (whereJson) => {
+        const selectAllQuery = 'SELECT ticket.ticketIdx AS ticket_idx, qrcode AS qr_code, show.imageUrl AS image_url, schedule.date, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location' +
+        ' FROM ((( `show` INNER JOIN schedule ' +
+        'ON show.showIdx = schedule.showIdx) INNER JOIN seat ' +
+        'ON schedule.scheduleIdx = seat.scheduleIdx) ' +
+        'INNER JOIN ticket ON seat.seatIdx = ticket.seatIdx) ' +
+        `WHERE ticket.userIdx = ${whereJson.userIdx}`
+        const result = await db.queryParam_None(selectAllQuery)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
         if (result == 0){
-            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD+"이 없습니다."), result.map(it => convertTicket(it))))
+            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD+"이 없습니다.")))
         }
-        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD), result.map(it => convertTicket(it))))
+        let resultArray = []
+        for(var i=0; i<result.length; i++)
+        {
+            resultArray.push(result[i])
+        }
+        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL('당첨 내역'), resultArray))
     }
 }
