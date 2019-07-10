@@ -92,19 +92,19 @@ const lotteryModule = {
         {
             resultArray.push(result[i])
         }
-        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD), resultArray))
+        return result
+        //new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD), resultArray))
     },
     delete: async (whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_delete(func, TABLE_NAME, whereJson)
-        console.log(result)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_REMOVED_X(WORD)))
         }
         if (result.affectedRows == 0) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.NO_X(WORD)))
         }
-        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.REMOVED_X(WORD)))
+        return result
     },
     chooseWin: async (cacheLotteryList, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse

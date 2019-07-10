@@ -9,6 +9,7 @@ const TOKEN_EXPIRED = -3
 const TOKEN_INVALID = -2
 module.exports = {
     sign: (user) => {
+        console.log('현재 페이로드:', user)
         const payload = {
             userIdx: user.userIdx,
             email: user.email,

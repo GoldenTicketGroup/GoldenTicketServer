@@ -9,9 +9,8 @@ const authUtil = {
     //token이 있다면 jwt.verify함수를 이용해서 토큰 hash를 확인하고 토큰에 들어있는 정보 해독
     //해독한 정보는 req.decoded에 저장하고 있으며 이후 로그인 유무는 decoded가 있는지 없는지를 통해 알 수 있음
     isLoggedin: async (req, res, next) => {
-        console.log("안녕하세요")
         var token = req.headers.token
-        console.log("token-----------"+token)
+        console.log('token'+token)
         if (!token) {
             return res.json(UTIL.successFalse(CODE.BAD_REQUEST, MSG.EMPTY_TOKEN))
         }

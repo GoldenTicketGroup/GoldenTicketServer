@@ -75,14 +75,21 @@ router.delete('/', authUtil.isLoggedin, async (req, res) => {
     const lotteryIdx = req.body.lotteryIdx
     const userIdx = req.decoded.userIdx
     const isAdmined = req.decoded.isAdmined
-    console.log("req.decoded: "+req.decoded)
-    console.log("isadmined: "+isAdmined)
-    const whereJson = {
-        userIdx,
-        lotteryIdx : lotteryIdx
+    //console.log("isadmined: "+isAdmined)
+    if(isAdmined == 0){
+        res.status(200).send(Utils.successFalse(statusCode.UNAUTHORIZED, responseMessage.NO_SELECT_AUTHORITY))
     }
-    const result = await lotteryModule.delete(whereJson)
-    res.status(200).send(result.jsonData)
+    else{
+        const whereJson = {
+            lotteryIdx
+        }
+        const result = await lotteryModule.delete(whereJson)
+        if(result.isError){
+            res.status(200).send(result.jsonData)
+            return true; //조건문으로 한 번 더 감싸져 있어서 return을 한 번 더 해주어야 오류가 안난다.
+        }
+        res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.REMOVED_X('응모')))
+    }
 })
 
 module.exports = router

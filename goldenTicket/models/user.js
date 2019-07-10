@@ -51,7 +51,6 @@ const userModule = {
             userIdx: userIdx
         }
         const result = await sqlManager.db_delete(func, TABLE_NAME, whereJson)
-        console.log(result)
         if (!result) {
             return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_REMOVED_USER))
         }
@@ -74,7 +73,7 @@ const userModule = {
         const User = {
             userIdx: userResult.userIdx,
             email: userResult.email,
-            isAdmined: userResult.isAdmined
+            isAdmined : userResult.isAdmined
         }
         const token = jwt.sign(User).accessToken
         const responseJson = {
@@ -128,44 +127,3 @@ const userModule = {
     }
 }
 module.exports = userModule
-
-const signUp_test = async () => {
-    console.log('DB TEST [ USER : signUp]')
-    const result = await userModule.signUp({
-        name: '황재석',
-        email: 'dajasin245@naver.com',
-        phone: '010-9959-5668',
-        salt: '1234'
-    })
-    console.log(result)
-}
-const signIn_test = async () => {
-    console.log('DB TEST [ USER : signIn]')
-    const result = await userModule.signIn({
-        email: 'heesung6701@naver.com'
-    })
-    console.log(result)
-}
-const update_test = async () => {
-    console.log('DB TEST [ USER : update]')
-    const result = await userModule.update({
-        name: '윤희성',
-        refreshToken: '1234',
-        fcmToken: 'test'
-    }, {
-        userIdx: 10
-    })
-    console.log(result)
-}
-const withdrawal_test = async () => {
-    console.log('DB TEST [ USER : withdrawal]')
-    const result = await userModule.withdrawal(40)
-    console.log(result)
-}
-const module_test = async () => {
-    // await signUp_test()
-    await withdrawal_test()
-    // await signIn_test()
-    // await update_test()
-}
-// module_test()
