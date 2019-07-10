@@ -57,17 +57,12 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
         userIdx : decoded.userIdx
     }
     const result = await lotteryModule.selectAll(whereJson)
-    if(result.isError && result.jsonData.message == '응모 전체 조회 성공')
-    {
-        res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('응모'), filter.lotteryFilter(result.jsonData.data)))
-        return
-    }
     if(result.isError)
     {
         res.status(200).send(result.jsonData)
         return
     }
-    console.log(result.jsonData.message)
+    res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('응모'), filter.lotteryFilter(result)))
 })
 
 //티켓 응모 삭제

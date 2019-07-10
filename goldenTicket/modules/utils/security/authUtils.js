@@ -10,7 +10,6 @@ const authUtil = {
     //해독한 정보는 req.decoded에 저장하고 있으며 이후 로그인 유무는 decoded가 있는지 없는지를 통해 알 수 있음
     isLoggedin: async (req, res, next) => {
         var token = req.headers.token
-        console.log('token'+token)
         if (!token) {
             return res.json(UTIL.successFalse(CODE.BAD_REQUEST, MSG.EMPTY_TOKEN))
         }

@@ -85,7 +85,8 @@ const lotteryModule = {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
         if (result.length == 0) {
-            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.OK_NO_X(WORD), result))    
+            return result
+            //new errorMsg(true, Utils.successTrue(CODE.OK, MSG.OK_NO_X(WORD), result))    
         }
         let resultArray = []
         for(var i=0; i<result.length; i++)
