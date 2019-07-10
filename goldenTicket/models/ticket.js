@@ -31,7 +31,7 @@ module.exports = {
         return result
     },
     select: async (whereJson) => {
-        const selectDetailQuery = 'SELECT newTicket.startTime, newTicket.endTime, newTicket.ticketIdx AS ticket_idx, showIdx AS show_idx, qrcode AS qr_code, newTicket.imageUrl AS image_url, newTicket.date, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location ' +
+        const selectDetailQuery = 'SELECT newTicket.startTime, newTicket.endTime, newTicket.ticketIdx AS ticket_idx, qrcode AS qr_code, newTicket.imageUrl AS image_url, newTicket.date, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location ' +
         'FROM (SELECT ticket.ticketIdx, show.showIdx, ticket.qrcode, show.imageUrl, schedule.date, show.name, seat.seatType, seat.seatName, show.discountPrice, show.location, schedule.startTime, schedule.endTime ' +
         'FROM ((( `show` INNER JOIN schedule ' +
         'ON show.showIdx = schedule.showIdx) ' +
@@ -59,7 +59,7 @@ module.exports = {
         }
     },
     selectAll: async (whereJson) => {
-        const selectAllQuery = 'SELECT ticket.ticketIdx AS ticket_idx, qrcode AS qr_code, show.imageUrl AS image_url, schedule.date, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location' +
+        const selectAllQuery = 'SELECT ticket.ticketIdx AS ticket_idx, qrcode AS qr_code, show.imageUrl AS image_url, schedule.date, schedule.startTime, schedule.endTime, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location' +
         ' FROM ((( `show` INNER JOIN schedule ' +
         'ON show.showIdx = schedule.showIdx) INNER JOIN seat ' +
         'ON schedule.scheduleIdx = seat.scheduleIdx) ' +

@@ -125,6 +125,7 @@ const sqlManager = {
     db_delete: async (func, table, whereJson) => {
         let whereStr = makeWhereQuery(whereJson)
         const query = `DELETE FROM ${table} ${whereStr}`
+        console.log(query)
         const result = await func(query)
         if (result == null) return false
         return result

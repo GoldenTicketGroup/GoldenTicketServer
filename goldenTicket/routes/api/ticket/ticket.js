@@ -3,7 +3,10 @@ const router = express.Router()
 const upload = require('../../../config/multer')
 const ticketModule = require('../../../models/ticket')
 const authUtil = require("../../../modules/utils/security/authUtils")
+const responseMessage = require('../../../modules/utils/rest/responseMessage')
+const statusCode = require('../../../modules/utils/rest/statusCode')
 const filter = require("../../../modules/utils/filter/ticketFilter")
+const utils = require('../../../modules/utils/rest/utils')
 
 // 후순위
 // 당첨 티켓 등록
@@ -39,7 +42,8 @@ router.get('/:id', authUtil.isLoggedin, async (req, res) => {
     const result = await ticketModule.select(whereJson)
     if(result.jsonData.message == "당첨 내역 상세 조회 성공")
     {
-            filter.ticketFilter(result.jsonData.data)
+        console.log(result)
+        filter.ticketFilter(result.jsonData.data)
     }
     res.status(200).send(result.jsonData)
 })
@@ -56,7 +60,14 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
         result.jsonData.data = []
         res.status(200).send(result.jsonData)
     }
-    res.status(200).send(result.jsonData)
+    if(result.jsonData.message == "당첨 티켓 전체 조회 성공")
+    {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('당첨 티켓'), filter.ticketAllFilter(result.jsonData.data)))
+    }
+    else
+    {
+        res.status(200).send(result.jsonData)
+    }
 })
 
 // 당첨 티켓 삭제 부분은 관리자가 직접 삭제

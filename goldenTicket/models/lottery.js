@@ -26,11 +26,11 @@ const lotteryModule = {
         console.log(result3.length)
         //중복해서 응모할 수 없음
         if (result2 != 0){
-            return new errorMsg(true, Utils.successFalse(CODE.OK, MSG.ALREADY_X(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.NO_CONTENT, MSG.ALREADY_X(WORD)))
         }
         //최대 두개까지만 응모 가능
         if (result3.length == 2){
-            return new errorMsg(true, Utils.successFalse(CODE.OK, MSG.ALREADY_LOTTERY_X(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.RESET_CONTENT, MSG.ALREADY_LOTTERY_X(WORD)))
         }
         const result = await sqlManager.db_insert(func, TABLE_NAME, lottery)
         if (!result) {
@@ -54,7 +54,7 @@ const lotteryModule = {
         const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
         const condition = `SELECT * FROM lottery WHERE lotteryIdx = ${whereJson.lotteryIdx}`
         const result2 = await func(condition)
-
+        console.log(result)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
@@ -85,26 +85,27 @@ const lotteryModule = {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
         if (result.length == 0) {
-            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.OK_NO_X(WORD), result))    
+            return result
+            //new errorMsg(true, Utils.successTrue(CODE.OK, MSG.OK_NO_X(WORD), result))    
         }
         let resultArray = []
         for(var i=0; i<result.length; i++)
         {
             resultArray.push(result[i])
         }
-        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD), resultArray))
+        return result
+        //new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD), resultArray))
     },
     delete: async (whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_delete(func, TABLE_NAME, whereJson)
-        console.log(result)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_REMOVED_X(WORD)))
         }
         if (result.affectedRows == 0) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.NO_X(WORD)))
         }
-        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.REMOVED_X(WORD)))
+        return result
     },
     chooseWin: async (cacheLotteryList, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse

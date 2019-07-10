@@ -1,22 +1,5 @@
 const moment = require('moment')
 
-const timeFormatting =  (date, time) =>
-{
-    date = JSON.stringify(date).split('-').join('.').substring(1,11)
-    const dateString = `${date} ${time} `
-    const dateObject = new Date(dateString)
-    let dateMomentObject = moment(dateObject)
-    dateMomentObject = dateMomentObject.format("a hh:mm:ss MM/DD/YYYY")
-    dateMomentObject = dateMomentObject.replace('pm', "오후")
-    dateMomentObject = dateMomentObject.replace('am', "오전")
-    dateMomentObject = dateMomentObject.substring(0,8)
-    if(dateMomentObject.substring(3,4) == '0')
-    {
-        dateMomentObject = dateMomentObject.substring(0,3).concat(dateMomentObject.substring(4,8))
-    }
-    return dateMomentObject
-}
-
 const durationFormatting = (date) =>
 {
     const dateString = `${date}`
@@ -31,26 +14,19 @@ const stringifyDuration = (startDate, endDate) =>
     return startDate.substring(0,10).concat(" ~ ", endDate.substring(0,10))
 }
 
+
 const showFilter = {
     detailShowFilter : (showData) => {
-    console.log(showData)
-    const duration = stringifyDuration(durationFormatting(showData[0].startDate), durationFormatting(showData[0].endDate))
-    const schedule = showData.map((e) => {
-            return {
-                schedule_idx: e.scheduleIdx,
-                time: timeFormatting(e.date, e.startTime),
-                draw_available: e.drawAvailable
-            }
-        })
-    return {
-        show_idx: showData[0].showIdx,
-        image_url: showData[0].imageUrl,
-        name: showData[0].name,
-        location: showData[0].location,
+    const duration = stringifyDuration(durationFormatting(showData.startDate), durationFormatting(showData.endDate))
+        return {
+        show_idx: showData.showIdx,
+        image_url: showData.imageUrl,
+        name: showData.name,
+        location: showData.location,
         duration: duration,
-        original_price: showData[0].originalPrice,
-        discount_price: showData[0].discountPrice,
-        schedule : schedule
+        original_price: showData.originalPrice,
+        discount_price: showData.discountPrice,
+        background_image: showData.backgroundImage,
         }
     },
     homeAllShowInfo : (showData) => {
