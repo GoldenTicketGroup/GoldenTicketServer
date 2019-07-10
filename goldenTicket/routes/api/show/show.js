@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const scheduleModule = require('../../../models/schedule')
+const showModule = require('../../../models/show')
 const artistModule = require('../../../models/artist')
 const posterModule = require('../../../models/poster')
 const likeModule = require('../../../models/like')
@@ -10,6 +11,7 @@ const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
 const showFilter = require('../../../modules/utils/filter/showFilter')
+const scheduleFilter = require('../../../modules/utils/filter/scheduleFilter')
 const db = require('../../../modules/utils/db/pool')
 
 //홈 화면 공연 리스트 조회
@@ -34,6 +36,7 @@ router.get('/detail/:id', async(req, res) => {
     const whereJson = {
         showIdx : parseInt(showIdx)
     }
+    const showResult = await showModule.select(whereJson)
     const opts = {
         joinJson: {
             table: "`show`",
@@ -41,19 +44,14 @@ router.get('/detail/:id', async(req, res) => {
             type: "LEFT"
         }
     }
-    const showResult = await scheduleModule.select(whereJson)
-    console.log(showResult)
-    const selectDetailQuery= "SELECT * FROM schedule LEFT JOIN `show` " +
+    const selectScheduleResult= "SELECT * FROM schedule LEFT JOIN `show` " +
     `USING (showIdx) WHERE showIdx = ${showIdx} AND date = CURDATE()`
-    let result = await db.queryParam_None(selectDetailQuery)
-    if(result.length == 0)
-    {
-        res.status(200).send(utils.successFalse(statusCode.NOT_FOUND, responseMessage.NO_X('공연')))
-        return
-    }
-    result = showFilter.detailShowFilter(result)
+    let scheduleResult = await db.queryParam_None(selectScheduleResult)
+    scheduleResult = scheduleFilter.detailScheduleFilter(scheduleResult)
+    let result = showFilter.detailShowFilter(showResult)
     const artistResult = await artistModule.selectAll(whereJson, opts)
     const posterResult = await posterModule.selectAll(whereJson, opts)
+    result.schedule = scheduleResult
     result.artist = artistResult
     result.poster = posterResult
     if(result.isError || artistResult.isError || posterResult.isError || artistResult.length==0 || posterResult.length==0)

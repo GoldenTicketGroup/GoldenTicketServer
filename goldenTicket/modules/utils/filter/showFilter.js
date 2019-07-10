@@ -41,29 +41,32 @@ const stringifyDuration = (startDate, endDate) =>
     return startDate.substring(0,10).concat(" ~ ", endDate.substring(0,10))
 }
 
+
 const showFilter = {
     detailShowFilter : (showData) => {
-    const duration = stringifyDuration(durationFormatting(showData[0].startDate), durationFormatting(showData[0].endDate))
-    const showTime = scheduleTimeFormatting(showData[0].date, showData[0].startTime)
-    console.log(showTime)
-    console.log(moment().format('hh:mm:ss'))
-    const schedule = showData.map((e) => {
-            return {
-                schedule_idx: e.scheduleIdx,
-                time: timeFormatting(e.date, e.startTime),
-                draw_available: e.drawAvailable
-            }
-        })
-    return {
-        show_idx: showData[0].showIdx,
-        image_url: showData[0].imageUrl,
-        name: showData[0].name,
-        location: showData[0].location,
+    const duration = stringifyDuration(durationFormatting(showData.startDate), durationFormatting(showData.endDate))
+    // const schedule = showData.map((e) => {
+    //     const lotteryStartTime = (convertToSeconds('10:00:00'))
+    //     const currentTime = (convertToSeconds(moment().format('hh:mm:ss')))
+    //     const lotteryEndTime = (convertToSeconds(e.startTime)-10800)
+    //     if(lotteryStartTime <= currentTime && currentTime <= lotteryEndTime)
+    //     {
+    //         return {
+    //             schedule_idx: e.scheduleIdx,
+    //             time: timeFormatting(e.date, e.startTime),
+    //             draw_available: e.drawAvailable
+    //         }
+    //     }
+    //     })
+        return {
+        show_idx: showData.showIdx,
+        image_url: showData.imageUrl,
+        name: showData.name,
+        location: showData.location,
         duration: duration,
-        original_price: showData[0].originalPrice,
-        discount_price: showData[0].discountPrice,
-        background_image: showData[0].backgroundImage,
-        schedule : schedule
+        original_price: showData.originalPrice,
+        discount_price: showData.discountPrice,
+        background_image: showData.backgroundImage,
         }
     },
     homeAllShowInfo : (showData) => {

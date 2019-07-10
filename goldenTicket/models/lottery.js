@@ -54,7 +54,7 @@ const lotteryModule = {
         const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
         const condition = `SELECT * FROM lottery WHERE lotteryIdx = ${whereJson.lotteryIdx}`
         const result2 = await func(condition)
-
+        console.log(result)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
