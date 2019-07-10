@@ -61,11 +61,11 @@ router.get('/detail/:id', authUtil.isLoggedin, async(req, res) => {
     {
         if(showLikeResult.length == 0)
         {
-            result.isLiked = 0
+            result.is_liked = 0
         }
         else
         {
-            result.isLiked = 1
+            result.is_liked = 1
         }
         scheduleResult = scheduleFilter.detailScheduleFilter(scheduleResult)
         result.schedule = scheduleResult
