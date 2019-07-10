@@ -50,13 +50,13 @@ const lotteryModule = {
         return result
     },
     select: async (whereJson, sqlFunc) => {
-        const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson)
-        // console.log(result[0].state)
-        // const result2 = await func(condition)
-        // const stateNum = `SELECT state FROM lottery WHERE lotteryIdx = ${whereJson.lotteryIdx}`
-        // const stateResult = await func(stateNum)
-
+        const selectQuery = 'SELECT ticket.ticketIdx, win.state '+
+        'FROM (SELECT * FROM lottery '+
+        `WHERE lottery.state = 1 AND lottery.lotteryIdx=${whereJson.lotteryIdx}) win, ticket `+
+        'WHERE win.userIdx=ticket.userIdx AND win.scheduleIdx=ticket.scheduleIdx'
+        const result = await db.queryParam_None(selectQuery)
+        // const func = sqlFunc || db.queryParam_Parse
+        // const result = await sqlManager.db_select(func, TABLE_NAME, whereJson)
         if (result.length == undefined) { 
             console.log('서버 에러')
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))

@@ -51,7 +51,7 @@ router.get('/:id', authUtil.isLoggedin, async (req, res) => {
         return
     } else if(result[0].state == 1) { //당첨 됐을 때
         console.log('당첨 됐을 때')
-        res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X('당첨'), filter.lotteryFilter(result)))
+        res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X('당첨'), result))
         return
     }
 })
