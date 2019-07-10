@@ -30,7 +30,7 @@ const lotteryModule = {
         }
         //최대 두개까지만 응모 가능
         if (result3.length == 2){
-            return new errorMsg(true, Utils.successFalse(CODE.OK, MSG.ALREADY_LOTTERY_X(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.RESET_CONTENT, MSG.ALREADY_LOTTERY_X(WORD)))
         }
         const result = await sqlManager.db_insert(func, TABLE_NAME, lottery)
         if (!result) {
@@ -49,6 +49,7 @@ const lotteryModule = {
         }
         return result
     },
+
     select: async (whereJson, sqlFunc) => {
         const selectQuery = 'SELECT ticket.ticketIdx, win.state '+
         'FROM (SELECT * FROM lottery '+
