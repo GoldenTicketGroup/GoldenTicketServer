@@ -16,6 +16,16 @@ const timeFormatting =  (date, time) =>
     }
     return dateMomentObject
 }
+const scheduleTimeFormatting =  (date, time) =>
+{
+    date = JSON.stringify(date).split('-').join('.').substring(1,11)
+    const dateString = `${date} ${time} `
+    const dateObject = new Date(dateString)
+    let dateMomentObject = moment(dateObject)
+    dateMomentObject = dateMomentObject.format("hh:mm:ss a MM/DD/YYYY")
+    dateMomentObject = dateMomentObject.substring(0,8)
+    return dateMomentObject
+}
 
 const durationFormatting = (date) =>
 {
@@ -33,8 +43,10 @@ const stringifyDuration = (startDate, endDate) =>
 
 const showFilter = {
     detailShowFilter : (showData) => {
-    console.log(showData)
     const duration = stringifyDuration(durationFormatting(showData[0].startDate), durationFormatting(showData[0].endDate))
+    const showTime = scheduleTimeFormatting(showData[0].date, showData[0].startTime)
+    console.log(showTime)
+    console.log(moment().format('hh:mm:ss'))
     const schedule = showData.map((e) => {
             return {
                 schedule_idx: e.scheduleIdx,

@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const showModule = require('../../../models/show')
 const scheduleModule = require('../../../models/schedule')
 const artistModule = require('../../../models/artist')
 const posterModule = require('../../../models/poster')
@@ -16,7 +15,7 @@ const db = require('../../../modules/utils/db/pool')
 //홈 화면 공연 리스트 조회
 router.get('/home', async(req, res) => {
     const selectHomeQuery = 'SELECT * FROM schedule LEFT JOIN `show` '
-    + 'USING (showIdx) WHERE date = CURDATE()+1 ORDER BY showIdx ASC'
+    + 'USING (showIdx) WHERE date = CURDATE() ORDER BY showIdx ASC'
     let result = await db.queryParam_None(selectHomeQuery);
     if(result.isError)
     { 
@@ -42,7 +41,11 @@ router.get('/detail/:id', async(req, res) => {
             type: "LEFT"
         }
     }
-    let result = await scheduleModule.getList(whereJson, opts)
+    const showResult = await scheduleModule.select(whereJson)
+    console.log(showResult)
+    const selectDetailQuery= "SELECT * FROM schedule LEFT JOIN `show` " +
+    `USING (showIdx) WHERE showIdx = ${showIdx} AND date = CURDATE()`
+    let result = await db.queryParam_None(selectDetailQuery)
     if(result.length == 0)
     {
         res.status(200).send(utils.successFalse(statusCode.NOT_FOUND, responseMessage.NO_X('공연')))
