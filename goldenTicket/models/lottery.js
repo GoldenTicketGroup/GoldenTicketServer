@@ -49,26 +49,29 @@ const lotteryModule = {
         }
         return result
     },
-    select: async (whereJson, opts, sqlFunc) => {
-        const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
-        const condition = `SELECT * FROM lottery WHERE lotteryIdx = ${whereJson.lotteryIdx}`
-        const result2 = await func(condition)
-        console.log(result)
-        if (result.length == undefined) {
+
+    select: async (whereJson, sqlFunc) => {
+        const selectQuery = 'SELECT ticket.ticketIdx, win.state '+
+        'FROM (SELECT * FROM lottery '+
+        `WHERE lottery.userIdx = ${whereJson.userIdx} AND lottery.lotteryIdx = ${whereJson.lotteryIdx}) win, ticket `+
+        'WHERE win.userIdx=ticket.userIdx AND win.scheduleIdx=ticket.scheduleIdx'
+        const result = await db.queryParam_None(selectQuery)
+        //애초에 응모하지 않은 티켓을 찾기 위한 쿼리
+        const xLotteryQuery = 'SELECT * FROM lottery '+
+        `WHERE lottery.userIdx = ${whereJson.userIdx} AND lottery.lotteryIdx = ${whereJson.lotteryIdx}`
+        const subResult = await db.queryParam_None(xLotteryQuery)
+        if (result.length == undefined) { 
+            console.log('서버 에러')
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
-        if (result2.length == 0) { //존재하지 않는 티켓을 조회했을 때
-            if (result.length == 0) {
-                return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_X(WORD)))
+        if(result == 0) {
+            if(subResult == 0){
+                console.log('존재하지 않는 응모티켓 조회')
+                return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.FAIL_READ_X(WORD)))
             }
         }
-        if (result2.length) { //존재하는 티켓이지만 당첨되지 않은 티켓을 조회했을 때
-            if (result.length == 0) {
-                return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.OK_NO_X(WORD)))
-            }
-            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X(WORD), convertLottery(result[0])))
-        }
+        console.log("당첨 된 응모티켓 조회")
+        return result
     },
     selectAll: async (whereJson) => {
         const selectAllQuery = 'SELECT * ' +
