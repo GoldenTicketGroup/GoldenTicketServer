@@ -18,19 +18,6 @@ const stringifyDuration = (startDate, endDate) =>
 const showFilter = {
     detailShowFilter : (showData) => {
     const duration = stringifyDuration(durationFormatting(showData.startDate), durationFormatting(showData.endDate))
-    // const schedule = showData.map((e) => {
-    //     const lotteryStartTime = (convertToSeconds('10:00:00'))
-    //     const currentTime = (convertToSeconds(moment().format('hh:mm:ss')))
-    //     const lotteryEndTime = (convertToSeconds(e.startTime)-10800)
-    //     if(lotteryStartTime <= currentTime && currentTime <= lotteryEndTime)
-    //     {
-    //         return {
-    //             schedule_idx: e.scheduleIdx,
-    //             time: timeFormatting(e.date, e.startTime),
-    //             draw_available: e.drawAvailable
-    //         }
-    //     }
-    //     })
         return {
         show_idx: showData.showIdx,
         image_url: showData.imageUrl,

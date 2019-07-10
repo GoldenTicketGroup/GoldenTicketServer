@@ -44,22 +44,22 @@ router.get('/detail/:id', async(req, res) => {
             type: "LEFT"
         }
     }
-    const selectScheduleResult= "SELECT * FROM schedule LEFT JOIN `show` " +
+    const selectScheduleQuery= "SELECT * FROM schedule LEFT JOIN `show` " +
     `USING (showIdx) WHERE showIdx = ${showIdx} AND date = CURDATE()`
-    let scheduleResult = await db.queryParam_None(selectScheduleResult)
+    let scheduleResult = await db.queryParam_None(selectScheduleQuery)
     scheduleResult = scheduleFilter.detailScheduleFilter(scheduleResult)
     let result = showFilter.detailShowFilter(showResult)
     const artistResult = await artistModule.selectAll(whereJson, opts)
     const posterResult = await posterModule.selectAll(whereJson, opts)
-    result.schedule = scheduleResult
-    result.artist = artistResult
-    result.poster = posterResult
-    if(result.isError || artistResult.isError || posterResult.isError || artistResult.length==0 || posterResult.length==0)
+    if(showResult.isError || scheduleResult.isError || artistResult.isError || posterResult.isError || artistResult.length==0 || posterResult.length==0)
     {
         res.status(200).send(utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_READ_X('공연')))
     }
     else
     {
+        result.schedule = scheduleResult
+        result.artist = artistResult
+        result.poster = posterResult
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
     }
 })
