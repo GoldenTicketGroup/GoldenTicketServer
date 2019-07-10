@@ -9,9 +9,11 @@ const TOKEN_EXPIRED = -3
 const TOKEN_INVALID = -2
 module.exports = {
     sign: (user) => {
+        console.log('현재 페이로드:', user)
         const payload = {
             userIdx: user.userIdx,
-            email: user.email
+            email: user.email,
+            isAdmined: user.isAdmined
         }
         const result = {
             accessToken: jwt.sign(payload, secretOrPrivateKey, options),
@@ -59,7 +61,8 @@ module.exports = {
     refresh: (user) => {
         const payload = {
             userIdx: user.userIdx,
-            name: user.name
+            name: user.name,
+            isAdmined: user.isAdmined
         }
         return jwt.sign(payload, secretOrPrivateKey, options);
     },

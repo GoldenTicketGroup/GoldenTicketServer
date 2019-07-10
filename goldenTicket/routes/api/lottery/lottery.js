@@ -57,29 +57,34 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
         userIdx : decoded.userIdx
     }
     const result = await lotteryModule.selectAll(whereJson)
-    if(result.isError && result.jsonData.message == '응모 전체 조회 성공')
-    {
-        res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('응모'), filter.lotteryFilter(result.jsonData.data)))
-        return
-    }
     if(result.isError)
     {
         res.status(200).send(result.jsonData)
         return
     }
-    console.log(result.jsonData.message)
+    res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('응모'), filter.lotteryFilter(result)))
 })
 
 //티켓 응모 삭제
-router.delete('/:id', authUtil.isLoggedin, async (req, res) => {
-    const lotteryIdx = req.params.id
-    const decoded = req.decoded
-    const whereJson = {
-        userIdx : decoded.userIdx,
-        lotteryIdx : lotteryIdx
+router.delete('/', authUtil.isLoggedin, async (req, res) => {
+    const lotteryIdx = req.body.lotteryIdx
+    const userIdx = req.decoded.userIdx
+    const isAdmined = req.decoded.isAdmined
+    //console.log("isadmined: "+isAdmined)
+    if(isAdmined == 0){
+        res.status(200).send(Utils.successFalse(statusCode.UNAUTHORIZED, responseMessage.NO_SELECT_AUTHORITY))
     }
-    const result = await lotteryModule.delete(whereJson)
-    res.status(200).send(result.jsonData)
+    else{
+        const whereJson = {
+            lotteryIdx
+        }
+        const result = await lotteryModule.delete(whereJson)
+        if(result.isError){
+            res.status(200).send(result.jsonData)
+            return true; //조건문으로 한 번 더 감싸져 있어서 return을 한 번 더 해주어야 오류가 안난다.
+        }
+        res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.REMOVED_X('응모')))
+    }
 })
 
 module.exports = router
