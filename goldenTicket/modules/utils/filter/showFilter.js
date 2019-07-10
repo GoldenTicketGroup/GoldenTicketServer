@@ -1,32 +1,5 @@
 const moment = require('moment')
 
-const timeFormatting =  (date, time) =>
-{
-    date = JSON.stringify(date).split('-').join('.').substring(1,11)
-    const dateString = `${date} ${time} `
-    const dateObject = new Date(dateString)
-    let dateMomentObject = moment(dateObject)
-    dateMomentObject = dateMomentObject.format("a hh:mm:ss MM/DD/YYYY")
-    dateMomentObject = dateMomentObject.replace('pm', "오후")
-    dateMomentObject = dateMomentObject.replace('am', "오전")
-    dateMomentObject = dateMomentObject.substring(0,8)
-    if(dateMomentObject.substring(3,4) == '0')
-    {
-        dateMomentObject = dateMomentObject.substring(0,3).concat(dateMomentObject.substring(4,8))
-    }
-    return dateMomentObject
-}
-const scheduleTimeFormatting =  (date, time) =>
-{
-    date = JSON.stringify(date).split('-').join('.').substring(1,11)
-    const dateString = `${date} ${time} `
-    const dateObject = new Date(dateString)
-    let dateMomentObject = moment(dateObject)
-    dateMomentObject = dateMomentObject.format("hh:mm:ss a MM/DD/YYYY")
-    dateMomentObject = dateMomentObject.substring(0,8)
-    return dateMomentObject
-}
-
 const durationFormatting = (date) =>
 {
     const dateString = `${date}`
