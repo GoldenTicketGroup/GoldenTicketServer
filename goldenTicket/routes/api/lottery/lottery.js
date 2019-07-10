@@ -37,17 +37,23 @@ router.get('/:id', authUtil.isLoggedin, async (req, res) => {
     const decoded = req.decoded
     const whereJson = {
         userIdx : decoded.userIdx,
-        lotteryIdx : lotteryIdx
+        lotteryIdx //: parseInt(lotteryIdx)
     }
-    const opts = {
-        joinJson: {
-            table: `schedule`,
-            foreignKey: `scheduleIdx`,
-            type: "LEFT"
-        }
+    const result = await lotteryModule.select(whereJson)
+    if(result.isError){
+        console.log('에러났을 때')
+        res.status(200).send(result.jsonData)
+        return
     }
-    const result = await lotteryModule.select(whereJson, opts)
-    res.status(200).send(result.jsonData)
+    if(result[0].state == 0){ //당첨 안 됐을 떄
+        console.log('당첨 안 됐을 때')
+        res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.OK_NO_X('당첨'), result))
+        return
+    } else if(result[0].state == 1) { //당첨 됐을 때
+        console.log('당첨 됐을 때')
+        res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X('당첨'), filter.lotteryFilter(result)))
+        return
+    }
 })
 
 // 티켓 응모 리스트 조회
