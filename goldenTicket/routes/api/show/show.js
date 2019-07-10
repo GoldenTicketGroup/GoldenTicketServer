@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const scheduleModule = require('../../../models/schedule')
 const showModule = require('../../../models/show')
 const artistModule = require('../../../models/artist')
 const posterModule = require('../../../models/poster')
@@ -31,7 +30,8 @@ router.get('/home', async(req, res) => {
 })
 
 //공연 상세 조회
-router.get('/detail/:id', async(req, res) => {
+router.get('/detail/:id', authUtil.isLoggedin, async(req, res) => {
+    const userIdx = req.decoded.userIdx
     const showIdx = req.params.id
     const whereJson = {
         showIdx : parseInt(showIdx)
@@ -47,16 +47,27 @@ router.get('/detail/:id', async(req, res) => {
     const selectScheduleQuery= "SELECT * FROM schedule LEFT JOIN `show` " +
     `USING (showIdx) WHERE showIdx = ${showIdx} AND date = CURDATE()`
     let scheduleResult = await db.queryParam_None(selectScheduleQuery)
-    scheduleResult = scheduleFilter.detailScheduleFilter(scheduleResult)
     let result = showFilter.detailShowFilter(showResult)
     const artistResult = await artistModule.selectAll(whereJson, opts)
     const posterResult = await posterModule.selectAll(whereJson, opts)
-    if(showResult.isError || scheduleResult.isError || artistResult.isError || posterResult.isError || artistResult.length==0 || posterResult.length==0)
+    const showLikeQuery= "SELECT * FROM `like` " +
+    `WHERE showIdx = ${showIdx} AND userIdx = ${userIdx}`
+    let showLikeResult = await db.queryParam_None(showLikeQuery)
+    if(showResult.isError || !scheduleResult || !showLikeResult || artistResult.isError || posterResult.isError || artistResult.length==0 || posterResult.length==0)
     {
         res.status(200).send(utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_READ_X('공연')))
     }
     else
     {
+        if(showLikeResult.length == 0)
+        {
+            result.isLiked = 0
+        }
+        else
+        {
+            result.isLiked = 1
+        }
+        scheduleResult = scheduleFilter.detailScheduleFilter(scheduleResult)
         result.schedule = scheduleResult
         result.artist = artistResult
         result.poster = posterResult
