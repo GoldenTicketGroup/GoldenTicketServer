@@ -45,15 +45,13 @@ router.get('/:id', authUtil.isLoggedin, async (req, res) => {
         res.status(200).send(result.jsonData)
         return
     }
-    if(result[0].state == 0){ //당첨 안 됐을 떄
-        console.log('당첨 안 됐을 때')
+    if(result == 0){
+        console.log('당첨이 안 된 응모티켓 조회22')
         res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.OK_NO_X('당첨'), result))
         return
-    } else if(result[0].state == 1) { //당첨 됐을 때
-        console.log('당첨 됐을 때')
-        res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X('당첨'), result))
-        return
     }
+    console.log("당첨 된 응모티켓 조회22")
+    res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.READ_X('당첨'), result))
 })
 
 // 티켓 응모 리스트 조회

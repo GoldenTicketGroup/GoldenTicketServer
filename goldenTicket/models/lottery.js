@@ -52,20 +52,24 @@ const lotteryModule = {
     select: async (whereJson, sqlFunc) => {
         const selectQuery = 'SELECT ticket.ticketIdx, win.state '+
         'FROM (SELECT * FROM lottery '+
-        `WHERE lottery.state = 1 AND lottery.lotteryIdx=${whereJson.lotteryIdx}) win, ticket `+
+        `WHERE lottery.userIdx = ${whereJson.userIdx} AND lottery.lotteryIdx = ${whereJson.lotteryIdx}) win, ticket `+
         'WHERE win.userIdx=ticket.userIdx AND win.scheduleIdx=ticket.scheduleIdx'
         const result = await db.queryParam_None(selectQuery)
-        // const func = sqlFunc || db.queryParam_Parse
-        // const result = await sqlManager.db_select(func, TABLE_NAME, whereJson)
+        //애초에 응모하지 않은 티켓을 찾기 위한 쿼리
+        const xLotteryQuery = 'SELECT * FROM lottery '+
+        `WHERE lottery.userIdx = ${whereJson.userIdx} AND lottery.lotteryIdx = ${whereJson.lotteryIdx}`
+        const subResult = await db.queryParam_None(xLotteryQuery)
         if (result.length == undefined) { 
             console.log('서버 에러')
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
         if(result == 0) {
-            console.log('존재하지 않는 응모티켓 조회')
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
+            if(subResult == 0){
+                console.log('존재하지 않는 응모티켓 조회')
+                return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.FAIL_READ_X(WORD)))
+            }
         }
-        console.log("<응모한 티켓 조회함>")
+        console.log("당첨 된 응모티켓 조회")
         return result
     },
     selectAll: async (whereJson) => {
