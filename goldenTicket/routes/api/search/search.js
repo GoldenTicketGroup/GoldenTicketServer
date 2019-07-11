@@ -22,7 +22,7 @@ router.post('/text', async (req, res) => {
         },
     }
     const opts = {
-        fields: `showIdx, imageUrl, name`
+        fields: `showIdx, detailImage, name`
     }
     let result = await showModule.getShowList(whereJson, opts)
     if(result.isError && result.jsonData.status == 404)

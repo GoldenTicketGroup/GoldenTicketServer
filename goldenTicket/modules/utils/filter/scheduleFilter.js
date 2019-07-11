@@ -30,6 +30,7 @@ const scheduleFilter = {
             const lotteryStartTime = (convertToSeconds('10:00:00'))
             const currentTime = (convertToSeconds(moment().format('hh:mm:ss')))
             const lotteryEndTime = (convertToSeconds(e.startTime)-10800)
+            console.log(lotteryStartTime, currentTime, lotteryEndTime)
             if(lotteryStartTime <= currentTime && currentTime <= lotteryEndTime)
             {
                 return {
