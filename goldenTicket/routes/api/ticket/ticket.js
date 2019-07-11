@@ -31,28 +31,6 @@ router.put('/', async (req, res) => {
     res.status(200).send("test2")
 })
 
-// 지금까지 당첨 티켓 상세 조회(빨강)
-router.get('/:id', authUtil.isLoggedin, async (req, res) => {
-    const ticketIdx = req.params.id
-    const decoded = req.decoded
-    const whereJson = {
-        userIdx : decoded.userIdx,
-        ticketIdx : ticketIdx
-    }
-    const result = await ticketModule.select(whereJson)
-    if(result.isError){
-        res.status(200).send(result.jsonData)
-    }
-    if(result.length == 0){
-        res.status(200).send(utils.successTrue(statusCode.NO_CONTENT, responseMessage.OK_NO_X('당첨'), result[0]))
-    }
-    if(result.is_paid == 0){ //당첨됐지만 결제를 하지 않은 상태
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('당첨 내역(미결제)'), filter.ticketFilter(result)))
-    } else if(result.is_paid == 1){ //당첨됐지만 결제 완료한 상태
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('당첨 내역(결제완료)'), filter.ticketFilter(result)))
-    }
-})
-
 // 오늘 당첨 티켓 상세 조회
 router.get('/detail', authUtil.isLoggedin, async (req, res) => {
     const decoded = req.decoded
@@ -69,6 +47,28 @@ router.get('/detail', authUtil.isLoggedin, async (req, res) => {
     }
     //console.log('당첨 됐을 때2222')
     //console.log(result.is_paid)
+    if(result.is_paid == 0){ //당첨됐지만 결제를 하지 않은 상태
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('당첨 내역(미결제)'), filter.ticketFilter(result)))
+    } else if(result.is_paid == 1){ //당첨됐지만 결제 완료한 상태
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('당첨 내역(결제완료)'), filter.ticketFilter(result)))
+    }
+})
+
+// 지금까지 당첨 티켓 상세 조회(빨강)
+router.get('/:id', authUtil.isLoggedin, async (req, res) => {
+    const ticketIdx = req.params.id
+    const decoded = req.decoded
+    const whereJson = {
+        userIdx : decoded.userIdx,
+        ticketIdx : ticketIdx
+    }
+    const result = await ticketModule.select(whereJson)
+    if(result.isError){
+        res.status(200).send(result.jsonData)
+    }
+    if(result.length == 0){
+        res.status(200).send(utils.successTrue(statusCode.NO_CONTENT, responseMessage.OK_NO_X('당첨'), result[0]))
+    }
     if(result.is_paid == 0){ //당첨됐지만 결제를 하지 않은 상태
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('당첨 내역(미결제)'), filter.ticketFilter(result)))
     } else if(result.is_paid == 1){ //당첨됐지만 결제 완료한 상태
