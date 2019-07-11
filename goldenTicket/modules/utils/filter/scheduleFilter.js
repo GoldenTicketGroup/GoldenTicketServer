@@ -28,9 +28,19 @@ const scheduleFilter = {
         console.log(showData)
         const schedule = showData.map((e) => {
             const lotteryStartTime = (convertToSeconds('10:00:00'))
-            const currentTime = (convertToSeconds(moment().format('hh:mm:ss')))
+            let currentTime = moment().format('a hh:mm:ss')
+            if(currentTime.substring(0,1) == 'p')
+            {
+                currentTime = (parseInt(currentTime.substring(3,5)) + 12).toString().concat(currentTime.substring(5.11))
+            }
+            else
+            {
+                currentTime = currentTime.substring(3,11)
+            }
+
             const lotteryEndTime = (convertToSeconds(e.startTime)-10800)
-            console.log(lotteryStartTime, currentTime, lotteryEndTime)
+            currentTime = convertToSeconds(currentTime)
+            console.log(currentTime)
             if(lotteryStartTime <= currentTime && currentTime <= lotteryEndTime)
             {
                 return {
