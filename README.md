@@ -123,7 +123,7 @@
 
 ## 개발자
 
-- **윤희성** - [HeeSungee(**samaungMan**)](https://github.com/heesung6701) 
+- **윤희성** - [HeeSungee(**samungMan**)](https://github.com/heesung6701) 
 - **최민경** - [MingKyonee](https://github.com/dquoupb) 
 - **황재석** - [JaeSeogie*>_<*](https://github.com/jaesukhwang95)
 
