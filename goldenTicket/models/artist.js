@@ -9,7 +9,6 @@ const WORD = '공연'
 const TABLE_NAME = sqlManager.TABLE_ARTIST
 
 const artistInfo = (artistData) => {
-    console.log( artistData )
     return {
         artist_idx: artistData.artistIdx,
         name: artistData.artistName,

@@ -9,7 +9,7 @@ const utils = require('../../../modules/utils/rest/utils')
 
 //공연 좋아요 등록
 router.post('/', authUtil.isLoggedin , async(req, res) => {
-    const showIdx = req.body.showIdx
+    const showIdx = req.body.show_idx
     const userIdx = req.decoded.userIdx
     likeResult = await likeModule.like(showIdx, userIdx)
     if(!likeResult.isError)
@@ -23,7 +23,7 @@ router.post('/', authUtil.isLoggedin , async(req, res) => {
 
 //공연 좋아요 삭제
 router.delete('/', authUtil.isLoggedin , async(req, res) => {
-    const showIdx = req.body.showIdx
+    const showIdx = req.body.show_idx
     const userIdx = req.decoded.userIdx
     unlikeResult = await likeModule.unlike(showIdx, userIdx)
     if(!unlikeResult.isError)

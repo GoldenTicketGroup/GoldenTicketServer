@@ -11,7 +11,7 @@ const TABLE_LIKE = '`like`'
 const TABLE_USER = 'user'
 const TABLE_POST = 'post'
 const TABLE_CARD = 'card'
-const TABLE_HASHTAG = 'hashtag'
+const TABLE_HASHTAG = 'hashTag'
 const TABLE_SHOW_CONTENT = 'showContent'
 const TABLE_ARTIST = 'artist'
 const TABLE_SHOW_POSTER = 'showPoster'
@@ -93,6 +93,10 @@ const sqlManager = {
         console.log(query)
         const result = await func(query)
         if (result == null) return false
+        // for(var key in result)
+        // {
+        //     console.log("attributes: " + key + ", value:" + result[key])
+        // }
         return result
     },
     db_insert: async (func, table, jsonData) => {
@@ -125,6 +129,7 @@ const sqlManager = {
     db_delete: async (func, table, whereJson) => {
         let whereStr = makeWhereQuery(whereJson)
         const query = `DELETE FROM ${table} ${whereStr}`
+        console.log(query)
         const result = await func(query)
         if (result == null) return false
         return result
