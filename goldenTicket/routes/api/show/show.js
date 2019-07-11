@@ -34,7 +34,8 @@ router.get('/detail/:id', authUtil.isLoggedin, async(req, res) => {
     const userIdx = req.decoded.userIdx
     const showIdx = req.params.id
     const whereJson = {
-        showIdx : parseInt(showIdx)
+        showIdx : parseInt(showIdx),
+        //userIdx
     }
     const showResult = await showModule.select(whereJson)
     const opts = {
@@ -44,6 +45,9 @@ router.get('/detail/:id', authUtil.isLoggedin, async(req, res) => {
             type: "LEFT"
         }
     }
+    const MyQuery = `SELECT * FROM lottery WHERE userIdx = ${userIdx}`
+    const MyResult = await db.queryParam_None(MyQuery)
+    
     const selectScheduleQuery= "SELECT * FROM schedule LEFT JOIN `show` " +
     `USING (showIdx) WHERE showIdx = ${showIdx} AND date = CURDATE()`
     let scheduleResult = await db.queryParam_None(selectScheduleQuery)
@@ -53,6 +57,21 @@ router.get('/detail/:id', authUtil.isLoggedin, async(req, res) => {
     const showLikeQuery= "SELECT * FROM `like` " +
     `WHERE showIdx = ${showIdx} AND userIdx = ${userIdx}`
     let showLikeResult = await db.queryParam_None(showLikeQuery)
+    console.log(scheduleResult.schedule.schedule_idx)
+    console.log('안녕하세요')
+    console.log('gdgd'+MyResult.length)
+    if(MyResult.length == 2){
+        console.log('이미 두 번 응모함. 응모가 불가능합니다.')
+    }
+    else if(MyResult.length == 1){
+        //if(scheduleResult)
+    }
+    else if(MyResult.length == 0){
+        console.log('응모가능')
+    }
+
+
+
     if(showResult.isError || !scheduleResult || !showLikeResult || artistResult.isError || posterResult.isError || artistResult.length==0 || posterResult.length==0)
     {
         res.status(200).send(utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_READ_X('공연')))
