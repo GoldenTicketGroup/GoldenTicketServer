@@ -5,7 +5,7 @@
 * **API** - (https://github.com/GoldenTicketGroup/GoldenTicketServer/wiki)
 
 ## 전반적인 플로우
-https://sopt24server.s3.ap-northeast-2.amazonaws.com/flow.png
+(https://sopt24server.s3.ap-northeast-2.amazonaws.com/flow.png)
 
 ## 의존성
 
@@ -31,7 +31,7 @@ https://sopt24server.s3.ap-northeast-2.amazonaws.com/flow.png
   }
 ```
 ## architecture
-https://sopt24server.s3.ap-northeast-2.amazonaws.com/architecture.png
+(https://sopt24server.s3.ap-northeast-2.amazonaws.com/architecture.png)
  
 ## 시작하기
 
