@@ -293,6 +293,18 @@ const scheduler = {
         for (const schedule in cronList) {
             schedule.destroy()
         }
+    },
+    forceReady2Choose: (date) => {
+        if(!date) return false
+        taskReady2Choose(date)
+    },
+    forceSaveCache: (scheduleIdx) => {
+        if(!scheduleIdx) return false
+        taskSaveCache(scheduleIdx)
+    },
+    forceChooseWin: (scheduleIdx) => {
+        if(!scheduleIdx) return false
+        taskChooseWin(scheduleIdx)
     }
 }
 module.exports = scheduler
