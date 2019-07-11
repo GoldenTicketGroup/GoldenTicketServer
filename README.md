@@ -7,6 +7,8 @@
 ## 전반적인 플로우
 ![플로우](https://sopt24server.s3.ap-northeast-2.amazonaws.com/flow.png)
 
+## ERD 모델
+![ERD](https://sopt24server.s3.ap-northeast-2.amazonaws.com/ERD.png)
 ## 의존성
 
 ```
