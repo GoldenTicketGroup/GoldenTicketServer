@@ -16,7 +16,6 @@ router.post('/', authUtil.isLoggedin, async (req, res) => {
         scheduleIdx : scheduleIdx
     }
     const result = await lotteryModule.apply(whereJson)
-    console.log(result)
     if(result.isError)
     {
         res.status(200).send(result.jsonData)   

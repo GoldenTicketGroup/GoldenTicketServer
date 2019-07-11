@@ -15,6 +15,7 @@ const lotteryFilter = {
     lotteryFilter : (lotteryData) => {
         const filteredData = lotteryData.map((e) => {
             return {
+                show_idx: e.showIdx,
                 lottery_idx: e.lotteryIdx,
                 name: e.name,
                 start_time: TimeFormatting(e.date, e.startTime)
