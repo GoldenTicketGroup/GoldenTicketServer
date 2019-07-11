@@ -28,13 +28,10 @@ const pushData = {
     priority: "high",
     // App 패키지 이름
     restricted_package_name: "com.example.goldenticket",
-<<<<<<< Updated upstream
-=======
     data: {  //you can send only notification or only data(or include both)
         title: '김강희',
         content: '안드로이드'
     }
->>>>>>> Stashed changes
     }
     fcm.send(push_data, function(err, response)
     {
@@ -51,8 +48,4 @@ const pushData = {
 }
 module.exports = pushData
 
-<<<<<<< Updated upstream
-result = pushData.fcmSend(4, '테스트내용')
-=======
 result = pushData.fcmSend(4, '김강희', '안드로이드')
->>>>>>> Stashed changes
