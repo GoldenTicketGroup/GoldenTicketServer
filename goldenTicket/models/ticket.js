@@ -30,7 +30,7 @@ module.exports = {
         }
         return result
     },
-    selectDetail: async (whereJson) => { //오늘 당첨 티켓(초록)
+    selectDetail: async (whereJson) => {
         const selectDetailQuery = 'SELECT newTicket.createdTime, newTicket.isPaid AS is_paid, newTicket.startTime, newTicket.endTime, newTicket.ticketIdx AS ticket_idx, showIdx AS show_idx, qrcode AS qr_code, newTicket.imageUrl AS image_url, newTicket.date, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location '+
         'FROM (SELECT ticket.ticketIdx, ticket.createdTime, ticket.isPaid, show.showIdx, ticket.qrcode, show.imageUrl, schedule.date, show.name, seat.seatType, seat.seatName, show.discountPrice, show.location, schedule.startTime, schedule.endTime '+
         'FROM ((( `show` INNER JOIN schedule '+
@@ -38,9 +38,9 @@ module.exports = {
         'INNER JOIN seat ON schedule.scheduleIdx = seat.scheduleIdx) '+
         'INNER JOIN ticket ON seat.seatIdx = ticket.seatIdx) '+
         `WHERE ticket.userIdx = ${whereJson.userIdx}) newTicket `+
-        'WHERE newTicket.createdTime >= CURDATE()'
+        'WHERE newTicket.createdTime >= CURDATE()'        
         const result = await db.queryParam_None(selectDetailQuery)
-       // console.log(result[0])
+        // console.log(result[0])
         // console.log('mmmmmmmmmmm')
         // console.log(result)
         // console.log(result.length)

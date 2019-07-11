@@ -53,7 +53,7 @@ router.get('/:id', authUtil.isLoggedin, async (req, res) => {
     }
 })
 
-// 오늘 당첨 티켓 상세 조회(초록)
+// 오늘 당첨 티켓 상세 조회
 router.get('/detail', authUtil.isLoggedin, async (req, res) => {
     const decoded = req.decoded
     const whereJson = {
@@ -63,7 +63,7 @@ router.get('/detail', authUtil.isLoggedin, async (req, res) => {
     if(result.isError){
         res.status(200).send(result.jsonData)
     }
-    if(result.length == 0){//당첨 안 됐을 때
+    if(result.length == 0){ //당첨 안 됐을 때
         //console.log('당첨 안됐을 때22')
         res.status(200).send(utils.successTrue(statusCode.NO_CONTENT, responseMessage.OK_NO_X('당첨'), result[0]))
     }
