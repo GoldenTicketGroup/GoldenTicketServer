@@ -60,6 +60,7 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
         userIdx : decoded.userIdx
     }
     const result = await lotteryModule.selectAll(whereJson)
+    console.log(result)
     if(result.isError)
     {
         res.status(200).send(result.jsonData)
