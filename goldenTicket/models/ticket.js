@@ -72,14 +72,6 @@ module.exports = {
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
-        if (result == 0){
-            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD+"이 없습니다.")))
-        }
-        let resultArray = []
-        for(var i=0; i<result.length; i++)
-        {
-            resultArray.push(result[i])
-        }
-        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL('당첨 티켓'), resultArray))
+        return result
     }
 }

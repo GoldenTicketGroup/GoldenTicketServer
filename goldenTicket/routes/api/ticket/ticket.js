@@ -44,7 +44,7 @@ router.get('/:id', authUtil.isLoggedin, async (req, res) => {
         res.status(200).send(result.jsonData)
     }
     if(result.length == 0){
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.OK_NO_X('당첨'), result[0]))
+        res.status(200).send(utils.successTrue(statusCode.NO_CONTENT, responseMessage.OK_NO_X('당첨'), result[0]))
     }
     if(result.is_paid == 0){ //당첨됐지만 결제를 하지 않은 상태
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('당첨 내역(미결제)'), filter.ticketFilter(result)))
@@ -60,19 +60,13 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
         userIdx : decoded.userIdx
     }
     const result = await ticketModule.selectAll(whereJson)
-    if(result.isError && result.jsonData.message == '당첨 티켓이 없습니다. 전체 조회 성공')
-    {
-        result.jsonData.data = []
+    if(result.isError){
         res.status(200).send(result.jsonData)
     }
-    if(result.jsonData.message == "당첨 티켓 전체 조회 성공")
-    {
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('당첨 티켓'), filter.ticketAllFilter(result.jsonData.data)))
+    if(result.length == 0) {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.OK_NO_X('당첨 티켓'), result))
     }
-    else
-    {
-        res.status(200).send(result.jsonData)
-    }
+    res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('당첨 티켓'), filter.ticketFilter(result[0])))
 })
 
 // 당첨 티켓 삭제 부분은 관리자가 직접 삭제
