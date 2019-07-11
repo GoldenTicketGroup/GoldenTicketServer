@@ -61,11 +61,11 @@ router.get('/detail/:id', authUtil.isLoggedin, async(req, res) => {
     {
         if(showLikeResult.length == 0)
         {
-            result.isLiked = 0
+            result.is_liked = 0
         }
         else
         {
-            result.isLiked = 1
+            result.is_liked = 1
         }
         scheduleResult = scheduleFilter.detailScheduleFilter(scheduleResult)
         result.schedule = scheduleResult
@@ -82,7 +82,7 @@ router.get('/heart', authUtil.isLoggedin, async(req, res) => {
         userIdx
     }
     const opts = {
-        fields: `showIdx as show_idx, imageUrl as image_url, name`,
+        fields: `showIdx as show_idx, detailImage as image_url, name`,
         joinJson: {
             table: "`show`",
             foreignKey: `showIdx`,
@@ -93,6 +93,7 @@ router.get('/heart', authUtil.isLoggedin, async(req, res) => {
     if(result.isError && result.jsonData.status == 404)
     { 
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.NO_HEART, []))
+        return
     }
     if(result.isError)
     { 

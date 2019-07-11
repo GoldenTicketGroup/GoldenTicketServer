@@ -14,13 +14,12 @@ const stringifyDuration = (startDate, endDate) =>
     return startDate.substring(0,10).concat(" ~ ", endDate.substring(0,10))
 }
 
-
 const showFilter = {
     detailShowFilter : (showData) => {
     const duration = stringifyDuration(durationFormatting(showData.startDate), durationFormatting(showData.endDate))
         return {
         show_idx: showData.showIdx,
-        image_url: showData.imageUrl,
+        image_url: showData.detailImage,
         name: showData.name,
         location: showData.location,
         duration: duration,

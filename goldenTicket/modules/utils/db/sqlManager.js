@@ -93,6 +93,10 @@ const sqlManager = {
         console.log(query)
         const result = await func(query)
         if (result == null) return false
+        // for(var key in result)
+        // {
+        //     console.log("attributes: " + key + ", value:" + result[key])
+        // }
         return result
     },
     db_insert: async (func, table, jsonData) => {

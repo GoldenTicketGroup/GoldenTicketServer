@@ -4,7 +4,7 @@ const textSearchFilter = {
         const filteredData = searchData.map((e) => {
             return {
                 show_idx: e.showIdx,
-                image_url: e.imageUrl,
+                image_url: e.detailImage,
                 name: e.name
             }
         })
