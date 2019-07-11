@@ -32,20 +32,21 @@ router.put('/', async (req, res) => {
 })
 
 // 당첨 티켓 상세 조회
-router.get('/:id', authUtil.isLoggedin, async (req, res) => {
-    const ticketIdx = req.params.id
+router.get('/detail', authUtil.isLoggedin, async (req, res) => {
     const decoded = req.decoded
     const whereJson = {
-        userIdx : decoded.userIdx,
-        ticketIdx : ticketIdx
+        userIdx : decoded.userIdx
     }
     const result = await ticketModule.select(whereJson)
     if(result.isError){
         res.status(200).send(result.jsonData)
     }
-    if(result.length == 0){
+    if(result.length == 0){ //당첨 안 됐을 때
+        //console.log('당첨 안됐을 때22')
         res.status(200).send(utils.successTrue(statusCode.NO_CONTENT, responseMessage.OK_NO_X('당첨'), result[0]))
     }
+    //console.log('당첨 됐을 때2222')
+    //console.log(result.is_paid)
     if(result.is_paid == 0){ //당첨됐지만 결제를 하지 않은 상태
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('당첨 내역(미결제)'), filter.ticketFilter(result)))
     } else if(result.is_paid == 1){ //당첨됐지만 결제 완료한 상태
