@@ -1,14 +1,17 @@
 # GoldenTicket_project_server
 
-* 2019 SOPT 24기 당일 공연 추첨식 예매 서비스 <**GoldenTicket**> 
+## <**GoldenTicket**>
+
+2019 SOPT 24기 
+당일 공연 추첨식 예매 서비스 **골든 티켓**입니다.
+***
+
 * 프로젝트 기간 : 2019년 6월 29일 ~ 2019년 7월 12일]
 * **API** - (https://github.com/GoldenTicketGroup/GoldenTicketServer/wiki)
 
-## 전반적인 플로우
+## 워크 플로우
 ![플로우](https://sopt24server.s3.ap-northeast-2.amazonaws.com/flow.png)
 
-## ERD 모델
-![ERD](https://sopt24server.s3.ap-northeast-2.amazonaws.com/ERD.png)
 ## 의존성
 
 ```
@@ -32,8 +35,8 @@
     "rand-token": "^0.4.0"
   }
 ```
-## architecture
-![구조](https://sopt24server.s3.ap-northeast-2.amazonaws.com/architecture.png)
+## SERVER architecture
+![ERD](https://sopt24server.s3.ap-northeast-2.amazonaws.com/ERD.png)
  
 ## 시작하기
 
@@ -123,14 +126,23 @@
 - [AWS RDS](https://aws.amazon.com/ko/rds/) - 클라우드 환경 데이터베이스 관리 시스템
 - [AWS S3](https://aws.amazon.com/ko/s3/?sc_channel=PS&sc_campaign=acquisition_KR&sc_publisher=google&sc_medium=english_s3_b&sc_content=s3_e&sc_detail=aws%20s3&sc_category=s3&sc_segment=177211245240&sc_matchtype=e&sc_country=KR&s_kwcid=AL!4422!3!177211245240!e!!g!!aws%20s3&ef_id=WkRozwAAAnO-lPWy:20180412120059:s) - 클라우드 환경 데이터 저장소
 
+## 사용 모듈
+- [Async & Await](https://www.npmjs.com/package/async)
+- [fcm-node](https://www.npmjs.com/package/fcm-node) : 푸쉬알림
+- [node-schedule](https://www.npmjs.com/package/node-schedule) : 스케줄링
+- [JWT(JsonWebTokens)](https://www.npmjs.com/package/jsonwebtoken)
+- [corn](https://www.npmjs.com/package/node-cron)
+- [multer](https://github.com/expressjs/multer)
+
 ## 개발자
 
-- **윤희성** - [HeeSungee(**samungMan**)](https://github.com/heesung6701) 
+- **윤희성** - [HeeSungee(**samaungMan**)](https://github.com/heesung6701) 
 - **최민경** - [MingKyonee](https://github.com/dquoupb) 
 - **황재석** - [JaeSeogie*>_<*](https://github.com/jaesukhwang95)
 
 
-[기여자 목록](https://github.com/GoldenTicketGroup/GoldenTicketServer/graphs/contributors)을 확인할 수 있습니다.
+- [기여자 목록](https://github.com/GoldenTicketGroup/GoldenTicketServer/graphs/contributors)
+
 
 ## **GoldenTicket**의 다른 프로젝트팀
 
