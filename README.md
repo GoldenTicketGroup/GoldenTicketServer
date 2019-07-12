@@ -6,7 +6,7 @@
 당일 공연 추첨식 예매 서비스 **골든 티켓**입니다.
 ***
 
-* 프로젝트 기간 : 2019년 6월 29일 ~ 2019년 7월 12일]
+* 프로젝트 기간 : 2019년 6월 29일 ~ 2019년 7월 12일
 * **API** - (https://github.com/GoldenTicketGroup/GoldenTicketServer/wiki)
 
 ## 워크 플로우
@@ -136,7 +136,7 @@
 
 ## 개발자
 
-- **윤희성** - [HeeSungee(**samaungMan**)](https://github.com/heesung6701) 
+- **윤희성** - [HeeSungee(**samsungMan**)](https://github.com/heesung6701) 
 - **최민경** - [MingKyonee](https://github.com/dquoupb) 
 - **황재석** - [JaeSeogie*>_<*](https://github.com/jaesukhwang95)
 
@@ -150,5 +150,5 @@
 - [IOS](https://github.com/GoldenTicketGroup/GoldenTicket_iOS) 
 
 
-## THANKS TO **★김현진★ 서버 파트장님**
+### SPECIAL THANKS TO **★김현진★ 서버 파트장님**
 
