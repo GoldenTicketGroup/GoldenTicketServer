@@ -42,6 +42,7 @@ const Like = {
         return likeResult
     }
 }
+
 const Lottery = {
     update: async (setJson, whereJson, sqlFunc) => {
         const TABLE_NAME = sqlManager.TABLE_LOTTERY
@@ -181,7 +182,7 @@ const taskReady2Choose = async (now) => {
         const queryStreamFunc = (query, value) => {
             return connection.query(query, value)
         }
-        const scheduleResult = await Schedule.getList({date: dateStr}, {}, queryStreamFunc)
+        const scheduleResult = await Schedule.getList({date: dateStr},null , queryStreamFunc)
         if(scheduleResult.isError) {
             throw `error during select Schedule with ${scheduleResult.jsonData}`
         }
@@ -367,7 +368,7 @@ const scheduler = {
         const taskWhen10oClock = cron.schedule('0 10 * * *', () => {        
             console.log("10시 에 실행")
             console.log(moment().format('YYYY-MM-DD HH:mm:ss'))
-            taskReady2Choose()
+            taskReady2Choose(new Date())
         })
         cronList.push(taskWhen10oClock)
     },
@@ -414,7 +415,7 @@ const test_taskChooseWin = async () => {
     await taskChooseWin(60)
 }
 const test_module = async () => {
-    // scheduler.startCron()
+    //scheduler.startCron()
     // test_taskReady2Choose_reset()
     // test_taskReady2Choose()
     // test_taskReady2Choose()

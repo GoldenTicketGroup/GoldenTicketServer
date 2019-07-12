@@ -11,6 +11,9 @@ module.exports = {
     FAIL_UPDATED_USER: "회원 정보 수정 실패",
     REMOVED_USER: "회원 탈퇴 성공",
     FAIL_REMOVED_USER: "회원 탈퇴 실패",
+    ALREADY_PHONE: "존재하는 phone 입니다.",
+    ALREADY_EMAIL: "존재하는 email 입니다.",
+
 
     ALREADY_USER: "존재하는 유저 id 입니다.",
     NO_USER: "존재하지 않는 유저 id 입니다.",
@@ -32,7 +35,11 @@ module.exports = {
     ALREADY_X: (X) => `존재하는 ${X} 입니다.`,
     OK_NO_X: (X) => `${X}내역이 존재하지 않습니다.`,
     ALREADY_LOTTERY_X: (X) => `이미 두 개의 ${X}내역이 존재합니다.`,
-
+    NO_HEART: "관심있는 공연이 존재하지 않습니다.",
+    SHOW_HEART: "관심있는 공연 조회 성공",
+    NO_SEARCH: "검색 결과가 없습니다.",
+    HASH_TAG_SEARCH: "해시태그 검색 성공",
+    NO_HASH_TAG: "해시태그 검색 결과 아무것도 없습니다.",
     LIKE_X: "좋아요 성공",
     ALREADY_LIKE_X: "이미 좋아요 상태입니다.",
     FAIL_LIKE_X: "좋아요 실패",
