@@ -18,6 +18,11 @@ router.get('/home', async(req, res) => {
     const selectHomeQuery = 'SELECT * FROM schedule LEFT JOIN `show` '
     + 'USING (showIdx) WHERE date = CURDATE() ORDER BY showIdx ASC'
     let result = await db.queryParam_None(selectHomeQuery);
+    if(result.length == 0)
+    {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
+        return
+    }
     if(result.isError)
     { 
         res.status(200).send(result.jsonData)
