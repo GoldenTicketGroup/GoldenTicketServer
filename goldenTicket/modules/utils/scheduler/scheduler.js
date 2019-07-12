@@ -5,9 +5,7 @@ const db = require('../db/pool')
 const errorMsg = require('../common/errorUtils')
 const responseMessage = require('../rest/responseMessage')
 const csvManager = require('../db/csvManager')
-csvManager.logWrite = (str) => {
-    console.log(str)
-}
+
 const fcmFunc = async (userIdx, title, content) => {
     console.log(title+ " " + content)
 }
@@ -347,6 +345,17 @@ const taskChooseWin = async (scheduleIdx) => {
     }
     console.log(transaction)
     //FCM을 보낸다
+    const showResult = await Show.get(resultSchedule.showIdx)
+    if(showResult.isError){
+        return new errorMsg(false,  Utils.successFalse(CODE.DB_ERROR, responseMessage.FAIL_READ_X('공연')))
+    }
+    const showName = showResult.name
+    for(const lottery of cacheLotteryList){
+        const userIdx = lottery.userIdx
+        const userResult = await User.get(userIdx)
+        const userName = userResult.name
+        fcmFunc(userIdx, `${userName}님, 두근두근 결과가 나왔습니다!`, `응모하신 '${showName}'의 당첨결과를 확인해보세요!`)
+    }
 
     // csv 정보를 clear한다.
     return transaction
@@ -407,10 +416,10 @@ const test_taskChooseWin = async () => {
 const test_module = async () => {
     // scheduler.startCron()
     // test_taskReady2Choose_reset()
-    test_taskReady2Choose()
+    // test_taskReady2Choose()
     // test_taskReady2Choose()
     // await test_taskSavaCache()
     // test_taskReady2Choose()
     // test_taskChooseWin()
 }
-test_module()
+// test_module()
