@@ -10,7 +10,7 @@
 * **API** - (https://github.com/GoldenTicketGroup/GoldenTicketServer/wiki)
 
 ## Work Flow
-<img src="https://sopt24server.s3.ap-northeast-2.amazonaws.com/workflow.png" width="200" height="200" />
+![워크 플로우](https://sopt24server.s3.ap-northeast-2.amazonaws.com/workflow.png)
 
 ## Server Architecture
 ![서버 아키텍처](https://sopt24server.s3.ap-northeast-2.amazonaws.com/ERD.png)
