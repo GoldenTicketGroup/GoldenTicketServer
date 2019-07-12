@@ -11,6 +11,7 @@ const TimeFormatting =  (date, time) =>
 
 const lotteryFilter = {
     lotteryFilter : (lotteryData) => {
+        console.log(lotteryData)
         const filteredData = lotteryData.map((e) => {
             return {
                 show_idx: e.showIdx,
