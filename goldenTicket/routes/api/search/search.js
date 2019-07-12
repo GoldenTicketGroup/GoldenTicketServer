@@ -28,6 +28,18 @@ router.post('/text', authUtil.isLoggedin, async (req, res) => {
         fields: `showIdx, detailImage, name`
     }
     let result = await showModule.getShowList(whereJson, opts)
+    let likeList = []
+    for(let i=0; i<result.length ;i++)
+    {
+        const showLikeQuery= "SELECT * FROM `like` " +
+        `WHERE showIdx = ${result[i].showIdx} AND userIdx = ${userIdx}`
+        const showLikeResult = await db.queryParam_None(showLikeQuery)
+        if(!showLikeResult)
+        {
+            res.status(200).send(utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_READ_X('해시 태그')))
+        }
+        likeList.push(showLikeResult)        
+    }
     if(result.isError && result.jsonData.status == 404)
     {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.NO_SEARCH, []))
@@ -38,7 +50,7 @@ router.post('/text', authUtil.isLoggedin, async (req, res) => {
         res.status(200).send(utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_READ_X_ALL('공연')))
         return
     }
-    result = filter.searchFilter(result, result, userIdx)
+    result = filter.searchFilter(result, likeList)
     res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('일반 검색'), result))
 })
 
