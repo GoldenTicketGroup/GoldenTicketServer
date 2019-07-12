@@ -55,7 +55,7 @@ const userModule = {
             return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_REMOVED_USER))
         }
         if (result.affectedRows == 0) {
-            return new errorMsg(true, utils.successFalse(statusCode.DB_ERROR, responseMessage.NO_X(WORD)))
+            return new errorMsg(true, utils.successFalse(statusCode.NOT_FOUND, responseMessage.NO_X(WORD)))
         }
         return result
     },

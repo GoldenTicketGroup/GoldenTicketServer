@@ -18,6 +18,11 @@ router.get('/home', async(req, res) => {
     const selectHomeQuery = 'SELECT * FROM schedule LEFT JOIN `show` '
     + 'USING (showIdx) WHERE date = CURDATE() ORDER BY showIdx ASC'
     let result = await db.queryParam_None(selectHomeQuery);
+    if(result.length == 0)
+    {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
+        return
+    }
     if(result.isError)
     { 
         res.status(200).send(result.jsonData)
@@ -48,6 +53,7 @@ router.get('/detail/:id', authUtil.isLoggedin, async(req, res) => {
     `USING (showIdx) WHERE showIdx = ${showIdx} AND date = CURDATE()`
     let scheduleResult = await db.queryParam_None(selectScheduleQuery)
     let result = showFilter.detailShowFilter(showResult)
+    console.log('xxx', result)
     const artistResult = await artistModule.selectAll(whereJson, opts)
     const posterResult = await posterModule.selectAll(whereJson, opts)
     const showLikeQuery= "SELECT * FROM `like` " +

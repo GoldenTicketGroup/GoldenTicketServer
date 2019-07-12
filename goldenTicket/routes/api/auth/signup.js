@@ -19,9 +19,14 @@ router.post('/', async(req, res) => {
     }
     const result = await userModule.signUp(input_name, input_email, input_phone, input_password)
     console.log(result)
-    if(result.message == '존재하는 phone 입니다.' || result.message == '존재하는 email 입니다.')
+    if(result.message == '존재하는 phone 입니다.')
     {
-        res.status(200).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.ALREADY_X('유저')))
+        res.status(200).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.ALREADY_PHONE))
+        return
+    }
+    if(result.message == '존재하는 email 입니다.')
+    {
+        res.status(200).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.ALREADY_EMAIL))
         return
     }
     res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.CREATED_USER))
