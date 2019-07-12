@@ -3,22 +3,27 @@ const cron = require('node-cron')
 const csvManager = require('../db/csvManager')
 const sqlManager = require('../db/sqlManager')
 const db = require('../db/pool')
+const errorMsg = require('../common/errorUtils')
+const responseMessage = require('../rest/responseMessage')
+
 const Lottery = {
     update: async (setJson, whereJson, sqlFunc) => {
         const TABLE_NAME = sqlManager.TABLE_LOTTERY
+        const WORD = '로터리'
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_update(func, TABLE_NAME, setJson, whereJson)
         if (!result) {
-            return new errorMsg(true, MSG.FAIL_UPDATED_X(WORD))
+            return new errorMsg(true, responseMessage.FAIL_UPDATED_X(WORD))
         }
         return result
     },
     selectAll: async (whereJson, opts, sqlFunc) => {
         const TABLE_NAME = sqlManager.TABLE_LOTTERY
+        const WORD = '로터리'
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
         if (result.length == undefined) {
-            return new errorMsg(true, MSG.FAIL_READ_X_ALL(WORD))
+            return new errorMsg(true, responseMessage.FAIL_READ_X_ALL(WORD))
         }
         return result
     }
@@ -30,7 +35,7 @@ const Schedule = {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
         if (!result) {
-            return new errorMsg(true, MSG.FAIL_CREATED_X(WORD))
+            return new errorMsg(true, responseMessage.FAIL_CREATED_X(WORD))
         }
         return result
     },
@@ -40,10 +45,10 @@ const Schedule = {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
         if (result.length == undefined) {
-            return new errorMsg(true,MSG.FAIL_READ_X(WORD))
+            return new errorMsg(true,responseMessage.FAIL_READ_X(WORD))
         }
         if (result.length == 0) {
-            return new errorMsg(true, MSG.NO_X(WORD))
+            return new errorMsg(true, responseMessage.NO_X(WORD))
         }
         return result[0]
     },
@@ -53,7 +58,7 @@ const Schedule = {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
         if (result.length == undefined) {
-            return new errorMsg(true,  MSG.FAIL_READ_X_ALL(WORD))
+            return new errorMsg(true,  responseMessage.FAIL_READ_X_ALL(WORD))
         }
         return result
     },
@@ -63,10 +68,10 @@ const Schedule = {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_update(func, TABLE_NAME, setJson, whereJson)
         if (!result) {
-            return new errorMsg(true, MSG.FAIL_UPDATED_X(WORD))
+            return new errorMsg(true, responseMessage.FAIL_UPDATED_X(WORD))
         }
         if (result.affectedRows == 0) {
-            return new errorMsg(true,  MSG.NO_X(WORD))
+            return new errorMsg(true,  responseMessage.NO_X(WORD))
         }
         return result
     },
@@ -76,10 +81,10 @@ const Schedule = {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_delete(func, TABLE_NAME, whereJson)
         if (!result) {
-            return new errorMsg(true, CODE.DB_ERROR, MSG.FAIL_REMOVED_X(WORD))
+            return new errorMsg(true, CODE.DB_ERROR, responseMessage.FAIL_REMOVED_X(WORD))
         }
         if (result.affectedRows == 0) {
-            return new errorMsg(true, CODE.DB_ERROR, MSG.NO_X(WORD))
+            return new errorMsg(true, CODE.DB_ERROR, responseMessage.NO_X(WORD))
         }
         return result
     }
@@ -108,9 +113,9 @@ class CronWithIndex {
         if(!this.currentTask) return
         this.currentTask.stop()
     }
-    end() {
+    destroy() {
         if(!this.currentTask) return
-        this.currentTask.end()
+        this.currentTask.destroy()
     }
 }
 const convertSchedule4csv = (it) => {
@@ -140,7 +145,7 @@ const taskReady2Choose = async (now) => {
         const queryStreamFunc = (query, value) => {
             return connection.query(query, value)
         }
-        const scheduleResult = await Schedule.getList({date: dateStr}, {}, queryStreamFunc)
+        const scheduleResult = await Schedule.getList({date: dateStr},null , queryStreamFunc)
         if(scheduleResult.isError) {
             throw `error during select Schedule with ${scheduleResult.jsonData}`
         }
@@ -151,8 +156,8 @@ const taskReady2Choose = async (now) => {
         const csvScheduleList = scheduleResult.map((it)=> convertSchedule4csv(it))
         await csvManager.csvWrite(csvManager.CSV_READY_TO_SCHEDULE_LIST, csvScheduleList)
 
-        for(const it in waitCronList){
-            it.end()
+        for(const it of waitCronList){
+            it.destroy()
         }
         waitCronList = []
         for(const schedule of csvScheduleList) {
@@ -259,7 +264,7 @@ const taskChooseWin = async (scheduleIdx) => {
         const resultLottery = await Lottery.update({state: 1}, {lotteryIdx: winLottery.lotteryIdx})
     })
     if(!transaction){
-        return new errorMsg(false,  Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_UPDATED_X(WORD)))
+        return new errorMsg(false,  Utils.successFalse(CODE.DB_ERROR, responseMessage.FAIL_UPDATED_X(WORD)))
     }
     console.log(transaction)
     //FCM을 보낸다
@@ -270,11 +275,11 @@ const taskChooseWin = async (scheduleIdx) => {
 const scheduler = {
     startCron: () => {
         console.log("start Cron")
-        const taskWhen10oClock = cron.schedule('*/1 * * * *', () => {        
-        // const taskWhen10oClock = cron.schedule('0 10 * * *', () => {        
+        // const taskWhen10oClock = cron.schedule('*/1 * * * *', () => {        
+        const taskWhen10oClock = cron.schedule('0 10 * * *', () => {        
             console.log("10시 에 실행")
             console.log(moment().format('YYYY-MM-DD HH:mm:ss'))
-            taskReady2Choose()
+            taskReady2Choose(new Date())
         })
         cronList.push(taskWhen10oClock)
     },
@@ -289,15 +294,27 @@ const scheduler = {
         for (const schedule in cronList) {
             schedule.destroy()
         }
+    },
+    forceReady2Choose: (date) => {
+        if(!date) return false
+        taskReady2Choose(date)
+    },
+    forceSaveCache: (scheduleIdx) => {
+        if(!scheduleIdx) return false
+        taskSaveCache(scheduleIdx)
+    },
+    forceChooseWin: (scheduleIdx) => {
+        if(!scheduleIdx) return false
+        taskChooseWin(scheduleIdx)
     }
 }
 module.exports = scheduler
 const test_taskReady2Choose = async () => {
-    const now = new Date('2019-07-08')
+    const now = new Date('2019-07-11')
     await taskReady2Choose(now)
 }
 const test_taskReady2Choose_reset = async () => {   
-    const now = new Date('2019-07-08')
+    const now = new Date('2019-07-11')
     const nowMoment = moment(now)
     const dateStr = nowMoment.format("YYYY-MM-DD")
     await Schedule.update({drawAvailable: 0}, {date: dateStr})
@@ -309,10 +326,12 @@ const test_taskChooseWin = async () => {
     await taskChooseWin(60)
 }
 const test_module = async () => {
-    // scheduler.startCron()
+    scheduler.startCron()
     // test_taskReady2Choose_reset()
+    // test_taskReady2Choose()
+    // test_taskReady2Choose()
     // await test_taskSavaCache()
     // test_taskReady2Choose()
     // test_taskChooseWin()
 }
-// test_module()
+//test_module()

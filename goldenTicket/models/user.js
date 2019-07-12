@@ -107,7 +107,6 @@ const userModule = {
         if(input_name) setJson.name = input_name
         if(input_email) setJson.email = input_email
         if(input_phone) setJson.phone = input_phone
-
         const userResult = await userModule.select({userIdx: userIdx}, {})
         if(userResult.isError){
             return userResult

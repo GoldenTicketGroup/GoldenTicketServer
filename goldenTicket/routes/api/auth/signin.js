@@ -9,6 +9,7 @@ const userModule = require('../../../models/user')
 router.post('/', async(req, res) => {
     const input_email = req.body.email
     const input_password = req.body.password
+    const fcm_token = req.body.fcm_token
     if (!input_email || !input_password)
     {
         res.status(200).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE))
@@ -17,6 +18,11 @@ router.post('/', async(req, res) => {
     const result = await userModule.signIn(input_email, input_password)
     if (result.isError) {
         res.status(200).send(result.jsonData)
+    }
+    if(fcm_token)
+    {
+        const updateResult = await userModule.update({fcmToken: fcm_token}, {email:input_email})
+        console.log(updateResult)
     }
     res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_USER, result))
 })
