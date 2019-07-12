@@ -48,6 +48,7 @@ router.get('/detail/:id', authUtil.isLoggedin, async(req, res) => {
     `USING (showIdx) WHERE showIdx = ${showIdx} AND date = CURDATE()`
     let scheduleResult = await db.queryParam_None(selectScheduleQuery)
     let result = showFilter.detailShowFilter(showResult)
+    console.log('xxx', result)
     const artistResult = await artistModule.selectAll(whereJson, opts)
     const posterResult = await posterModule.selectAll(whereJson, opts)
     const showLikeQuery= "SELECT * FROM `like` " +
