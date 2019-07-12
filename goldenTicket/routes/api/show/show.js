@@ -53,6 +53,13 @@ router.get('/detail/:id', authUtil.isLoggedin, async(req, res) => {
     const showLikeQuery= "SELECT * FROM `like` " +
     `WHERE showIdx = ${showIdx} AND userIdx = ${userIdx}`
     let showLikeResult = await db.queryParam_None(showLikeQuery)
+
+    //응모여부 확인하기 위함
+    const lotteryJson = {
+        userIdx
+    }
+    const lotteryResult = await showModule.lottery(lotteryJson)
+    //
     if(showResult.isError || !scheduleResult || !showLikeResult || artistResult.isError || posterResult.isError || artistResult.length==0 || posterResult.length==0)
     {
         res.status(200).send(utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_READ_X('공연')))
@@ -71,7 +78,18 @@ router.get('/detail/:id', authUtil.isLoggedin, async(req, res) => {
         result.schedule = scheduleResult
         result.artist = artistResult
         result.poster = posterResult
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
+        if(lotteryResult.length == 2){ //두 번 응모 불가능
+            res.status(200).send(utils.successTrue(statusCode.RESET_CONTENT, responseMessage.READ_X('공연'), result))
+        }
+        else if(lotteryResult.length == 1){
+            if(lotteryResult == showIdx){ //중복 응모 불가능
+                res.status(200).send(utils.successTrue(statusCode.NO_CONTENT, responseMessage.READ_X('공연'), result))
+            } else{ //중복이 아니니 응모 가능
+                res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
+            }
+        } else{ //한 번도 응모 하지 않았으므로 응모 가능
+            res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
+        }
     }
 })
 
