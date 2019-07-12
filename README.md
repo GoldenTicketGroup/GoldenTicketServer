@@ -22,11 +22,13 @@
 
 ```
 "dependencies": {
-    "aws-sdk": "^2.485.0",
+   "aws-sdk": "^2.485.0",
     "cookie-parser": "~1.4.3",
     "csvtojson": "^2.0.10",
     "debug": "~2.6.9",
     "express": "~4.16.0",
+    "fcm-node": "^1.5.1",
+    "helmet": "^3.18.0",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
     "json2csv": "^4.5.1",
@@ -38,7 +40,8 @@
     "node-cron": "^2.0.3",
     "nodemon": "^1.19.1",
     "promise-mysql": "^4.0.4",
-    "rand-token": "^0.4.0"
+    "rand-token": "^0.4.0",
+    "request": "^2.88.0"
   }
 ```
  
