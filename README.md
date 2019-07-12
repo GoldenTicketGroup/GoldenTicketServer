@@ -9,14 +9,14 @@
 * 프로젝트 기간 : 2019년 6월 29일 ~ 2019년 7월 12일
 * **API** - (https://github.com/GoldenTicketGroup/GoldenTicketServer/wiki)
 
-![워크플로우]## Work Flow
-(https://sopt24server.s3.ap-northeast-2.amazonaws.com/workflow.png)
+## Work Flow
+![워크플로우](https://sopt24server.s3.ap-northeast-2.amazonaws.com/workflow.png)
 
-![서버 아키텍처]## Server Architecture
-(https://sopt24server.s3.ap-northeast-2.amazonaws.com/ERD.png)
+## Server Architecture
+![서버 아키텍처](https://sopt24server.s3.ap-northeast-2.amazonaws.com/ERD.png)
 
-![ERD]## Entity Relationship Diagram
-(https://sopt24server.s3.ap-northeast-2.amazonaws.com/architecture.png)
+## Entity Relationship Diagram
+![ERD](https://sopt24server.s3.ap-northeast-2.amazonaws.com/architecture.png)
 
 
 ## Dependencies
