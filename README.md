@@ -13,11 +13,10 @@
 ![워크 플로우](./goldenTicket/public/images/workflow.png)
 
 ## Server Architecture
-![서버 아키텍처](https://sopt24server.s3.ap-northeast-2.amazonaws.com/ERD.png)
+![서버 아키텍처](https://sopt24server.s3.ap-northeast-2.amazonaws.com/architecture.png)
 
 ## Entity Relationship Diagram
-![ERD](https://sopt24server.s3.ap-northeast-2.amazonaws.com/architecture.png)
-
+![ERD](https://sopt24server.s3.ap-northeast-2.amazonaws.com/ERD.png)
 
 ## Dependencies
 
