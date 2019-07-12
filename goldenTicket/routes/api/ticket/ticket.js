@@ -83,13 +83,14 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
         userIdx : decoded.userIdx
     }
     const result = await ticketModule.selectAll(whereJson)
+    console.log(result)
     if(result.isError){
         res.status(200).send(result.jsonData)
     }
     if(result.length == 0) {
         res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.OK_NO_X('당첨 티켓'), result))
     }
-    res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('당첨 티켓'), filter.ticketFilter(result[0])))
+    res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('당첨 티켓'), filter.ticketAllFilter(result)))
 })
 
 // 당첨 티켓 삭제 부분은 관리자가 직접 삭제
