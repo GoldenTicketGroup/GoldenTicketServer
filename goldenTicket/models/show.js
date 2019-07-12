@@ -28,10 +28,18 @@ const showModule = {
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
-        if (result.length == 0) {
-            return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_X(WORD)))
+        return result
+    },
+    lottery: async (whereJson, sqlFunc) => {
+        const lotteryQuery = 'SELECT showIdx FROM schedule '+
+        'INNER JOIN (SELECT lottery.scheduleIdx FROM lottery '+
+        `WHERE lottery.userIdx = ${whereJson.userIdx}) showLottery `+
+        'ON showLottery.scheduleIdx = schedule.scheduleIdx'
+        const result = await db.queryParam_None(lotteryQuery)
+        if (result.length == undefined) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
-        return result[0]
+        return result
     },
     getShowList: async (whereJson, opts, sqlFunc) => {  
         const func = sqlFunc || db.queryParam_Parse

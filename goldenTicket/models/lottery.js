@@ -49,7 +49,6 @@ const lotteryModule = {
         }
         return result
     },
-
     select: async (whereJson, sqlFunc) => {
         const selectQuery = 'SELECT ticket.ticketIdx, win.state '+
         'FROM (SELECT * FROM lottery '+
