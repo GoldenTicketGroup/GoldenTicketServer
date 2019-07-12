@@ -9,10 +9,17 @@
 * 프로젝트 기간 : 2019년 6월 29일 ~ 2019년 7월 12일
 * **API** - (https://github.com/GoldenTicketGroup/GoldenTicketServer/wiki)
 
-## 워크 플로우
-![플로우](https://sopt24server.s3.ap-northeast-2.amazonaws.com/flow.png)
+## Work Flow
+(https://sopt24server.s3.ap-northeast-2.amazonaws.com/workflow.png)
 
-## 의존성
+## Server Architecture
+(https://sopt24server.s3.ap-northeast-2.amazonaws.com/ERD.png)
+
+## Entity Relationship Diagram
+(https://sopt24server.s3.ap-northeast-2.amazonaws.com/architecture.png)
+
+
+## Dependencies
 
 ```
 "dependencies": {
@@ -35,8 +42,6 @@
     "rand-token": "^0.4.0"
   }
 ```
-## SERVER architecture
-![ERD](https://sopt24server.s3.ap-northeast-2.amazonaws.com/ERD.png)
  
 ## 시작하기
 
@@ -128,10 +133,8 @@
 
 ## 사용 모듈
 - [Async & Await](https://www.npmjs.com/package/async)
-- [fcm-node](https://www.npmjs.com/package/fcm-node) : 푸쉬알림
-- [node-schedule](https://www.npmjs.com/package/node-schedule) : 스케줄링
+- [node-cron](https://www.npmjs.com/package/node-schedule) : 스케줄링
 - [JWT(JsonWebTokens)](https://www.npmjs.com/package/jsonwebtoken)
-- [corn](https://www.npmjs.com/package/node-cron)
 - [multer](https://github.com/expressjs/multer)
 
 ## 개발자
