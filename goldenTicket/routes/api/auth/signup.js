@@ -15,13 +15,15 @@ router.post('/', async(req, res) => {
         !input_email ||
         !input_phone || 
         !input_password) {       
-        return new errorMsg(true, Utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE))
+            res.status(200).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE))
     }
     const result = await userModule.signUp(input_name, input_email, input_phone, input_password)
-    if(result.isError) {
-        res.status(200).send(result.jsonData)
+    console.log(result)
+    if(result.message == '존재하는 phone 입니다.' || result.message == '존재하는 email 입니다.')
+    {
+        res.status(200).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.ALREADY_X('유저')))
         return
     }
     res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.CREATED_USER))
 })
-module.exports = router
+module.exports = router 

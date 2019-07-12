@@ -1,49 +1,31 @@
 const moment = require('moment')
 
-const TimeFormatting =  (date, time) =>
+const durationFormatting = (date) =>
 {
-    date = JSON.stringify(date).split('-').join('.').substring(1,11)
-    const dateString = `${date} ${time} `
+    const dateString = `${date}`
     const dateObject = new Date(dateString)
     let dateMomentObject = moment(dateObject)
-    dateMomentObject = dateMomentObject.format("a hh:mm:ss MM/DD/YYYY")
-    dateMomentObject = dateMomentObject.replace('pm', "오후")
-    dateMomentObject = dateMomentObject.replace('am', "오전")
-    dateMomentObject = dateMomentObject.substring(0,8)
-    if(dateMomentObject.substring(3,4) == '0')
-    {
-        dateMomentObject = dateMomentObject.substring(0,3).concat(dateMomentObject.substring(4,8))
-    }
+    dateMomentObject = dateMomentObject.format("YYYY.MM.DD")
     return dateMomentObject
 }
 
-const stringifyDate = (date, startTime, endTime) =>
+const stringifyDuration = (startDate, endDate) =>
 {
-    return JSON.stringify(date).split('-').join('.').substring(1,11)
-    .concat("  ", startTime.substring(0,5).concat("~", endTime.substring(0,5)))
+    return startDate.substring(0,10).concat(" ~ ", endDate.substring(0,10))
 }
 
 const showFilter = {
     detailShowFilter : (showData) => {
-
-    // const date = JSON.stringify(e.date).split('-').join('.').substring(1,11)
-    const schedule = showData.map((e) => {
-            return {
-                schedule_idx: e.scheduleIdx,
-                start_time: TimeFormatting(e.date, e.startTime),
-                end_time: TimeFormatting(e.date, e.endTime),
-                draw_available: e.drawAvailable
-            }
-        })
-    return {
-        show_idx: showData[0].showIdx,
-        image_url: showData[0].imageUrl,
-        name: showData[0].name,
-        location: showData[0].location,
-        date: stringifyDate(showData[0].date, showData[0].startTime, showData[0].endTime),
-        schedule : schedule,
-        original_price: showData[0].originalPrice,
-        discount_price: showData[0].discountPrice
+    const duration = stringifyDuration(durationFormatting(showData.startDate), durationFormatting(showData.endDate))
+        return {
+        show_idx: showData.showIdx,
+        image_url: showData.detailImage,
+        name: showData.name,
+        location: showData.location,
+        duration: duration,
+        original_price: showData.originalPrice,
+        discount_price: showData.discountPrice,
+        background_image: showData.backgroundImage,
         }
     },
     homeAllShowInfo : (showData) => {

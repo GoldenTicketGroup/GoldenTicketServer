@@ -4,22 +4,9 @@ const errorMsg = require('../modules/utils/common/errorUtils')
 const Utils = require('../modules/utils/rest/utils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
-
 const WORD = '공연 컨텐츠'
 const TABLE_NAME = sqlManager.TABLE_SHOW_CONTENT
 
-const contentInfo = (showContent) => {
-    title = "<".concat(showContent.title, ">")
-    content = showContent.content.split('/')
-    return {
-        show_content_idx: showContent.postIdx,
-        title: title,
-        subtitle: showContent.subtitle,
-        image_url: showContent.contentImageUrl,
-        content: content,
-        show_idx: showContent.showIdx
-    }
-}
 module.exports = {
     insert: async (jsonData, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
@@ -61,7 +48,7 @@ module.exports = {
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
-        return result.map(it => contentInfo(it))
+        return result
     }
 }
 

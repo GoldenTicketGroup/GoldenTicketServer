@@ -5,20 +5,9 @@ const errorMsg = require('../modules/utils/common/errorUtils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
 const Schedule = require('../models/schedule')
-
 const WORD = '응모'
 const TABLE_NAME = sqlManager.TABLE_LOTTERY
 
-const convertLottery = (lotteryData) => {
-    return {
-        lottery_idx: lotteryData.lotteryIdx,
-        schedule_idx: lotteryData.scheduleIdx,
-        user_idx: lotteryData.userIdx,
-        seat: lotteryData.seat,
-        state: lotteryData.state,
-        created_time: lotteryData.createdTime
-    }
-}
 const lotteryModule = {
     apply: async (jsonData, sqlFunc) => {
         if (jsonData.userIdx == undefined || jsonData.scheduleIdx == undefined) {
@@ -37,11 +26,11 @@ const lotteryModule = {
         console.log(result3.length)
         //중복해서 응모할 수 없음
         if (result2 != 0){
-            return new errorMsg(true, Utils.successFalse(CODE.FORBIDDEN, MSG.ALREADY_X(WORD)))
+            return new errorMsg(true, Utils.successTrue(CODE.NO_CONTENT, MSG.ALREADY_X(WORD)))
         }
         //최대 두개까지만 응모 가능
         if (result3.length == 2){
-            return new errorMsg(true, Utils.successFalse(CODE.FORBIDDEN, MSG.ALREADY_LOTTERY_X(WORD)))
+            return new errorMsg(true, Utils.successTrue(CODE.RESET_CONTENT, MSG.ALREADY_LOTTERY_X(WORD)))
         }
         const result = await sqlManager.db_insert(func, TABLE_NAME, lottery)
         if (!result) {
@@ -60,49 +49,63 @@ const lotteryModule = {
         }
         return result
     },
-    select: async (whereJson, opts, sqlFunc) => {
-        const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
-        const condition = `SELECT * FROM lottery WHERE lotteryIdx = ${whereJson.lotteryIdx}`
-        const result2 = await func(condition)
-
-        if (result.length == undefined) {
+    select: async (whereJson, sqlFunc) => {
+        const selectQuery = 'SELECT ticket.ticketIdx, win.state '+
+        'FROM (SELECT * FROM lottery '+
+        `WHERE lottery.userIdx = ${whereJson.userIdx} AND lottery.lotteryIdx = ${whereJson.lotteryIdx}) win, ticket `+
+        'WHERE win.userIdx=ticket.userIdx AND win.scheduleIdx=ticket.scheduleIdx'
+        const result = await db.queryParam_None(selectQuery)
+        //애초에 응모하지 않은 티켓을 찾기 위한 쿼리
+        const xLotteryQuery = 'SELECT * FROM lottery '+
+        `WHERE lottery.userIdx = ${whereJson.userIdx} AND lottery.lotteryIdx = ${whereJson.lotteryIdx}`
+        const subResult = await db.queryParam_None(xLotteryQuery)
+        if (result.length == undefined) { 
+            console.log('서버 에러')
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
-        if (result2.length == 0) { //존재하지 않는 티켓을 조회했을 때
-            if (result.length == 0) {
-                return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_X(WORD)))
+        if(result == 0) {
+            if(subResult == 0){
+                console.log('존재하지 않는 응모티켓 조회')
+                return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.FAIL_READ_X(WORD)))
             }
         }
-        if (result2.length) { //존재하는 티켓이지만 당첨되지 않은 티켓을 조회했을 때
-            if (result.length == 0) {
-                return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.OK_NO_X(WORD)))
-            }
-            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X(WORD), convertLottery(result[0])))
-        }
+        console.log("당첨 된 응모티켓 조회")
+        return result
     },
-    selectAll: async (whereJson, opts, sqlFunc) => {
-        const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
+    selectAll: async (whereJson) => {
+        const selectAllQuery = 'SELECT * ' +
+        'FROM (SELECT show.showIdx, show.name, schedule.startTime, schedule.date, lottery.lotteryIdx, lottery.userIdx ' +
+        'FROM (( `show` INNER JOIN schedule ON show.showIdx = schedule.showIdx)' +
+        'INNER JOIN lottery ON schedule.scheduleIdx = lottery.scheduleIdx)) AS a ' +
+        `WHERE a.userIdx = ${whereJson.userIdx}`
+        const result = await db.queryParam_None(selectAllQuery)
+        if(!result)
+        {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
+        }
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
         if (result.length == 0) {
-            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.OK_NO_X(WORD), result.map(it => convertLottery(it))))    
+            return result
         }
-        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD), result.map(it => convertLottery(it))))
+        let resultArray = []
+        for(var i=0; i<result.length; i++)
+        {
+            resultArray.push(result[i])
+        }
+        return result
     },
     delete: async (whereJson, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_delete(func, TABLE_NAME, whereJson)
-        console.log(result)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_REMOVED_X(WORD)))
         }
         if (result.affectedRows == 0) {
-            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
+            return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.NO_X(WORD)))
         }
-        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.REMOVED_X(WORD)))
+        return result
     },
     chooseWin: async (cacheLotteryList, sqlFunc) => {
         const func = sqlFunc || db.queryParam_Parse

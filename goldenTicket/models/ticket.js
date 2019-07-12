@@ -4,28 +4,16 @@ const Utils = require('../modules/utils/rest/utils')
 const errorMsg = require('../modules/utils/common/errorUtils')
 const db = require('../modules/utils/db/pool')
 const sqlManager = require('../modules/utils/db/sqlManager')
-
 const WORD = '당첨 티켓'
 const TABLE_NAME = sqlManager.TABLE_TICKET
 
-const convertTicket = (TicketData) => {
-    return {
-        // 아래 내용은 그냥 임시
-        Ticket_idx: TicketData.TicketIdx,
-        schedule_idx: TicketData.scheduleIdx,
-        user_idx: TicketData.userIdx,
-        seat: TicketData.seat,
-        win: TicketData.win,
-        created_time: TicketData.createdTime
-    }
-}
 module.exports = {
-    insert: async (jsonData, sqlFunc) => {
+    insert: async (jsonData, opts, sqlFunc) => {
         if (jsonData.userIdx == undefined || jsonData.seatIdx == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.BAD_REQUEST, MSG.NULL_VALUE))
         }
         const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData)
+        const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData, opts)
         if (!result) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_CREATED_X(WORD)))
         }
@@ -42,36 +30,79 @@ module.exports = {
         }
         return result
     },
-    select: async (whereJson, opts, sqlFunc) => {
-        const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
+    selectDetail: async (whereJson) => {
+        const selectDetailQuery = 'SELECT newTicket.createdTime, newTicket.isPaid AS is_paid, newTicket.startTime, newTicket.endTime, newTicket.ticketIdx AS ticket_idx, showIdx AS show_idx, qrcode AS qr_code, newTicket.imageUrl AS image_url, newTicket.date, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location '+
+        'FROM (SELECT ticket.ticketIdx, ticket.createdTime, ticket.isPaid, show.showIdx, ticket.qrcode, show.imageUrl, schedule.date, show.name, seat.seatType, seat.seatName, show.discountPrice, show.location, schedule.startTime, schedule.endTime '+
+        'FROM ((( `show` INNER JOIN schedule '+
+        'ON show.showIdx = schedule.showIdx) '+
+        'INNER JOIN seat ON schedule.scheduleIdx = seat.scheduleIdx) '+
+        'INNER JOIN ticket ON seat.seatIdx = ticket.seatIdx) '+
+        `WHERE ticket.userIdx = ${whereJson.userIdx}) newTicket `+
+        'WHERE newTicket.createdTime >= CURDATE()'        
+        const result = await db.queryParam_None(selectDetailQuery)
+        // console.log(result[0])
+        // console.log('mmmmmmmmmmm')
+        // console.log(result)
+        // console.log(result.length)
+        //console.log(result.createdTime)
+        //console.log(result[0].createdTime)
+        if (result.length == undefined) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
+        }
+        if(result.length == 0){ //당첨되지 않았을 때
+            //당첨 되지 않은 경우만 result로 반환하는 이유
+            //이 경우가 에러가 아니기 때문에
+            //ticket api에서 result.length하면 당첨되지 않은 경우만 undefined가 아니라서
+            //경우를 나누어서 메시지 처리하기 편해서 이렇게 해줌...
+            console.log('당첨 안됨')
+            return result
+        }
+        //당첨 됐을 때
+        console.log('당첨됨')
+        return result[0]
+    },
+    select: async (whereJson) => { //지금까지 당첨 티켓(빨강)
+        const selectQuery = 'SELECT newTicket.startTime, newTicket.endTime, newTicket.isPaid AS is_paid, newTicket.ticketIdx AS ticket_idx, qrcode AS qr_code, newTicket.roundedImage AS image_url, newTicket.date, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location ' +
+        'FROM (SELECT ticket.ticketIdx, show.showIdx, ticket.qrcode, ticket.isPaid, show.roundedImage, schedule.date, show.name, seat.seatType, seat.seatName, show.discountPrice, show.location, schedule.startTime, schedule.endTime ' +
+        'FROM ((( `show` INNER JOIN schedule ' +
+        'ON show.showIdx = schedule.showIdx) ' +
+        'INNER JOIN seat ON schedule.scheduleIdx = seat.scheduleIdx) ' +
+        'INNER JOIN ticket ON seat.seatIdx = ticket.seatIdx) ' +
+        `WHERE ticket.userIdx = ${whereJson.userIdx}) newTicket `+
+        `WHERE newTicket.ticketIdx = ${whereJson.ticketIdx}`
+        const result = await db.queryParam_None(selectQuery)
         //존재하지 않는 티켓 조회
         const condition = `SELECT * FROM ticket WHERE ticketIdx = ${whereJson.ticketIdx}`
-        const result2 = await func(condition)
+        const result2 = await db.queryParam_None(condition)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
         if (result2.length == 0) { //존재하지 않는 티켓을 조회했을 때
             if (result.length == 0) {
-                return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_X(WORD)))
+                return new errorMsg(true, Utils.successFalse(CODE.BAD_RE, MSG.NO_X(WORD)))
             }
         }
-        if (result2.length) { //존재하는 티켓이지만 당첨되지 않은 티켓을 조회했을 때
-            if (result.length == 0) {
-                return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.NO_X('당첨 내역')))
-            }
-            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X(WORD), convertTicket(result[0])))
+        if(result.length == 0){ //당첨되지 않았을 때
+            //당첨 되지 않은 경우만 result로 반환하는 이유
+            //이 경우가 에러가 아니기 때문에
+            //ticket api에서 result.length하면 당첨되지 않은 경우만 undefined가 아니라서
+            //경우를 나누어서 메시지 처리하기 편해서 이렇게 해줌...
+            return result
         }
+        //당첨 됐을 때
+        return result[0]
     },
-    selectAll: async (whereJson, opts,sqlFunc) => {
-        const func = sqlFunc || db.queryParam_Parse
-        const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
+    selectAll: async (whereJson) => {
+        const selectAllQuery = 'SELECT ticket.ticketIdx AS ticket_idx, qrcode AS qr_code, show.detailImage AS image_url, schedule.date, schedule.startTime, schedule.endTime, name, seatType AS seat_type, seatName AS seat_name, discountPrice AS price, location' +
+        ' FROM ((( `show` INNER JOIN schedule ' +
+        'ON show.showIdx = schedule.showIdx) INNER JOIN seat ' +
+        'ON schedule.scheduleIdx = seat.scheduleIdx) ' +
+        'INNER JOIN ticket ON seat.seatIdx = ticket.seatIdx) ' +
+        `WHERE ticket.userIdx = ${whereJson.userIdx}`
+        const result = await db.queryParam_None(selectAllQuery)
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X_ALL(WORD)))
         }
-        if (result == 0){
-            return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD+"이 없습니다."), result.map(it => convertTicket(it))))
-        }
-        return new errorMsg(true, Utils.successTrue(CODE.OK, MSG.READ_X_ALL(WORD), result.map(it => convertTicket(it))))
+        return result
     }
 }

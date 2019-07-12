@@ -1,28 +1,23 @@
 const express = require('express')
 const router = express.Router()
 const showModule = require('../../../models/show')
-const scheduleModule = require('../../../models/schedule')
 const artistModule = require('../../../models/artist')
 const posterModule = require('../../../models/poster')
+const likeModule = require('../../../models/like')
+const authUtil = require("../../../modules/utils/security/authUtils")
 const upload = require('../../../config/multer')
 const responseMessage = require('../../../modules/utils/rest/responseMessage')
 const statusCode = require('../../../modules/utils/rest/statusCode')
 const utils = require('../../../modules/utils/rest/utils')
 const showFilter = require('../../../modules/utils/filter/showFilter')
+const scheduleFilter = require('../../../modules/utils/filter/scheduleFilter')
+const db = require('../../../modules/utils/db/pool')
 
 //홈 화면 공연 리스트 조회
 router.get('/home', async(req, res) => {
-    const opts = {
-        joinJson: {
-            table: "`show`",
-            foreignKey: `showIdx`,
-            type: "LEFT"
-        },
-        orderBy: {
-            "showIdx": "ASC"
-        }
-    }
-    let result = await scheduleModule.getList('', opts)
+    const selectHomeQuery = 'SELECT * FROM schedule LEFT JOIN `show` '
+    + 'USING (showIdx) WHERE date = CURDATE() ORDER BY showIdx ASC'
+    let result = await db.queryParam_None(selectHomeQuery);
     if(result.isError)
     { 
         res.status(200).send(result.jsonData)
@@ -34,12 +29,14 @@ router.get('/home', async(req, res) => {
     }
 })
 
-//상세 페이지 공연 상세 조회
-router.get('/detail/:id', async(req, res) => {
+//공연 상세 조회
+router.get('/detail/:id', authUtil.isLoggedin, async(req, res) => {
+    const userIdx = req.decoded.userIdx
     const showIdx = req.params.id
     const whereJson = {
         showIdx : parseInt(showIdx)
     }
+    const showResult = await showModule.select(whereJson)
     const opts = {
         joinJson: {
             table: "`show`",
@@ -47,19 +44,82 @@ router.get('/detail/:id', async(req, res) => {
             type: "LEFT"
         }
     }
-    let result = await scheduleModule.getList(whereJson, opts)
-    result = showFilter.detailShowFilter(result)
+    const selectScheduleQuery= "SELECT * FROM schedule LEFT JOIN `show` " +
+    `USING (showIdx) WHERE showIdx = ${showIdx} AND date = CURDATE()`
+    let scheduleResult = await db.queryParam_None(selectScheduleQuery)
+    let result = showFilter.detailShowFilter(showResult)
     const artistResult = await artistModule.selectAll(whereJson, opts)
     const posterResult = await posterModule.selectAll(whereJson, opts)
-    result.artist = artistResult
-    result.poster = posterResult
-    if(result.isError || artistResult.isError || posterResult.isError)
-    { 
-        res.status(200).send(result.jsonData)
+    const showLikeQuery= "SELECT * FROM `like` " +
+    `WHERE showIdx = ${showIdx} AND userIdx = ${userIdx}`
+    let showLikeResult = await db.queryParam_None(showLikeQuery)
+
+    //응모여부 확인하기 위함
+    const lotteryJson = {
+        userIdx
+    }
+    const lotteryResult = await showModule.lottery(lotteryJson)
+    //
+    if(showResult.isError || !scheduleResult || !showLikeResult || artistResult.isError || posterResult.isError || artistResult.length==0 || posterResult.length==0)
+    {
+        res.status(200).send(utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_READ_X('공연')))
     }
     else
     {
-        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
+        if(showLikeResult.length == 0)
+        {
+            result.is_liked = 0
+        }
+        else
+        {
+            result.is_liked = 1
+        }
+        scheduleResult = scheduleFilter.detailScheduleFilter(scheduleResult)
+        result.schedule = scheduleResult
+        result.artist = artistResult
+        result.poster = posterResult
+        if(lotteryResult.length == 2){ //두 번 응모 불가능
+            res.status(200).send(utils.successTrue(statusCode.RESET_CONTENT, responseMessage.READ_X('공연'), result))
+        }
+        else if(lotteryResult.length == 1){
+            if(lotteryResult[0].showIdx == showIdx){ //중복 응모 불가능
+                res.status(200).send(utils.successTrue(statusCode.NO_CONTENT, responseMessage.READ_X('공연'), result))
+            } else{ //중복이 아니니 응모 가능
+                res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
+            }
+        } else{ //한 번도 응모 하지 않았으므로 응모 가능
+            res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
+        }
+    }
+})
+
+//관심있는 공연 리스트 조회
+router.get('/heart', authUtil.isLoggedin, async(req, res) => {
+    const userIdx = req.decoded.userIdx
+    const whereJson = { 
+        userIdx
+    }
+    const opts = {
+        fields: `showIdx as show_idx, detailImage as image_url, name`,
+        joinJson: {
+            table: "`show`",
+            foreignKey: `showIdx`,
+            type: "LEFT"
+        }
+    }
+    let result = await likeModule.getLikeList(whereJson, opts)
+    if(result.isError && result.jsonData.status == 404)
+    { 
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.NO_HEART, []))
+        return
+    }
+    if(result.isError)
+    { 
+        res.status(200).send(utils.successFalse(statusCode.DB_ERROR, responseMessage.FAIL_READ_X_ALL('공연')))
+    }
+    else
+    {
+        res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.SHOW_HEART, result))
     }
 })
 
