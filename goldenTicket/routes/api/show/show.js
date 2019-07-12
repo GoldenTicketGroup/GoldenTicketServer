@@ -82,7 +82,7 @@ router.get('/detail/:id', authUtil.isLoggedin, async(req, res) => {
             res.status(200).send(utils.successTrue(statusCode.RESET_CONTENT, responseMessage.READ_X('공연'), result))
         }
         else if(lotteryResult.length == 1){
-            if(lotteryResult == showIdx){ //중복 응모 불가능
+            if(lotteryResult[0].showIdx == showIdx){ //중복 응모 불가능
                 res.status(200).send(utils.successTrue(statusCode.NO_CONTENT, responseMessage.READ_X('공연'), result))
             } else{ //중복이 아니니 응모 가능
                 res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X('공연'), result))
