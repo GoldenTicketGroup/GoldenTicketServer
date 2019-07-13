@@ -131,8 +131,11 @@ const csvManager = {
     },
     logWrite: async (fileName, stringData, date) => {
         if(date == null) date = new Date()
+        
         const nowMoment = moment(date)
         const dateStr = nowMoment.format("YYYY-MM-DD HH:MM:SS")
+        console.log(`[${dateStr}] ${stringData}`)
+        return
         fs.appendFile(`${log_url}${fileName}`, `[${dateStr}] ${stringData}\n`, (err) => {
             if (err) new Error(err)
             console.log(`saved log ${stringData}`)

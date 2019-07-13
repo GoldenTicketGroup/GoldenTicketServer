@@ -1,10 +1,83 @@
 const moment = require('moment')
 const cron = require('node-cron')
-const csvManager = require('../db/csvManager')
 const sqlManager = require('../db/sqlManager')
 const db = require('../db/pool')
 const errorMsg = require('../common/errorUtils')
 const responseMessage = require('../rest/responseMessage')
+const csvManager = require('../db/csvManager')
+const userModule = require('../../../models/user')
+const fcmServerKey = require('../../../config/fcmServerKey').key
+var request = require('request')
+
+const fcmFunc = async (userIdx, title, content) => {
+    const whereJson = {
+        userIdx: userIdx
+    }
+    const opts = {
+        fields: `fcmToken`
+    }
+    const fcmTokenResult= await userModule.select(whereJson, opts)
+    if(fcmTokenResult == undefined)
+        return
+    else
+    {
+        console.log(fcmTokenResult)
+        const clientToken = fcmTokenResult.fcmToken
+        var jsonDataObj = {
+        "data": {
+            "title": title,
+            "content": content
+        },
+        "to": clientToken
+        }
+        request.post({
+            headers: {'content-type': 'application/json',
+            'authorization': `key=${fcmServerKey}`},
+            url: 'https://fcm.googleapis.com/fcm/send',
+            body: jsonDataObj,
+            json: true
+            },
+        function(err, response, body) {
+                console.log(err)
+            }
+        )
+
+    }
+}
+
+const User = {
+    get: async (userIdx) => {
+        const TABLE_NAME = sqlManager.TABLE_USER
+        const WORD = '유저'
+        const userResult = await sqlManager.db_select(db.queryParam_Parse, TABLE_NAME, {userIdx: userIdx}, {})
+        if(userResult.isError){
+            return new errorMsg(true, responseMessage.FAIL_READ_X(WORD))
+        }
+        return userResult[0]
+    }
+}
+const Show = {
+    get: async (showIdx) => {
+        const TABLE_NAME = sqlManager.TABLE_SHOW
+        const WORD = '공연'
+        const showResult = await sqlManager.db_select(db.queryParam_Parse, TABLE_NAME, {showIdx: showIdx}, {})
+        if(showResult.isError){
+            return new errorMsg(true, responseMessage.FAIL_READ_X(WORD))
+        }
+        return showResult[0]
+    }
+}
+const Like = {
+    isLikedUserList: async(showIdx) => {
+        const TABLE_NAME = sqlManager.TABLE_LIKE
+        const WORD = '좋아요 체크'
+        const likeResult = await sqlManager.db_select(db.queryParam_Parse, TABLE_NAME, {showIdx: showIdx}, {fields: 'userIdx'})
+        if(likeResult.isError) {
+            return new errorMsg(true, responseMessage.FAIL_READ_X(WORD))
+        }
+        return likeResult
+    }
+}
 
 const Lottery = {
     update: async (setJson, whereJson, sqlFunc) => {
@@ -58,7 +131,7 @@ const Schedule = {
         const func = sqlFunc || db.queryParam_Parse
         const result = await sqlManager.db_select(func, TABLE_NAME, whereJson, opts)
         if (result.length == undefined) {
-            return new errorMsg(true,  responseMessage.FAIL_READ_X_ALL(WORD))
+            return new errorMsg(true, responseMessage.FAIL_READ_X_ALL(WORD))
         }
         return result
     },
@@ -149,13 +222,55 @@ const taskReady2Choose = async (now) => {
         if(scheduleResult.isError) {
             throw `error during select Schedule with ${scheduleResult.jsonData}`
         }
+        if(scheduleResult.length==0){
+            return
+        }
         const updateResult = await Schedule.update({drawAvailable: 1}, {date: dateStr}, queryStreamFunc)
         if(updateResult.isError) {
             throw `error during update Schedule with ${updateResult.jsonData}`
         }        
         const csvScheduleList = scheduleResult.map((it)=> convertSchedule4csv(it))
-        await csvManager.csvWrite(csvManager.CSV_READY_TO_SCHEDULE_LIST, csvScheduleList)
 
+        const userMap = {}
+        for(const schedule of csvScheduleList) {
+            const showIdx = schedule.showIdx
+            const showResult = await Show.get(showIdx)
+            if(showResult.isError){
+                throw `error during read Show with ${showResult.jsonData}`
+            }
+            const showName = showResult.name
+            const userListResult = await Like.isLikedUserList(showIdx)
+            for(const user of userListResult){
+                const userIdx = user.userIdx
+                if(userMap[userIdx] == undefined){
+                    userMap[userIdx] = [showName]
+                    continue
+                }
+                if(!userMap[userIdx].includes(showName)){
+                    userMap[userIdx].push(showName)
+                }
+            }
+        }
+        for(const userIdx of Object.keys(userMap)){
+            const showNameList = userMap[userIdx]
+            const userResult = await User.get(userIdx)
+            if(userResult.isError){
+                throw `error during read Show with ${userResult.jsonData}`
+            }
+            const userName = userResult.name
+            let showNameStr = ""
+            if(showNameList.length == 1){
+                showNameStr = showNameList[0]
+            }
+            else if(showNameList.length == 2){
+                showNameStr = `${showNameList[0]}, ${showNameList[1]}`
+            }
+            else if(showNameList.length > 2){
+                showNameStr = `${showNameList[0]}, ${showNameList[1]} 외 ${(showNameList.length - 2)}개`
+            }
+            fcmFunc(userIdx, `${userName}님, ${showNameStr}의 관심있는 공연 응모가 시작되었습니다!`, '골든티켓의 주인공이 되어보세요!')
+        }
+        
         for(const it of waitCronList){
             it.destroy()
         }
@@ -183,9 +298,9 @@ const taskReady2Choose = async (now) => {
     if(transaction.isError) {
         console.log(transaction.jsonData)
         csvManager.logWrite(csvManager.LOG_TO_UPDATE_AVAILABLE, '매일 10시에 스케쥴 리스트 csv로 저장하기 실패', now)
-        setTimeout(() => {
-            taskReady2Choose(new Date())
-        },60 * 10)
+        // setTimeout(() => {
+        //     taskReady2Choose(new Date())
+        // },60 * 10 * 5)
         return
     }
     csvManager.logWrite(csvManager.LOG_TO_UPDATE_AVAILABLE, '매일 10시에 스케쥴 리스트 csv로 저장하기 성공', now)
@@ -200,9 +315,9 @@ const taskSaveCache = async (scheduleIdx) => {
     if (lotteryResult.isError == true) {
         console.log(`error ${lotteryResult.jsonData}`)
         await csvManager.logWrite(csvManager.LOG_DURING_SAVE_CACHE, 'fail to read lotteryList')
-        setTimeout(() => {
-            taskSaveCache(scheduleIdx)
-        },60 * 10 * 60)
+        // setTimeout(() => {
+        //     taskSaveCache(scheduleIdx)
+        // },60 * 10 * 60)
         return
     }
     const csvJson = lotteryResult.map((it) => convertLottery4csv(it))
@@ -212,9 +327,9 @@ const taskSaveCache = async (scheduleIdx) => {
     if (!result) {
         console.log('error on save cache lottery')
         await csvManager.logWrite(csvManager.LOG_DURING_SAVE_CACHE, 'fail to save result as csv file')
-        setTimeout(() => {
-            taskSaveCache(scheduleIdx)
-        },60 * 10)
+        // setTimeout(() => {
+        //     taskSaveCache(scheduleIdx)
+        // },60 * 10 * 60)
         return
     }
 }
@@ -253,7 +368,6 @@ const taskChooseWin = async (scheduleIdx) => {
         return
     }
     csvManager.logWrite(csvManager.LOG_DURING_CHOOSE_WIN, `scheduleIdx:${scheduleIdx}/ winLotteryIdx is ${winLottery.lotteryIdx}`)
-
     
     // db update(트랜잭션 처리)
     const transaction = await db.Transaction(async (connection) => {
@@ -268,6 +382,17 @@ const taskChooseWin = async (scheduleIdx) => {
     }
     console.log(transaction)
     //FCM을 보낸다
+    const showResult = await Show.get(resultSchedule.showIdx)
+    if(showResult.isError){
+        return new errorMsg(false,  Utils.successFalse(CODE.DB_ERROR, responseMessage.FAIL_READ_X('공연')))
+    }
+    const showName = showResult.name
+    for(const lottery of cacheLotteryList){
+        const userIdx = lottery.userIdx
+        const userResult = await User.get(userIdx)
+        const userName = userResult.name
+        fcmFunc(userIdx, `${userName}님, 두근두근 결과가 나왔습니다!`, `응모하신 '${showName}'의 당첨결과를 확인해보세요!`)
+    }
 
     // csv 정보를 clear한다.
     return transaction
@@ -310,11 +435,11 @@ const scheduler = {
 }
 module.exports = scheduler
 const test_taskReady2Choose = async () => {
-    const now = new Date('2019-07-11')
+    const now = new Date('2019-07-12')
     await taskReady2Choose(now)
 }
 const test_taskReady2Choose_reset = async () => {   
-    const now = new Date('2019-07-11')
+    const now = new Date('2019-07-12')
     const nowMoment = moment(now)
     const dateStr = nowMoment.format("YYYY-MM-DD")
     await Schedule.update({drawAvailable: 0}, {date: dateStr})
@@ -326,7 +451,7 @@ const test_taskChooseWin = async () => {
     await taskChooseWin(60)
 }
 const test_module = async () => {
-    scheduler.startCron()
+    //scheduler.startCron()
     // test_taskReady2Choose_reset()
     // test_taskReady2Choose()
     // test_taskReady2Choose()
@@ -334,4 +459,4 @@ const test_module = async () => {
     // test_taskReady2Choose()
     // test_taskChooseWin()
 }
-//test_module()
+// test_module()
