@@ -5,10 +5,46 @@ const db = require('../db/pool')
 const errorMsg = require('../common/errorUtils')
 const responseMessage = require('../rest/responseMessage')
 const csvManager = require('../db/csvManager')
+const userModule = require('../../../models/user')
+const fcmServerKey = require('../../../config/fcmServerKey').key
+var request = require('request')
 
 const fcmFunc = async (userIdx, title, content) => {
-    console.log(title+ " " + content)
+    const whereJson = {
+        userIdx: userIdx
+    }
+    const opts = {
+        fields: `fcmToken`
+    }
+    const fcmTokenResult= await userModule.select(whereJson, opts)
+    if(fcmTokenResult == undefined)
+        return
+    else
+    {
+        console.log(fcmTokenResult)
+        const clientToken = fcmTokenResult.fcmToken
+        var jsonDataObj = {
+        "data": {
+            "title": title,
+            "content": content
+        },
+        "to": clientToken
+        }
+        request.post({
+            headers: {'content-type': 'application/json',
+            'authorization': `key=${fcmServerKey}`},
+            url: 'https://fcm.googleapis.com/fcm/send',
+            body: jsonDataObj,
+            json: true
+            },
+        function(err, response, body) {
+                console.log(err)
+            }
+        )
+
+    }
 }
+
 const User = {
     get: async (userIdx) => {
         const TABLE_NAME = sqlManager.TABLE_USER
