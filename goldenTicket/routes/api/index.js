@@ -7,5 +7,5 @@ router.use('/show', require('./show/index'))
 router.use('/ticket', require('./ticket/index'))
 router.use('/lottery', require('./lottery/index'))
 router.use('/search', require('./search/index'))
-
+router.use('/chooseOne', require('./chooseOne/index'))
 module.exports = router
