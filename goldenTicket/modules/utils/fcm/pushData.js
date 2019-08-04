@@ -24,14 +24,14 @@ const pushData = {
     request.post({
         headers: {'content-type': 'application/json',
         'authorization': `key=${fcmServerKey}`},
-    url: 'https://fcm.googleapis.com/fcm/send',
-    body: jsonDataObj,
-    json: true
-    }, function(err, response, body) {
-            console.log(err)
-            }
-        )
-    }
+        url: 'https://fcm.googleapis.com/fcm/send',
+        body: jsonDataObj,
+        json: true
+        }, function(err, response, body) {
+                console.log(err)
+                }
+            )
+        }
 }
 module.exports = pushData
 

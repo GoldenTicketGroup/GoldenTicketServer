@@ -28,7 +28,10 @@ const showModule = {
         if (result.length == undefined) {
             return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_READ_X(WORD)))
         }
-        return result
+        if (result.length == 0) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.NO_X(WORD)))
+        }
+        return result[0]
     },
     lottery: async (whereJson, sqlFunc) => {
         const lotteryQuery = 'SELECT showIdx FROM schedule '+
