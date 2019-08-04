@@ -11,6 +11,9 @@ module.exports = {
     FAIL_UPDATED_USER: "회원 정보 수정 실패",
     REMOVED_USER: "회원 탈퇴 성공",
     FAIL_REMOVED_USER: "회원 탈퇴 실패",
+    ALREADY_PHONE: "존재하는 phone 입니다.",
+    ALREADY_EMAIL: "존재하는 email 입니다.",
+
 
     ALREADY_USER: "존재하는 유저 id 입니다.",
     NO_USER: "존재하지 않는 유저 id 입니다.",
