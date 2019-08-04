@@ -67,6 +67,18 @@ const showModule = {
         }
         return result
     },
+    todayShowList: async(whereJson, sqlFunc)=>{
+        const todayListQuery = 'SELECT showIdx AS show_idx, detailImage AS image_url FROM `show`'
+        const result = await db.queryParam_None(todayListQuery)
+        if(result.length == 0)
+        {
+            return new errorMsg(true, Utils.successFalse(CODE.NOT_FOUND, MSG.NO_SHOW_TODAY))
+        }
+        if (!result) {
+            return new errorMsg(true, Utils.successFalse(CODE.DB_ERROR, MSG.FAIL_REMOVED_X(WORD)))
+        }
+        return result
+    }
 }
 module.exports = showModule
 

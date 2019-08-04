@@ -15,7 +15,7 @@ module.exports = {
         const func = sqlFunc || db.queryParam_Parse
         // const result = await sqlManager.db_insert(func, TABLE_NAME, jsonData, opts)
         const testQuery = 'SELECT * FROM (SELECT userIdx, scheduleIdx '+
-        'FROM lottery WHERE userIdx = 200) newTable '+
+        `FROM lottery WHERE userIdx = ${jsonData.userIdx}) newTable `+
         'INNER JOIN seat ON newTable.scheduleIdx = seat.scheduleIdx'
         const result = await db.queryParam_None(testQuery)
         console.log('xxxx', result[0])
