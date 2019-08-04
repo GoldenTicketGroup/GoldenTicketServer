@@ -175,4 +175,12 @@ router.delete('/:id', async(req, res) => {
     }
 })
 
+//공연 전체 조회 detail_Image
+//schedule테이블에서 오늘 이후의 공연
+router.get('/all', async(req, res) => {
+    let result = await showModule.todayShowList()
+    console.log(result)
+    res.status(200).send(utils.successTrue(statusCode.OK, responseMessage.READ_X_ALL('오늘 공연'), result))
+})
+
 module.exports = router
