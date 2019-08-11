@@ -35,6 +35,7 @@ module.exports = {
     ALREADY_X: (X) => `존재하는 ${X} 입니다.`,
     OK_NO_X: (X) => `${X}내역이 존재하지 않습니다.`,
     ALREADY_LOTTERY_X: (X) => `이미 두 개의 ${X}내역이 존재합니다.`,
+    NO_SHOW_TODAY: "오늘의 공연이 존재하지 않습니다.",
     NO_HEART: "관심있는 공연이 존재하지 않습니다.",
     SHOW_HEART: "관심있는 공연 조회 성공",
     NO_SEARCH: "검색 결과가 없습니다.",
