@@ -1,6 +1,5 @@
 const responseMessage = require('../../utils/rest/responseMessage')
 responseMessage.FAIL_CSV_READ = "CSV 읽기 실패"
-responseMessage.FAIL_
 const errorMsg = require('../common/errorUtils')
 const fs = require('fs')
 const json2csv = require('json2csv')
