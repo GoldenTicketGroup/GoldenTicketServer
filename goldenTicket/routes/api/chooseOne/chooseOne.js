@@ -10,15 +10,16 @@ const Utils = require('../../../modules/utils/rest/utils')
 router.post('/',  async (req, res) => {
     const imageUrl = req.body.imageUrl
     const userIdx = req.body.userIdx
-    //const scheduleIdx = req.body.scheduleIdx
+    const scheduleIdx = req.body.scheduleIdx
     //const seatIdx = req.body.seatIdx
     const whereJson = {
         imageUrl,
-        userIdx
+        userIdx,
+        scheduleIdx
     }
     const result = await chooseOneModule.insert(whereJson)
-    if(result.isError){
-        res.status(200).send(result.jsonData)
+    if(!result){
+        res.status(200).send(result)
         return
     }
     res.status(200).send(Utils.successTrue(statusCode.OK, responseMessage.CREATED_X('당첨')))

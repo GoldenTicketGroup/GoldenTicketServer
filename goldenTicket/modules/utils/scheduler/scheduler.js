@@ -6,23 +6,25 @@ const errorMsg = require('../common/errorUtils')
 const responseMessage = require('../rest/responseMessage')
 const csvManager = require('../db/csvManager')
 const userModule = require('../../../models/user')
-const fcmServerKey = require('../../../config/fcmServerKey').key
+const ServerKey = require('../../../config/fcmServerKey').key
 var request = require('request')
+const makeTicket = require('../../../models/chooseOne')
+const qrcode = 'https://raw.githubusercontent.com/zpao/qrcode.react/HEAD/qrcode.png'
 
-const fcmFunc = async (userIdx, title, content) => {
+const Func = async (userIdx, title, content) => {
     const whereJson = {
         userIdx: userIdx
     }
     const opts = {
-        fields: `fcmToken`
+        fields: `Token`
     }
-    const fcmTokenResult= await userModule.select(whereJson, opts)
-    if(fcmTokenResult == undefined)
+    const TokenResult= await userModule.select(whereJson, opts)
+    if(TokenResult == undefined)
         return
     else
     {
-        console.log(fcmTokenResult)
-        const clientToken = fcmTokenResult.fcmToken
+        console.log(TokenResult)
+        const clientToken = TokenResult.Token
         var jsonDataObj = {
         "data": {
             "title": title,
@@ -32,8 +34,8 @@ const fcmFunc = async (userIdx, title, content) => {
         }
         request.post({
             headers: {'content-type': 'application/json',
-            'authorization': `key=${fcmServerKey}`},
-            url: 'https://fcm.googleapis.com/fcm/send',
+            'authorization': `key=${ServerKey}`},
+            url: 'https://.googleapis.com//send',
             body: jsonDataObj,
             json: true
             },
@@ -268,7 +270,7 @@ const taskReady2Choose = async (now) => {
             else if(showNameList.length > 2){
                 showNameStr = `${showNameList[0]}, ${showNameList[1]} 외 ${(showNameList.length - 2)}개`
             }
-            fcmFunc(userIdx, `${userName}님, ${showNameStr}의 관심있는 공연 응모가 시작되었습니다!`, '골든티켓의 주인공이 되어보세요!')
+            Func(userIdx, `${userName}님, ${showNameStr}의 관심있는 공연 응모가 시작되었습니다!`, '골든티켓의 주인공이 되어보세요!')
         }
         
         for(const it of waitCronList){
@@ -331,7 +333,7 @@ const taskSaveCache = async (scheduleIdx) => {
         //     taskSaveCache(scheduleIdx)
         // },60 * 10 * 60)
         return
-    }
+    }   
 }
 const taskChooseWin = async (scheduleIdx) => {
     console.log(`당첨 로터리 티켓 고르기`)
@@ -363,6 +365,7 @@ const taskChooseWin = async (scheduleIdx) => {
     // 2. random 알고리즘
     const randomIdx = parseInt(Math.random() * 1000) % cacheLotteryList.length
     const winLottery = cacheLotteryList[randomIdx]
+    console.log('xxxx', winLottery)
     if(!winLottery.lotteryIdx){
         await csvManager.logWrite(csvManager.LOG_DURING_CHOOSE_WIN, "로터리 당첨 선발중에 에러가 발생했습니다...")
         return
@@ -377,11 +380,12 @@ const taskChooseWin = async (scheduleIdx) => {
         const resultUpdate = await Schedule.update({done: 1}, {scheduleIdx: scheduleIdx}, queryStreamFunc)
         const resultLottery = await Lottery.update({state: 1}, {lotteryIdx: winLottery.lotteryIdx})
     })
-    if(!transaction){
+    const resultTicket = await makeTicket.insert({userIdx: winLottery.userIdx, imageUrl: qrcode, scheduleIdx: winLottery.scheduleIdx})
+    if(!transaction || resultTicket.isError == true){
         return new errorMsg(false,  Utils.successFalse(CODE.DB_ERROR, responseMessage.FAIL_UPDATED_X(WORD)))
     }
     console.log(transaction)
-    //FCM을 보낸다
+    //을 보낸다
     const showResult = await Show.get(resultSchedule.showIdx)
     if(showResult.isError){
         return new errorMsg(false,  Utils.successFalse(CODE.DB_ERROR, responseMessage.FAIL_READ_X('공연')))
@@ -391,7 +395,7 @@ const taskChooseWin = async (scheduleIdx) => {
         const userIdx = lottery.userIdx
         const userResult = await User.get(userIdx)
         const userName = userResult.name
-        fcmFunc(userIdx, `${userName}님, 두근두근 결과가 나왔습니다!`, `응모하신 '${showName}'의 당첨결과를 확인해보세요!`)
+        Func(userIdx, `${userName}님, 두근두근 결과가 나왔습니다!`, `응모하신 '${showName}'의 당첨결과를 확인해보세요!`)
     }
 
     // csv 정보를 clear한다.
