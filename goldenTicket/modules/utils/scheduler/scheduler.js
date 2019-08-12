@@ -16,7 +16,7 @@ const Func = async (userIdx, title, content) => {
         userIdx: userIdx
     }
     const opts = {
-        fields: `Token`
+        fields: `fcmToken`
     }
     const TokenResult= await userModule.select(whereJson, opts)
     if(TokenResult == undefined)
@@ -24,23 +24,23 @@ const Func = async (userIdx, title, content) => {
     else
     {
         console.log(TokenResult)
-        const clientToken = TokenResult.Token
+        const clientToken = TokenResult.fcmToken
         var jsonDataObj = {
         "data": {
             "title": title,
-            "content": content
+            "message": content
         },
         "to": clientToken
         }
         request.post({
             headers: {'content-type': 'application/json',
             'authorization': `key=${ServerKey}`},
-            url: 'https://.googleapis.com//send',
+            url: 'https://fcm.googleapis.com/fcm/send',
             body: jsonDataObj,
             json: true
             },
-        function(err, response, body) {
-                console.log(err)
+            function(err, response, body) {
+                console.log('에렁', err)
             }
         )
 

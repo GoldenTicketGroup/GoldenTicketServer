@@ -38,6 +38,7 @@ router.get('/home', async(req, res) => {
 router.get('/detail/:id', authUtil.isLoggedin, async(req, res) => {
     const userIdx = req.decoded.userIdx
     const showIdx = req.params.id
+    console.log(showIdx)
     const whereJson = {
         showIdx : parseInt(showIdx)
     }
